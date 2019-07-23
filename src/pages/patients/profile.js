@@ -69,6 +69,12 @@ export default class Profile extends Component {
 		});
 	});
 
+	componentWillUnmount() {
+        Keyboard.removeAllListeners("keyboardDidShow");
+		Keyboard.removeAllListeners("keyboardDidHide");
+		this.didFocus.remove();
+	}
+	
 	toggleModal = (modalName) => {
 		this.setState({[modalName]: !this.state[modalName]})
 	}

@@ -94,7 +94,7 @@ export default class Patients extends Component {
     });
     
     componentWillUnmount() {
-        this.willFocus.remove();
+        this.didFocus.remove();
     }
     
     exitDateBelow48Hours(date) {
