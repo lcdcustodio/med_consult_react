@@ -33,7 +33,7 @@ export default class Hospital extends Component {
 			isConnected: null,
 			dateSync: null,
 			page: 1,
-			isEditable: true,
+			isEditable: Session.current.user.profile == 'CONSULTANT',
 			loading: false,
 			timerTextColor: "#005cd1",
 			timerBackgroundColor: "#fff",
@@ -68,11 +68,15 @@ export default class Hospital extends Component {
 
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
 
-        this.setState({errorSync: 0});
+		this.setState({
+			errorSync: 0,
+			timerTextColor: "#005cd1", 
+			timerBackgroundColor: "#fff",
+			patientQuery: null,
+			patientsFiltered: [],
+		});
 
         this.setUser();
-
-        this.setState({ timerTextColor: "#005cd1", timerBackgroundColor: "#fff" });
         
 		NetInfo.fetch().then(state => {
 
@@ -106,11 +110,6 @@ export default class Hospital extends Component {
 			if (res != null) {
 				this.setRequireSyncTimer(res);
 			}
-		});
-
-		this.setState({
-			patientQuery: null,
-			patientsFiltered: []
 		});
 
 		BackHandler.removeEventListener ('hardwareBackPress', () => {});

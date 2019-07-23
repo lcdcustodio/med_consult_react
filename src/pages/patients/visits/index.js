@@ -13,16 +13,20 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { RdIf } from '../../../components/rededor-base'
 import Patient, { FinalizationErrorEnum } from '../../../model/Patient';
 import TabEnum from '../PatientDetailTabEnum';
+import Session from '../../../Session'
 
 export default class Visitas extends React.Component {
 	
 	constructor(props) {
 		super(props);
+		let patient = this.props.navigation.getParam('patient');
+		let observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+
 		this.state = {
-			patient: this.props.patient,
+			patient: patient,
 			modalVisible: false,
 			hospitalId: this.props.hospitalId,
-			isEditable: this.props.isEditable,
+			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease),
 			visit: {
 				uuid: null,
 				observation: '',
@@ -40,14 +44,20 @@ export default class Visitas extends React.Component {
 			});
 		});
 		
-        Keyboard.addListener('keyboardDidHide',(frames)=>{
-            this.setState({keyboardSpace:0});
-        });
+		Keyboard.addListener('keyboardDidHide',(frames)=>{
+				this.setState({keyboardSpace:0});
+		});
 	}
 
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
 		const hospitalId = this.props.hospitalId;
-		this.setState({hospitalId});
+		let patient = this.props.navigation.getParam('patient');
+		let observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+
+		this.setState({
+			hospitalId,
+			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease),
+		});
 	});
 
 	save = _ => {
@@ -223,11 +233,8 @@ export default class Visitas extends React.Component {
 
 	renderItem = ({ item, index }) => {
 		const { patient } = this.state;
-		const observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
-		const lastObservation = observations.length ? observations[0] : null;
-		const hasMedicalRelease = (lastObservation && lastObservation.medicalRelease);
-		const isEdit = this.state.isEditable && !hasMedicalRelease;
-		const onPress =  isEdit ? (_=>this.showVisit(item)) : null;
+		const onPress = this.state.isEditable ? (_=>this.showVisit(item)) : null;
+
 		if(item.uuid) {
 
 			if (index <= 29) {
@@ -238,7 +245,7 @@ export default class Visitas extends React.Component {
 							<Card>
 								<CardItem header bordered style={{ flex: 1, backgroundColor: '#cce5ff', height: 60}}>
 									<Left>
-										<Text style={{ fontSize: 16, fontWeight: 'bold'}}>Visita {isEdit && this.showIconEdit(this.isToday(item.observationDate))}</Text>
+										<Text style={{ fontSize: 16, fontWeight: 'bold'}}>Visita {this.state.isEditable && this.showIconEdit(this.isToday(item.observationDate))}</Text>
 									</Left>
 									<Right>
 										<Text>{this.isToday(item.observationDate) ? 'Hoje' : this.getParamnDate(item.observationDate)}</Text>

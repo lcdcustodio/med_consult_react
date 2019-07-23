@@ -8,26 +8,30 @@ import moment from 'moment';
 import _ from 'lodash';
 import { RdIf, toJsonDate } from '../../../components/rededor-base'
 import Patient, { StatusVisitEnum } from '../../../model/Patient'
+import Session from '../../../Session'
 
 export default class Events extends Component {
 	
 	constructor(props) {
 		super(props);
-		const { patient } = this.props;
-		const observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+		let { patient } = this.props;
+		let observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+
 		this.state = {
 			patient: patient,
 			eventos: this._loadEvents(patient),
-			isEditable: this.props.isEditable,
-			hasMedicalRelease: (observations.length && observations[0].medicalRelease),
+			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease),
 		};
 	}
 		
 	willFocus = this.props.navigation.addListener('willFocus', (payload) => {
-		const patient = this.props.navigation.getParam('patient');
+		let patient = this.props.navigation.getParam('patient');
+		let observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+
 		this.setState({
 			patient: patient,
 			eventos: this._loadEvents(patient),
+			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease),
 		});
 	});
 
@@ -39,7 +43,7 @@ export default class Events extends Component {
 					data={this.state.eventos}
 					keyExtractor={ (event) => { return event.data.uuid; } }
 					renderItem={ this._renderEvent } />
-				<RdIf condition={ this.state.isEditable && !this.state.hasMedicalRelease }> 
+				<RdIf condition={ this.state.isEditable }> 
 					<View style={{ marginTop:10, marginBottom: 10, marginLeft: 10, marginRight: 10 }}>
 						<Button mode="contained" onPress={this._create}>APONTAR</Button>
 					</View>

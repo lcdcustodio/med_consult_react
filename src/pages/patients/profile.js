@@ -9,16 +9,18 @@ import data from '../../../data.json';
 import { Button, Dialog, Portal, RadioButton, Divider, TextInput, Searchbar, List } from 'react-native-paper';
 import { Content, ListItem, Text, Right, Body } from 'native-base';
 import _ from 'lodash';
+import Session from '../../Session';
 
 export default class Profile extends Component {
 
 	constructor(props) {
 		super(props);
-		const patient = this.props.navigation.getParam('patient');
-		const observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+		let patient = this.props.navigation.getParam('patient');
+		let observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+
 		this.state = {
 			patient: patient,
-			isEditable: this.props.isEditable && !(observations.length && observations[0].medicalRelease),
+			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease),
 			cid: data.cid,
 			auxCid: data.cid,
 			tuss: data.tuss,
@@ -61,11 +63,12 @@ export default class Profile extends Component {
 	}
 
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
-		const patient = this.props.navigation.getParam('patient');
-		const observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+		let patient = this.props.navigation.getParam('patient');
+		let observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+
 		this.setState({
-			isEditable: this.props.isEditable && !(observations.length && observations[0].medicalRelease),
-			patient: this.props.navigation.getParam('patient')
+			patient: this.props.navigation.getParam('patient'),
+			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease)
 		});
 	});
 

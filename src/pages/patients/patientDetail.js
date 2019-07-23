@@ -21,6 +21,7 @@ class PatientDetail extends Component {
 	constructor(props) {
 
 		super(props);
+		let observations = _.orderBy(this.props.navigation.getParam('patient').observationList, ['observationDate'], ['desc']);
 
 		this.state = {
             hospital: {},
@@ -32,7 +33,7 @@ class PatientDetail extends Component {
             timerTextColor: "#005cd1",
             timerBackgroundColor: "#fff",
 			selectedTab: TabEnum.Profile,
-			isEditable: Session.current.user.profile == 'CONSULTANT'
+			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease)
 		}
 	}
 
@@ -101,15 +102,20 @@ class PatientDetail extends Component {
 	}
 
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
-		
-		this.setState({isEditable: Session.current.user._profile != 'ADMIN'});
+		let observations = _.orderBy(this.state.patient.observationList, ['observationDate'], ['desc']);
+
+		this.setState({
+			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease)
+		});
 
 		const patientId = this.props.navigation.getParam('patientId');
 
 		const hospitalId = this.props.navigation.getParam('hospitalId');
 
 		if (this.state.setprofile != patientId) {
-			this.setState({ selectedTab: 'profile' });
+			this.setState({ 
+				selectedTab: 'profile' 
+			});
 			this.state.setprofile =  patientId;
 		}
 
