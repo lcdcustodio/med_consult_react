@@ -93,6 +93,10 @@ export default class Patients extends Component {
 
     });
     
+    componentWillUnmount() {
+        this.willFocus.remove();
+    }
+    
     exitDateBelow48Hours(date) {
         const today = moment()
         let dateFormatted = moment(moment(date).format('YYYY-MM-DD'))

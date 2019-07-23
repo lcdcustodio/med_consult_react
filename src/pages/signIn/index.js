@@ -17,8 +17,8 @@ export default class SignIn extends Component {
 		
 		this.state = {
 			lastDateSync: '2010-01-10T18:46:19-0700',
-			email: '',
-			password: '',
+			email: 'consult.radix',
+			password: '*ru8u!uBus2A',
 			error: '',
 			textContent: '',
 			loading: false,

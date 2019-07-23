@@ -76,6 +76,10 @@ export default class Finalize extends Component {
 		this.handleUpdatePatient = payload.action.params.handleUpdatePatient;
 	});
 
+	componentWillUnmount() {
+        this.didFocus.remove();
+	}
+	
 	getPatient = async (patientID, hospitalId) => {
 		let self = this;
 		let hospitalList = JSON.parse(await AsyncStorage.getItem('hospitalList'));

@@ -40,15 +40,21 @@ export default class Visitas extends React.Component {
 			});
 		});
 		
-        Keyboard.addListener('keyboardDidHide',(frames)=>{
-            this.setState({keyboardSpace:0});
-        });
+		Keyboard.addListener('keyboardDidHide',(frames)=>{
+				this.setState({keyboardSpace:0});
+		});
 	}
 
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
 		const hospitalId = this.props.hospitalId;
 		this.setState({hospitalId});
 	});
+
+	componentWillUnmount() {
+        Keyboard.removeAllListeners("keyboardDidShow");
+		Keyboard.removeAllListeners("keyboardDidHide");
+		this.didFocus.remove();
+	}
 
 	save = _ => {
 		const newVisit = this.state.visit;
@@ -160,12 +166,33 @@ export default class Visitas extends React.Component {
 	}
 
 	toggleModal = _ => {
+		Keyboard.addListener('keyboardDidShow',(frames)=>{
+            if (!frames.endCoordinates) return;
+            this.setState({
+				keyboardSpace: frames.endCoordinates.height
+			});
+		});
+		
+		Keyboard.addListener('keyboardDidHide',(frames)=>{
+				this.setState({keyboardSpace:0});
+		});
 
 	    this.setState({modalVisible: !this.state.modalVisible})
 	}
 
  	appoint = _ => {
-		 this.setState({ 
+		Keyboard.addListener('keyboardDidShow',(frames)=>{
+            if (!frames.endCoordinates) return;
+            this.setState({
+				keyboardSpace: frames.endCoordinates.height
+			});
+		});
+		
+		Keyboard.addListener('keyboardDidHide',(frames)=>{
+				this.setState({keyboardSpace:0});
+		});
+
+		this.setState({ 
 			modalVisible: true,
 			update: false, 
 			visit: {
@@ -173,8 +200,8 @@ export default class Visitas extends React.Component {
 				observation: '',
 				alert: false,
 				observationDate: toJsonDate(),
-				}
-		})
+			}
+		});
 	}
 
 	finalize = () => {

@@ -73,13 +73,13 @@ export default class Profile extends Component {
 		this.setState({[modalName]: !this.state[modalName]})
 	}
 
-	handleAttendanceType = (attendanceType) => {
-		this.props.handleUpdatePatient('attendanceType', attendanceType)
+	handleAttendanceType = async (attendanceType) => {
+		await this.props.handleUpdatePatient('attendanceType', attendanceType)
 		this.toggleModal('modalAttendanceType')
 	}
 
-	handleHospitalizationType = (hospitalizationType) => {
-		this.props.handleUpdatePatient('hospitalizationType', hospitalizationType)
+	handleHospitalizationType = async (hospitalizationType) => {
+		await this.props.handleUpdatePatient('hospitalizationType', hospitalizationType)
 		this.toggleModal('modalHospitalizationType')
 	}
 
@@ -125,8 +125,8 @@ export default class Profile extends Component {
 		this.setState({ crmTMP: crm });
 	}
 
-	saveCRM = () => {
-		this.props.handleUpdatePatient('mainProcedureCRM', this.state.crmTMP);
+	saveCRM = async () => {
+		await this.props.handleUpdatePatient('mainProcedureCRM', this.state.crmTMP);
 		this.toggleModal('modalCRM');
 	}
 
@@ -135,7 +135,7 @@ export default class Profile extends Component {
 		this.toggleModal('modalCRM');
 	}
 
-	handlePrimaryCID = (cid) => {
+	handlePrimaryCID = async (cid) => {
 		diagnosticHypothesisList = [];
 		let diagnosticHypothesis = {
 			beginDate: toJsonDate(),
@@ -152,25 +152,19 @@ export default class Profile extends Component {
 
 			if (!this.hasCidItem(cidListDesc, diagnosticHypothesis)) {
 				cidListDesc.push(diagnosticHypothesis);
-				this.props.handleUpdatePatient('diagnosticHypothesisList', cidListDesc);
+				await this.props.handleUpdatePatient('diagnosticHypothesisList', cidListDesc);
+				this.setState({ auxCid: data.cid, cidQuery: null });
 				this.toggleModal('modalPrimaryCID');
-				this.setState({
-					auxCid: data.cid,
-					cidQuery: null
-				});
 			}
 		} else {
 			diagnosticHypothesisList.push(diagnosticHypothesis)
-			this.props.handleUpdatePatient('diagnosticHypothesisList', diagnosticHypothesisList)
-			this.toggleModal('modalPrimaryCID')
-			this.setState({
-				auxCid: data.cid,
-				cidQuery: null
-			})
+			await this.props.handleUpdatePatient('diagnosticHypothesisList', diagnosticHypothesisList)
+			this.setState({ auxCid: data.cid, cidQuery: null });
+			this.toggleModal('modalPrimaryCID');
 		}
 	}
 
-	handleSecondaryCID = (cid) => {
+	handleSecondaryCID = async (cid) => {
 
 		let secondaryCID = {
 			beginDate: moment(),
@@ -192,25 +186,16 @@ export default class Profile extends Component {
 			}
 
 			if (push) {
-
 				cidList.push(secondaryCID);
-				
-				this.props.handleUpdatePatient('secondaryCIDList', cidList)
-				
-				this.setState({
-					auxCid: data.cid,
-					cidQuery: null
-				});
+				await this.props.handleUpdatePatient('secondaryCIDList', cidList)
+				this.setState({ auxCid: data.cid, cidQuery: null });
 			}
 
 		} else {
 			let cidList = [];
 			cidList.push(secondaryCID)
-			this.props.handleUpdatePatient('secondaryCIDList', cidList)
-			this.setState({
-				auxCid: data.cid,
-				cidQuery: null
-			})
+			await this.props.handleUpdatePatient('secondaryCIDList', cidList)
+			this.setState({ auxCid: data.cid, cidQuery: null });
 		}
 		this.toggleModal('modalSecondaryCID')
 	}
@@ -451,9 +436,9 @@ export default class Profile extends Component {
 				this.props.patient.diagnosticHypothesisList.length === 0 ? 
 					<TextValue color={'#0000FF'} value={'ESCOLHER'} press={ () => { this.setState({modalSelected: 'PrimaryCID', modalPrimaryCID: true}) }} />
 				:
-					this.props.patient.diagnosticHypothesisList.map((prop) => {
+					this.props.patient.diagnosticHypothesisList.map((prop, index) => {
 						if (prop.endDate === null) {
-							return ( <TextValue color={'#0000FF'} key={prop.cidId} value={prop.cidDisplayName} press={ () => { this.setState({modalSelected: 'PrimaryCID', modalPrimaryCID: true}) }} /> )
+							return ( <TextValue color={'#0000FF'} key={index} value={prop.cidDisplayName} press={ () => { this.setState({modalSelected: 'PrimaryCID', modalPrimaryCID: true}) }} /> )
 						}
 					})
 			:

@@ -81,6 +81,12 @@ export default class Recommendation extends React.Component {
 		}
 	});
 
+	componentWillUnmount() {
+        Keyboard.removeAllListeners("keyboardDidShow");
+		Keyboard.removeAllListeners("keyboardDidHide");
+		this.didFocus.remove();
+	}
+	
 	save = async _ => {
 		let patient = this.props.navigation.state.params.patient;
 		let update = this.state.update;
