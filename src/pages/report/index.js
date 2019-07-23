@@ -179,6 +179,28 @@ export default class Report extends Component {
 		
 		try {
 
+			let conn = await NetInfo.fetch().then(state => {
+				return state.isConnected;
+			});
+			
+			if (!conn) {
+				
+				Alert.alert(
+					'Sua conexão parece estar inativa',
+					'Por favor verifique sua conexão e tente novamente',
+					[
+						{
+							text: 'OK', onPress: () => {}
+						},
+					],
+					{
+						cancelable: false
+					},
+				);
+
+				return false;
+			}
+
 			this.setState({ textContent: 'Carregando informações...' });
 
 			this.setState({loading: true});
@@ -245,13 +267,48 @@ export default class Report extends Component {
 
 							this.setState({loading: false});
 
-							this.setRequireSyncTimer(null);
+							if(response && response.status === 200) {
 
-							if (response == undefined) {
+								this.setRequireSyncTimer(null);
+
+								AsyncStorage.setItem('hospitalizationList', JSON.stringify([]));
+								AsyncStorage.setItem('morbidityComorbityList', JSON.stringify(response.data.content.morbidityComorbityList));
+
+								let hospitalListOrdered = _.orderBy(response.data.content.hospitalList, ['name'], ['asc']);
+								
+								let user = Session.current.user;
+
+								let listHospital = []
+								
+								if (user.profile == 'CONSULTANT') {
+
+									hospitalListOrdered.forEach( hospital => {
+										if(this.isTheSameHospital(hospital, parse)){
+											listHospital.push(hospital)
+										}
+									});
+								
+								} 
+								else
+								{
+									listHospital = hospitalListOrdered;
+								}
+
+								const dateSync = moment().format('DD/MM/YYYY [às] HH:mm:ss');
+
+								this.setState({dateSync: dateSync});
+
+								AsyncStorage.setItem('dateSync', JSON.stringify(dateSync));
+
+								AsyncStorage.setItem('hospitalList', JSON.stringify(listHospital));
+
+								this.report(listHospital);
+							
+							} else {
 
 								Alert.alert(
 									'Erro ao carregar informações',
-									'Desculpe, recebemos um erro inesperado do servidor, por favor, faça login e tente novamente! [REF 001]',
+									'Desculpe, recebemos um erro inesperado do servidor, por favor, faça login e tente novamente! ',
 									[
 										{
 											text: 'OK', onPress: () => {
@@ -264,63 +321,7 @@ export default class Report extends Component {
 									},
 								);
 							}
-							else
-							{
-							
-								if(response.status === 200) {
-
-									AsyncStorage.setItem('hospitalizationList', JSON.stringify([]));
-									AsyncStorage.setItem('morbidityComorbityList', JSON.stringify(response.data.content.morbidityComorbityList));
-
-									let hospitalListOrdered = _.orderBy(response.data.content.hospitalList, ['name'], ['asc']);
-									
-									let user = Session.current.user;
-
-									let listHospital = []
-									
-									if (user.profile == 'CONSULTANT') {
-
-										hospitalListOrdered.forEach( hospital => {
-											if(this.isTheSameHospital(hospital, parse)){
-												listHospital.push(hospital)
-											}
-										});
-									
-									} 
-									else
-									{
-										listHospital = hospitalListOrdered;
-									}
-
-									const dateSync = moment().format('DD/MM/YYYY [às] HH:mm:ss');
-
-									this.setState({dateSync: dateSync});
-
-									AsyncStorage.setItem('dateSync', JSON.stringify(dateSync));
-
-									AsyncStorage.setItem('hospitalList', JSON.stringify(listHospital));
-
-									this.report(listHospital);
-								
-								} else {
-
-									Alert.alert(
-										'Erro ao carregar informações',
-										'Desculpe, recebemos um erro inesperado do servidor, por favor, faça login e tente novamente! ',
-										[
-											{
-												text: 'OK', onPress: () => {
-													this.props.navigation.navigate("SignIn");
-												}
-											},
-										],
-										{
-											cancelable: false
-										},
-									);
-								}
-							}
-						
+											
 						}).catch(error => {
 
 							this.setState({loading: false});
@@ -345,7 +346,23 @@ export default class Report extends Component {
 			});
 
         } catch(error) {
+        	
         	this.setState({loading: false});
+
+			Alert.alert(
+				'Erro ao carregar informações',
+				error,
+				[
+					{
+						text: 'OK', onPress: () => {
+							this.props.navigation.navigate("SignIn");
+						}
+					},
+				],
+				{
+					cancelable: false
+				},
+			);
         }        		
 	};
 

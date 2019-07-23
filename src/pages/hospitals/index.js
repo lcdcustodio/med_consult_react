@@ -66,23 +66,6 @@ export default class Hospital extends Component {
 		this.setUser();
 	}
 
-	handleFirstConnectivityChange(connectionInfo) {
-
-		if(connectionInfo.type == 'none')
-		{
-			this.setState({isConnected: false });
-		}
-		else
-		{
-			this.setState({isConnected: true });
-		}
-
-		NetInfo.removeEventListener(
-			'connectionChange',
-			this.handleFirstConnectivityChange,
-		); 
-	}
-	
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
 
         this.setState({errorSync: 0});
@@ -91,8 +74,6 @@ export default class Hospital extends Component {
 
         this.setState({ timerTextColor: "#005cd1", timerBackgroundColor: "#fff" });
         
-        NetInfo.addEventListener('connectionChange', this.handleFirstConnectivityChange);
-
 		NetInfo.fetch().then(state => {
 
 			this.setState({isConnected: state.isConnected});
@@ -261,12 +242,14 @@ export default class Hospital extends Component {
 		
 		try {
 
-			console.log(this.state.isConnected);
+			let conn = await NetInfo.fetch().then(state => {
+				return state.isConnected;
+			});
 			
-			if (!this.state.isConnected) {
+			if (!conn) {
 				
 				Alert.alert(
-					'Sua conexão paece estar inativa',
+					'Sua conexão parece estar inativa',
 					'Por favor verifique sua conexão e tente novamente',
 					[
 						{
@@ -337,13 +320,51 @@ export default class Hospital extends Component {
 
 							this.setState({loading: false});
 
-							this.setRequireSyncTimer(null);
+							if(response && response.status === 200) {
 
-							if (response == undefined) {
+								this.setRequireSyncTimer(null);
+
+								AsyncStorage.setItem('hospitalizationList', JSON.stringify([]));
+								AsyncStorage.setItem('morbidityComorbityList', JSON.stringify(response.data.content.morbidityComorbityList));
+
+								let hospitalListOrdered = _.orderBy(response.data.content.hospitalList, ['name'], ['asc']);
+								
+								let user = Session.current.user;
+
+								let listHospital = [];
+								
+								if (user.profile == 'CONSULTANT') {
+
+									hospitalListOrdered.forEach( hospital => {
+										if(this.isTheSameHospital(hospital, parse)){
+											listHospital.push(hospital)
+										}
+									});
+								
+								} 
+								else
+								{
+									listHospital = hospitalListOrdered;
+								}
+
+								this.getInformationHospital(listHospital).then(response => {
+
+									this.setState({loading: false});
+									
+									const dateSync = moment().format('DD/MM/YYYY [às] HH:mm:ss');
+
+									this.setState({dateSync: dateSync});
+
+									AsyncStorage.setItem('dateSync', JSON.stringify(dateSync));
+
+									AsyncStorage.setItem('hospitalList', JSON.stringify(listHospital));						
+								});
+							
+							} else {
 
 								Alert.alert(
 									'Erro ao carregar informações',
-									'Desculpe, recebemos um erro inesperado do servidor, por favor, faça login e tente novamente! [REF 001]',
+									response,
 									[
 										{
 											text: 'OK', onPress: () => {
@@ -356,66 +377,6 @@ export default class Hospital extends Component {
 									},
 								);
 							}
-							else
-							{
-								if(response.status === 200) {
-
-									AsyncStorage.setItem('hospitalizationList', JSON.stringify([]));
-									AsyncStorage.setItem('morbidityComorbityList', JSON.stringify(response.data.content.morbidityComorbityList));
-
-									let hospitalListOrdered = _.orderBy(response.data.content.hospitalList, ['name'], ['asc']);
-									
-									let user = Session.current.user;
-
-									let listHospital = [];
-									
-									if (user.profile == 'CONSULTANT') {
-
-										hospitalListOrdered.forEach( hospital => {
-											if(this.isTheSameHospital(hospital, parse)){
-												listHospital.push(hospital)
-											}
-										});
-									
-									} 
-									else
-									{
-										listHospital = hospitalListOrdered;
-									}
-
-									this.getInformationHospital(listHospital).then(response => {
-
-										this.setState({loading: false});
-										
-										const dateSync = moment().format('DD/MM/YYYY [às] HH:mm:ss');
-
-										this.setState({dateSync: dateSync});
-
-										AsyncStorage.setItem('dateSync', JSON.stringify(dateSync));
-
-										AsyncStorage.setItem('hospitalList', JSON.stringify(listHospital));						
-									});
-								
-								} else {
-
-									Alert.alert(
-										'Erro ao carregar informações',
-										'Desculpe, recebemos um erro inesperado do servidor, por favor, faça login e tente novamente! ',
-										[
-											{
-												text: 'OK', onPress: () => {
-													this.props.navigation.navigate("SignIn");
-												}
-											},
-										],
-										{
-											cancelable: false
-										},
-									);
-
-									this.props.navigation.navigate("SignIn");
-								}
-							}
 						
 						}).catch(error => {
 
@@ -423,7 +384,7 @@ export default class Hospital extends Component {
 
 							Alert.alert(
 								'Erro ao carregar informações',
-								'Desculpe, recebemos um erro inesperado do servidor, por favor, faça login e tente novamente! ',
+								error.message,
 								[
 									{
 										text: 'OK', onPress: () => {
@@ -442,8 +403,26 @@ export default class Hospital extends Component {
 			});
 
         } catch(error) {
+
+        	console.log(error);
+        	
         	this.setState({loading: false});
-        }        		
+
+			Alert.alert(
+				'Erro ao carregar informações',
+				error,
+				[
+					{
+						text: 'OK', onPress: () => {
+							this.props.navigation.navigate("SignIn");
+						}
+					},
+				],
+				{
+					cancelable: false
+				},
+			);
+        }     		
 	};
 
 	isTheSameHospital = (hospital, userData) =>  {
