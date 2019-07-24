@@ -200,7 +200,7 @@ export default class Events extends Component {
 				<Right>
 					<Text>
 					{
-						eventInfo.time !== 'Não Informado' ? moment(eventInfo.time).format('DD/MM/YYYY') : eventInfo.time
+						(eventInfo.time !== 'Pendente' && eventInfo.time !== 'Não Informado') ? moment(eventInfo.time).format('DD/MM/YYYY') : eventInfo.time
 					}
 					</Text>
 				</Right>
