@@ -178,6 +178,12 @@ export default class Hospital extends Component {
 		return patient;
 	}
 
+	clearAllData() {
+		AsyncStorage.removeItem('hospitalList');
+		AsyncStorage.removeItem('userData');
+		AsyncStorage.removeItem('auth');
+	}
+
 	parseObject(json) {
 
 		let parse = {};
@@ -386,68 +392,93 @@ export default class Hospital extends Component {
 							
 							} else {
 
-								Alert.alert(
-									'Erro ao carregar informações',
-									response,
-									[
+								setTimeout(() => {
+
+									Alert.alert(
+										'Erro ao carregar informações',
+										response,
+										[
+											{
+												text: 'OK', onPress: () => {
+													this.clearAllData();
+													this.props.navigation.navigate("SignIn");
+												}
+											},
+										],
 										{
-											text: 'OK', onPress: () => {
-												this.props.navigation.navigate("SignIn");
-											}
+											cancelable: false
 										},
-									],
-									{
-										cancelable: false
-									},
-								);
+									);
+
+								}, 100);
+
+								return false;
 							}
 						
 						}).catch(error => {
 
-							clearTimeout(timer);
+							this.setState({loading: false}, function(){
 
-							this.setState({loading: false});
+								setTimeout(() => {
 
-							Alert.alert(
-								'Erro ao carregar informações',
-								error.message,
-								[
-									{
-										text: 'OK', onPress: () => {
-											this.props.navigation.navigate("SignIn");
-										}
-									},
-								],
-								{
-									cancelable: false
-								},
-							);
+									Alert.alert(
+										'Erro ao carregar informações',
+										error.message,
+										[
+											{
+												text: 'OK', onPress: () => {
+													this.clearAllData();
+													this.props.navigation.navigate("SignIn");
+												}
+											},
+										],
+										{
+											cancelable: false
+										},
+									);
+
+								}, 100);
+
+								clearTimeout(timer);
+
+							});
+
+							return false;
 						});
 
 					});
 				}
 			});
 
-        } catch(error) {
+        }catch(error) {
 
-        	console.log(error);
-        	
-        	this.setState({loading: false});
+        	this.setState({loading: false}, function(){
 
-			Alert.alert(
-				'Erro ao carregar informações',
-				error,
-				[
-					{
-						text: 'OK', onPress: () => {
-							this.props.navigation.navigate("SignIn");
-						}
-					},
-				],
-				{
-					cancelable: false
-				},
-			);
+				setTimeout(() => {
+
+					Alert.alert(
+						'Erro ao carregar informações',
+						error,
+						[
+							{
+								text: 'OK', onPress: () => {
+									this.clearAllData();
+									this.props.navigation.navigate("SignIn");
+								}
+							},
+						],
+						{
+							cancelable: false
+						},
+					);
+
+				}, 100);
+
+				clearTimeout(timer);
+
+			});
+
+			return false;
         }     		
 	};
 
