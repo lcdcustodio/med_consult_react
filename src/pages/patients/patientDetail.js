@@ -102,7 +102,11 @@ class PatientDetail extends Component {
 
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
 		
-		this.setState({isEditable: Session.current.user._profile != 'ADMIN'});
+		this.setState({
+			isEditable: Session.current.user._profile != 'ADMIN',
+			hospitalId: this.props.navigation.getParam('hospitalId'),
+			patientId: this.props.navigation.getParam('patientId'),
+		});
 
 		const patientId = this.props.navigation.getParam('patientId');
 
