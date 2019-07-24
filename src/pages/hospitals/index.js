@@ -277,20 +277,30 @@ export default class Hospital extends Component {
 
 				if (this.state.loading) {
 
-					this.setState({ loading: false });
+					this.setState({loading: false}, function(){
 
-					Alert.alert(
-						'Servidor lento ou indisponível',
-						'O servidor não retornou um resultado dentro do período de 2 minutos, por favor tente novamente ou entre em contato com o suporte',
-						[
-							{
-								text: 'OK', onPress: () => {}
-							},
-						],
-						{
-							cancelable: false
-						},
-					);
+						setTimeout(() => {
+
+							Alert.alert(
+								'Servidor lento ou indisponível',
+								'O servidor não retornou um resultado dentro do período de 2 minutos, por favor tente novamente ou entre em contato com o suporte',
+								[
+									{
+										text: 'OK', onPress: () => {}
+									},
+								],
+								{
+									cancelable: false
+								},
+							);
+
+						}, 100);
+
+						clearTimeout(timer);
+
+					});
+
+					return false;
 					
 				}
 
@@ -882,17 +892,23 @@ export default class Hospital extends Component {
 	}
 
 	filterHospitals(regionalHospital) {
+		
 		let hospitals = [];
-		this.state.hospitals.map(item => {
-			if (regionalHospital === 'ALL' || regionalHospital === item.regional) {
-				hospitals.push(item)
-			}
-		});
 
-		this.setState({
-			selectedRegionalHospital: regionalHospital,
-			filteredHospitals: hospitals
-		})
+		if(this.state.hospitals)
+		{
+			this.state.hospitals.map(item => {
+				if (regionalHospital === 'ALL' || regionalHospital === item.regional) {
+					hospitals.push(item)
+				}
+			});
+
+			this.setState({
+				selectedRegionalHospital: regionalHospital,
+				filteredHospitals: hospitals
+			});
+		}
+		
 	}
 
 	setUser() {
