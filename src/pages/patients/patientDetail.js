@@ -40,7 +40,7 @@ class PatientDetail extends Component {
 
 		this.setState({loading: showSpinner});
 
-		AsyncStorage.setItem('require_sync_at', JSON.stringify(moment().format('YYYY-MM-DD')));
+		await AsyncStorage.setItem('require_sync_at', JSON.stringify(moment().format('YYYY-MM-DD')));
 
 		let patient = this.state.patient;
 
@@ -48,7 +48,7 @@ class PatientDetail extends Component {
 
 		this.setState({patient});
 
-		await AsyncStorage.getItem('hospitalList', (err, res) => {
+		await AsyncStorage.getItem('hospitalList', async (err, res) => {
 
 			let hospitalList = JSON.parse(res);
 
@@ -68,7 +68,7 @@ class PatientDetail extends Component {
 				}
 			}
 
-			AsyncStorage.setItem('hospitalList', JSON.stringify(hospitalList));
+			await AsyncStorage.setItem('hospitalList', JSON.stringify(hospitalList));
 
 		});
 
@@ -152,6 +152,10 @@ class PatientDetail extends Component {
         });
 	});
 
+	componentWillUnmount() {
+        this.didFocus.remove();
+	}
+	
 	isSelected = (tab) => {
 		return (tab === this.state.selectedTab);
 	}

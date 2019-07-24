@@ -35,12 +35,14 @@ export default class Recommendation extends React.Component {
 			specialtyQuery: null,
 			keyboardSpace: 0,
 		}
+
 		Keyboard.addListener('keyboardDidShow',(frames)=>{
             if (!frames.endCoordinates) return;
             this.setState({
 				keyboardSpace: frames.endCoordinates.height
 			});
 		});
+		
         Keyboard.addListener('keyboardDidHide',(frames)=>{
             this.setState({keyboardSpace:0});
 		});
@@ -81,6 +83,12 @@ export default class Recommendation extends React.Component {
 		}
 	});
 
+	componentWillUnmount() {
+        Keyboard.removeAllListeners("keyboardDidShow");
+		Keyboard.removeAllListeners("keyboardDidHide");
+		this.didFocus.remove();
+	}
+	
 	save = async _ => {
 		let patient = this.props.navigation.state.params.patient;
 		let update = this.state.update;

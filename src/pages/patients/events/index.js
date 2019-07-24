@@ -31,6 +31,10 @@ export default class Events extends Component {
 		});
 	});
 
+	componentWillUnmount() {
+        this.willFocus.remove();
+	}
+	
 	render() {
 		return (
 			<View style={ styles.container }>

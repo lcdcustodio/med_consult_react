@@ -24,6 +24,11 @@ export default class ModalPrimaryCID extends Component {
         });
     }
 
+    componentWillUnmount() {
+        Keyboard.removeAllListeners("keyboardDidShow");
+        Keyboard.removeAllListeners("keyboardDidHide");
+    }
+
     select = (element) => {
         this.setState({ query: '', list: this.props.list});
         this.props.onSelect(element);
