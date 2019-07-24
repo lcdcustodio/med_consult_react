@@ -65,7 +65,10 @@ export default class Profile extends Component {
 		const observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
 		this.setState({
 			isEditable: this.props.isEditable && !(observations.length && observations[0].medicalRelease),
-			patient: this.props.navigation.getParam('patient')
+			patient: this.props.navigation.getParam('patient'),
+			patientHeightTMP: Number(this.props.navigation.getParam('patient').patientHeight ? this.props.navigation.getParam('patient').patientHeight.toString().replace(',', '.') : '').toFixed(2),
+			patientWeightTMP: this.props.navigation.getParam('patient').patientWeight,
+			crmTMP: this.props.navigation.getParam('patient').mainProcedureCRM
 		});
 	});
 
