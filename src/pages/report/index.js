@@ -59,6 +59,10 @@ export default class Report extends Component {
 				  label: 'Pernambuco',
 				  value: 'PE',
 				},
+				{
+				  label: 'São Paulo',
+				  value: 'SP',
+				},
 			]
 		}
 

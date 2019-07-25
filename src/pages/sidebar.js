@@ -43,6 +43,11 @@ export default class Sidebar extends Component {
 		}
 	}
 
+	clearAllData() {
+		AsyncStorage.removeItem('userData');
+		AsyncStorage.removeItem('auth');
+	}
+
 	render() {
 		let user = Session.current.user;
 		if (!user) {
@@ -65,9 +70,7 @@ export default class Sidebar extends Component {
 							<TouchableWithoutFeedback key={key} onPress={() => { 
 
 								if (item.screenToNavigate == 'SignIn') {
-									AsyncStorage.removeItem('hospitalList');
-									AsyncStorage.removeItem('userData');
-									AsyncStorage.removeItem('auth');
+									this.clearAllData();
 								}
 
 								this.props.navigation.closeDrawer(); this.props.navigation.navigate(item.screenToNavigate); 
