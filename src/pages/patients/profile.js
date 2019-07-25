@@ -20,7 +20,7 @@ export default class Profile extends Component {
 
 		this.state = {
 			patient: patient,
-			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease),
+			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
 			cid: data.cid,
 			auxCid: data.cid,
 			tuss: data.tuss,
@@ -67,7 +67,7 @@ export default class Profile extends Component {
 		let observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
 
 		this.setState({
-			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease),
+			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
 			patient: this.props.navigation.getParam('patient'),
 			patientHeightTMP: Number(this.props.navigation.getParam('patient').patientHeight ? this.props.navigation.getParam('patient').patientHeight.toString().replace(',', '.') : '').toFixed(2),
 			patientWeightTMP: this.props.navigation.getParam('patient').patientWeight,

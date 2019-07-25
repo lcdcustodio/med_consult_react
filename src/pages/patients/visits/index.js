@@ -26,7 +26,7 @@ export default class Visitas extends React.Component {
 			patient: patient,
 			modalVisible: false,
 			hospitalId: this.props.hospitalId,
-			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease),
+			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
 			visit: {
 				uuid: null,
 				observation: '',
@@ -56,7 +56,7 @@ export default class Visitas extends React.Component {
 
 		this.setState({
 			hospitalId,
-			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease),
+			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
 		});
 	});
 

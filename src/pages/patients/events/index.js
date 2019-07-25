@@ -20,7 +20,7 @@ export default class Events extends Component {
 		this.state = {
 			patient: patient,
 			eventos: this._loadEvents(patient),
-			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease),
+			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
 		};
 	}
 		
@@ -31,7 +31,7 @@ export default class Events extends Component {
 		this.setState({
 			patient: patient,
 			eventos: this._loadEvents(patient),
-			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease),
+			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
 		});
 	});
 

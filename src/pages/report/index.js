@@ -689,19 +689,21 @@ export default class Report extends Component {
 
 	sincronizar = async (fromServer) => {
 
-		const { isConnected } = this.state;
+		let conn = await NetInfo.fetch().then(state => {
+			return state.isConnected;
+		});
 
 		if (fromServer) {
 
-			if (isConnected) 
+			if (conn) 
 			{
 				this.loadHospitals();
 			}
 			else
 			{
 				Alert.alert(
-					'Sem conexão com a internet',
-					'Desculpe, não identificamos uma conexão estável com a internet!',
+					'Sua conexão parece estar inativa',
+					'Por favor verifique sua conexão e tente novamente',
 					[
 						{
 							text: 'OK', onPress: () => {}
@@ -716,7 +718,7 @@ export default class Report extends Component {
 		}
 		else
 		{
-			if (isConnected) {
+			if (conn) {
 
 				AsyncStorage.getItem('hospitalList', (err, res) => {
 

@@ -33,7 +33,7 @@ class PatientDetail extends Component {
             timerTextColor: "#005cd1",
             timerBackgroundColor: "#fff",
 			selectedTab: TabEnum.Profile,
-			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease)
+			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease)
 		}
 	}
 
@@ -105,7 +105,7 @@ class PatientDetail extends Component {
 		let observations = _.orderBy(this.props.navigation.getParam('patient').observationList, ['observationDate'], ['desc']);
 		
 		this.setState({
-			isEditable: (Session.current.user.profile == 'CONSULTANT') && !(observations.length && observations[0].medicalRelease),
+			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
 			hospitalId: this.props.navigation.getParam('hospitalId'),
 			patientId: this.props.navigation.getParam('patientId'),
 

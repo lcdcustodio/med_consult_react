@@ -3,6 +3,7 @@ import { Alert, StatusBar, Text, StyleSheet, ImageBackground, Keyboard } from 'r
 import Spinner from 'react-native-loading-spinner-overlay';
 import AsyncStorage from '@react-native-community/async-storage';
 import qs from "qs";
+import NetInfo from "@react-native-community/netinfo";
 
 import Session from '../../Session';
 import User from '../../model/User'
@@ -88,6 +89,28 @@ export default class SignIn extends Component {
 		if (this.state.email.length === 0 || this.state.password.length === 0) {
 			this.setState({ error: 'Por favor, preencha todos os campos' }, () => false);
 		} else {
+
+			let conn = await NetInfo.fetch().then(state => {
+				return state.isConnected;
+			});
+			
+			if (!conn) {
+				
+				Alert.alert(
+					'Sua conexão parece estar inativa',
+					'Por favor verifique sua conexão e tente novamente',
+					[
+						{
+							text: 'OK', onPress: () => {}
+						},
+					],
+					{
+						cancelable: false
+					},
+				);
+
+				return false;
+			}
 			
 			this.setState({ textContent: 'Aguarde...' });
 
@@ -103,7 +126,7 @@ export default class SignIn extends Component {
 
 							Alert.alert(
 								'Servidor lento ou indisponível',
-								'O servidor não retornou um resultado dentro do período de 2 minutos, por favor tente novamente ou entre em contato com o suporte',
+								'O servidor não retornou um resultado dentro do período de 30 segundos, por favor tente novamente ou entre em contato com o suporte',
 								[
 									{
 										text: 'OK', onPress: () => {}
@@ -124,7 +147,7 @@ export default class SignIn extends Component {
 					
 				}
 
-		    }, 120000);
+		    }, 30000);
 			
 			const params = {
 				username: this.state.email,

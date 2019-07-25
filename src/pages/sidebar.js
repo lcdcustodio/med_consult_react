@@ -28,6 +28,21 @@ export default class Sidebar extends Component {
 		];
 	}
 
+	getProfileName(profile) {
+		
+		if (profile == 'ADMIN') {
+			return 'Administrador';
+		}
+		
+		if (profile == 'MANAGER') {
+			return 'Gestor';
+		}
+
+		if (profile == 'CONSULTANT') {
+			return 'Consultor';
+		}
+	}
+
 	render() {
 		let user = Session.current.user;
 		if (!user) {
@@ -42,7 +57,7 @@ export default class Sidebar extends Component {
 						{user.name}
 					</Text>
 					<Text style={{ fontSize: 12, color: '#CFC', marginBottom: 20, }}>
-						{user.profile}
+						{this.getProfileName(user.profile)}
 					</Text>
 					<View style={styles.divider} />
 					<View style={styles.containerMenu}>

@@ -30,10 +30,9 @@ export default class Hospital extends Component {
 			infos: {},
 			hospitals: null,
 			filteredHospitals: null,
-			isConnected: null,
 			dateSync: null,
 			page: 1,
-			isEditable: Session.current.user.profile == 'CONSULTANT',
+			isEditable: Session.current.user.profile != 'ADMIN',
 			loading: false,
 			timerTextColor: "#005cd1",
 			timerBackgroundColor: "#fff",
@@ -59,6 +58,10 @@ export default class Hospital extends Component {
 				{
 				  label: 'Pernambuco',
 				  value: 'PE',
+				},
+				{
+				  label: 'São Paulo',
+				  value: 'SP',
 				},
 			]
 		}
@@ -179,7 +182,6 @@ export default class Hospital extends Component {
 	}
 
 	clearAllData() {
-		AsyncStorage.removeItem('hospitalList');
 		AsyncStorage.removeItem('userData');
 		AsyncStorage.removeItem('auth');
 	}
@@ -233,6 +235,12 @@ export default class Hospital extends Component {
 			if (aux.hasOwnProperty('patientHeight')) {
 				if (aux.patientHeight != null) {
 					aux.patientHeight = aux.patientHeight.toString().replace(',', '.');
+				}
+			}
+
+			if (aux.hasOwnProperty('patientWeight')) {
+				if (aux.patientWeight != null) {
+					aux.patientWeight = aux.patientWeight.toString().replace(',', '.');
 				}
 			}
 
@@ -397,7 +405,10 @@ export default class Hospital extends Component {
 
 									AsyncStorage.setItem('dateSync', JSON.stringify(dateSync));
 
-									AsyncStorage.setItem('hospitalList', JSON.stringify(listHospital));						
+									AsyncStorage.removeItem('hospitalList', (err, res) => {
+										AsyncStorage.setItem('hospitalList', JSON.stringify(listHospital));
+							        });
+
 								});
 							
 							} else {
@@ -678,19 +689,21 @@ export default class Hospital extends Component {
 
 	sincronizar = async (fromServer) => {
 
-		const { isConnected } = this.state;
+		let conn = await NetInfo.fetch().then(state => {
+			return state.isConnected;
+		});
 
 		if (fromServer) {
 
-			if (isConnected) 
+			if (conn) 
 			{
 				this.loadHospitals();
 			}
 			else
 			{
 				Alert.alert(
-					'Sem conexão com a internet',
-					'Desculpe, não identificamos uma conexão estável com a internet!',
+					'Sua conexão parece estar inativa',
+					'Por favor verifique sua conexão e tente novamente',
 					[
 						{
 							text: 'OK', onPress: () => {}
@@ -705,7 +718,7 @@ export default class Hospital extends Component {
 		}
 		else
 		{
-			if (isConnected) {
+			if (conn) {
 
 				AsyncStorage.getItem('hospitalList', (err, res) => {
 
