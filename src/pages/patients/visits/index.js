@@ -36,17 +36,6 @@ export default class Visitas extends React.Component {
 			update: false,
 			keyboardSpace: 0
 		}
-		
-		Keyboard.addListener('keyboardDidShow',(frames)=>{
-            if (!frames.endCoordinates) return;
-            this.setState({
-				keyboardSpace: frames.endCoordinates.height
-			});
-		});
-		
-		Keyboard.addListener('keyboardDidHide',(frames)=>{
-				this.setState({keyboardSpace:0});
-		});
 	}
 
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
@@ -60,9 +49,20 @@ export default class Visitas extends React.Component {
 		});
 	});
 
+	e = Keyboard.addListener('keyboardDidShow',(frames)=>{
+		if (!frames.endCoordinates) return;
+		this.setState({
+			keyboardSpace: frames.endCoordinates.height
+		});
+	});
+		
+	f = Keyboard.addListener('keyboardDidHide',(frames)=>{
+		this.setState({keyboardSpace:0});
+	});
+
 	componentWillUnmount() {
-        Keyboard.removeAllListeners("keyboardDidShow");
-		Keyboard.removeAllListeners("keyboardDidHide");
+		this.e.remove();
+		this.f.remove();
 		this.didFocus.remove();
 	}
 

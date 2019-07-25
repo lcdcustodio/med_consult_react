@@ -11,22 +11,22 @@ export default class ModalPrimaryCID extends Component {
             query: null,
             keyboardSpace: 0
         }
-        
-        Keyboard.addListener('keyboardDidShow',(frames)=>{
-            if (!frames.endCoordinates) return;
-            this.setState({
-				keyboardSpace: frames.endCoordinates.height
-			});
-		});
-		
-        Keyboard.addListener('keyboardDidHide',(frames)=>{
-            this.setState({keyboardSpace:0});
-        });
     }
 
+    g = Keyboard.addListener('keyboardDidShow',(frames)=>{
+        if (!frames.endCoordinates) return;
+        this.setState({
+            keyboardSpace: frames.endCoordinates.height
+        });
+    });
+    
+    h = Keyboard.addListener('keyboardDidHide',(frames)=>{
+        this.setState({keyboardSpace:0});
+    });
+
     componentWillUnmount() {
-        Keyboard.removeAllListeners("keyboardDidShow");
-        Keyboard.removeAllListeners("keyboardDidHide");
+        this.g.remove();
+		this.h.remove();
     }
 
     select = (element) => {
