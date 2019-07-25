@@ -69,6 +69,7 @@ class PatientDetail extends Component {
 				}
 			}
 
+			
 			await AsyncStorage.setItem('hospitalList', JSON.stringify(hospitalList));
 
 		});
