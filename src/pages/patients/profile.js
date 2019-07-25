@@ -49,17 +49,6 @@ export default class Profile extends Component {
 			crmTMP: this.props.navigation.getParam('patient').mainProcedureCRM,
 			keyboardSpace: 0
 		}
-
-		Keyboard.addListener('keyboardDidShow',(frames)=>{
-            if (!frames.endCoordinates) return;
-            this.setState({
-				keyboardSpace: frames.endCoordinates.height
-			});
-		});
-		
-        Keyboard.addListener('keyboardDidHide',(frames)=>{
-            this.setState({keyboardSpace:0});
-        });
 	}
 
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
@@ -75,9 +64,20 @@ export default class Profile extends Component {
 		});
 	});
 
+	a = Keyboard.addListener('keyboardDidShow',(frames)=>{
+		if (!frames.endCoordinates) return;
+		this.setState({
+			keyboardSpace: frames.endCoordinates.height
+		});
+	});
+	
+	b = Keyboard.addListener('keyboardDidHide',(frames)=>{
+		this.setState({keyboardSpace:0});
+	});
+	
 	componentWillUnmount() {
-        Keyboard.removeAllListeners("keyboardDidShow");
-		Keyboard.removeAllListeners("keyboardDidHide");
+		this.a.remove();
+		this.b.remove();
 		this.didFocus.remove();
 	}
 	

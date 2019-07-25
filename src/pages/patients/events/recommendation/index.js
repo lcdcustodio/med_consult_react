@@ -35,17 +35,6 @@ export default class Recommendation extends React.Component {
 			specialtyQuery: null,
 			keyboardSpace: 0,
 		}
-
-		Keyboard.addListener('keyboardDidShow',(frames)=>{
-            if (!frames.endCoordinates) return;
-            this.setState({
-				keyboardSpace: frames.endCoordinates.height
-			});
-		});
-		
-        Keyboard.addListener('keyboardDidHide',(frames)=>{
-            this.setState({keyboardSpace:0});
-		});
 	}
 	
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
@@ -83,9 +72,20 @@ export default class Recommendation extends React.Component {
 		}
 	});
 
+	c = Keyboard.addListener('keyboardDidShow',(frames)=>{
+		if (!frames.endCoordinates) return;
+		this.setState({
+			keyboardSpace: frames.endCoordinates.height
+		});
+	});
+	
+	d = Keyboard.addListener('keyboardDidHide',(frames)=>{
+		this.setState({keyboardSpace:0});
+	});
+
 	componentWillUnmount() {
-        Keyboard.removeAllListeners("keyboardDidShow");
-		Keyboard.removeAllListeners("keyboardDidHide");
+        this.c.remove();
+		this.d.remove();
 		this.didFocus.remove();
 	}
 	
