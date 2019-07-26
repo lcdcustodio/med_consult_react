@@ -123,7 +123,7 @@ export default class Finalize extends Component {
 		await this.handleUpdatePatient('clinicalIndication', patient.clinicalIndication, showSpinner);
 
 		let observationList;
-		if (patient.observationList && patient.observationList.lenght > 0) {
+		if (patient.observationList && patient.observationList.length > 0) {
 			observationList = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
 			observationList[0].medicalRelease = true;
 			observationList[0].observation = "Internação finalizada.";
@@ -143,7 +143,7 @@ export default class Finalize extends Component {
 	}
 
 	_goBack = () => {
-		this.props.navigation.navigate('PatientDetail');
+		this.props.navigation.navigate('PatientDetail',  {patient: this.state.patient});
 	}
 	
 	toggleModal = (modalName) => {
