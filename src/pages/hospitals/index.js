@@ -83,8 +83,6 @@ export default class Hospital extends Component {
         
 		NetInfo.fetch().then(state => {
 
-			this.setState({isConnected: state.isConnected});
-
 			this.setState({hospitals: null, filteredHospitals: null, selectedRegionalHospital: ''});
 
 			this.sincronizar();
@@ -173,17 +171,24 @@ export default class Hospital extends Component {
 
 	getPatient(patientId) {
 
-		for (var h = 0; h < this.state.hospitals.length; h++) {		
+		if (this.state.hospitals) {
 
-			for (var i = 0; i < this.state.hospitals[h].hospitalizationList.length; i++) {
-				
-				let p = this.state.hospitals[h].hospitalizationList[i];
+			for (var h = 0; h < this.state.hospitals.length; h++) {		
 
-				if(patientId == p.id)
-				{
-					return this.state.hospitals[h].hospitalizationList[i];
+				for (var i = 0; i < this.state.hospitals[h].hospitalizationList.length; i++) {
+					
+					let p = this.state.hospitals[h].hospitalizationList[i];
+
+					if(patientId == p.id)
+					{
+						return this.state.hospitals[h].hospitalizationList[i];
+					}
 				}
 			}
+		}
+		else
+		{
+			return null;
 		}
 	}
 
@@ -203,6 +208,10 @@ export default class Hospital extends Component {
 				if (attrname == 'id') continue;
 
 				let patient = this.getPatient(json[i].id);
+
+				if (patient == null) {
+					continue;
+				}
 
 				if (parse.hasOwnProperty(json[i].id)) {
 					
