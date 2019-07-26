@@ -266,7 +266,7 @@ export default class Visitas extends React.Component {
 
 			if (index <= 29) {
 				return (	
-					<TouchableWithoutFeedback onPress={onPress}>
+					<TouchableWithoutFeedback key={item.uuid} onPress={onPress}>
 	
 						<View style={{ paddingTop: 10, paddingLeft: 10, paddingRight: 10, backgroundColor: baseStyles.container.backgroundColor}}>
 							<Card>
@@ -314,6 +314,7 @@ export default class Visitas extends React.Component {
 		const { patient } = this.state;
 		const observations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
 		const lastObservation = observations.length ? observations[0] : null;
+		
 		if (lastObservation && lastObservation.medicalRelease) {
 			return <FinalizedButton/>;
 		}
@@ -329,32 +330,6 @@ export default class Visitas extends React.Component {
 		}
 		return <VisitButton onPress={this.appoint}/>;
 	}
-
-	/*showButton = () => {
-		const patient = new Patient(this.state.patient);
-		switch (patient.getHospitalizationStatusEnum()) {
-			case HospitalizationStatusEnum.Open:
-				return (patient.getStatusVisitEnum() === StatusVisitEnum.Visited)
-					? <VisitedButton/>
-					: <VisitButton onPress={this.appoint}/>;
-
-			case HospitalizationStatusEnum.CanBeClosed:
-				const lastTracking = patient.getLastTracking();
-				if (lastTracking && lastTracking.endMode === TrackingEndModeEnum.AdminDischarge) {
-					return <FinalizeButton onPress={this.finalize}/>;
-				}
-				if (lastTracking && lastTracking.json.endDate) {
-					return (patient.getStatusVisitEnum() === StatusVisitEnum.VisitedEndTracking)
-						? <EndTrackingButtonDisabled/>
-						: <EndTrackingButtonEnabled/>;
-				}
-			case HospitalizationStatusEnum.Closed:
-				console.log('Visitas: finalizado não é exibido.', patient);
-				return null;
-		}
-		console.log('Visitas: tipo de botão não mapeado.', patient);
-		return null;
-	}*/
 	
 	renderModal() {
 		return(

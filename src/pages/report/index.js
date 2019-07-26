@@ -120,8 +120,23 @@ export default class Report extends Component {
 
 	});
 
+	getPatient(patientId) {
+
+		for (var h = 0; h < this.state.hospitals.length; h++) {		
+
+			for (var i = 0; i < this.state.hospitals[h].hospitalizationList.length; i++) {
+				
+				let p = this.state.hospitals[h].hospitalizationList[i];
+
+				if(patientId == p.id)
+				{
+					return this.state.hospitals[h].hospitalizationList[i];
+				}
+			}
+		}
+	}
+
 	clearAllData() {
-		AsyncStorage.removeItem('hospitalList');
 		AsyncStorage.removeItem('userData');
 		AsyncStorage.removeItem('auth');
 	}
@@ -133,54 +148,58 @@ export default class Report extends Component {
 		for (var i = 0; i < json.length; i++) {
 
 			for (var attrname in json[i])
-			{	
+			{
+				if (attrname == 'id') continue;
+
+				let patient = this.getPatient(json[i].id);
+
 				if (parse.hasOwnProperty(json[i].id)) {
 					
-					if (attrname == 'id') continue;
-
-
 					parse[json[i].id][attrname] = json[i][attrname];
 				}
 				else
 				{
-					parse[json[i].id] = json[i];
-					parse.patient = this.getPatient(json[i].id);
+					parse[json[i].id] = json[i];	
+				}
+
+				if (!parse[json[i].id].hasOwnProperty('recommendationClinicalIndication')) {
+					parse[json[i].id]['recommendationClinicalIndication'] = patient.recommendationClinicalIndication;
+				}
+
+				if (!parse[json[i].id].hasOwnProperty('recommendationMedicineReintegration')) {
+					parse[json[i].id]['recommendationMedicineReintegration'] = patient.recommendationMedicineReintegration;
+				}
+
+				if (!parse[json[i].id].hasOwnProperty('recommendationWelcomeHomeIndication')) {
+					parse[json[i].id]['recommendationWelcomeHomeIndication'] = patient.recommendationWelcomeHomeIndication;
+				}
+
+				if (!parse[json[i].id].hasOwnProperty('diagnosticHypothesisList')) {
+					parse[json[i].id]['diagnosticHypothesisList'] = null;
+				}
+
+				if (!parse[json[i].id].hasOwnProperty('secondaryCIDList')) {
+					parse[json[i].id]['secondaryCIDList'] = null;
+				}
+
+				if (parse[json[i].id].hasOwnProperty('patientHeight')) {
+					if (patient.patientHeight != null) {
+						parse[json[i].id]['patientHeight'] = parse[json[i].id]['patientHeight'].toString().replace(',', '.');
+					}
+				}
+
+				if (parse[json[i].id].hasOwnProperty('patientWeight')) {
+					if (patient.patientWeight != null) {
+						parse[json[i].id]['patientWeight'] = parse[json[i].id]['patientWeight'].toString().replace(',', '.');
+					}
 				}
 			}
 		}
-		
+
 		var result = Object.keys(parse).map(function(key) {
 			let aux = parse[key];
-
-			if (!aux.hasOwnProperty('diagnosticHypothesisList')) {
-				aux.diagnosticHypothesisList = null;
-			}
-
-			if (!aux.hasOwnProperty('secondaryCIDList')) {
-				aux.secondaryCIDList = null;
-			}
-
-			if (!aux.hasOwnProperty('recommendationClinicalIndication')) {
-				aux.recommendationClinicalIndication = parse.patient.recommendationClinicalIndication;
-			}
-
-			if (!aux.hasOwnProperty('recommendationMedicineReintegration')) {
-				aux.recommendationMedicineReintegration = parse.patient.recommendationMedicineReintegration;
-			}
-
-			if (!aux.hasOwnProperty('recommendationWelcomeHomeIndication')) {
-				aux.recommendationWelcomeHomeIndication = parse.patient.recommendationWelcomeHomeIndication;
-			}
-
-			if (aux.hasOwnProperty('patientHeight')) {
-				if (aux.patientHeight != null) {
-					aux.patientHeight = aux.patientHeight.toString().replace(',', '.');
-				}
-			}
-
 			return aux;
 		});
-
 
 		return result;
 	}
@@ -686,6 +705,10 @@ export default class Report extends Component {
 			} 
 			else 
 			{
+				let hospitalList = JSON.parse(res);
+
+				this.setState({ hospitals: hospitalList });
+
 				this.report(JSON.parse(res));
 			}
 		});

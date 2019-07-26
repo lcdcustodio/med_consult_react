@@ -50,8 +50,6 @@ export default class Finalize extends Component {
 		let morbidityComorbityList = JSON.parse(morbidityComorbityStorage);
 
 		if (patientStorage) {
-			//patientStorage.patientBornDate = '1948/04/13'
-			//patientStorage.death = true;
 			patientStorage.complementaryInfoHospitalizationAPI.isUrgentEmergHospitatization = patientStorage.attendanceType === 'EMERGENCY' ? true : false;
 			patientStorage.complementaryInfoHospitalizationAPI.isNotHemoglobin = this.getStatusHemoglobin(patientStorage.complementaryInfoHospitalizationAPI.hemoglobin);
 			patientStorage.complementaryInfoHospitalizationAPI.isNotSerumSodium = this.getStatusSodium(patientStorage.complementaryInfoHospitalizationAPI.serumSodium);
@@ -123,7 +121,7 @@ export default class Finalize extends Component {
 		await this.handleUpdatePatient('clinicalIndication', patient.clinicalIndication, showSpinner);
 
 		let observationList;
-		if (patient.observationList && patient.observationList.lenght > 0) {
+		if (patient.observationList && patient.observationList.length > 0) {
 			observationList = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
 			observationList[0].medicalRelease = true;
 			observationList[0].observation = "Internação finalizada.";

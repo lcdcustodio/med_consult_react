@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, Text, Button, TouchableWithoutFeedback } from 'react-native';
+import { Alert, View, StyleSheet, Image, Text, Button, TouchableWithoutFeedback } from 'react-native';
 import { Icon } from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -43,7 +43,35 @@ export default class Sidebar extends Component {
 		}
 	}
 
-	clearAllData() {
+	renderIconTrash() {
+		
+		return <TouchableWithoutFeedback onPress={() => {
+
+			Alert.alert(
+				'Atenção',
+				'Tem certeza que deseja limpar todos os dados?',
+				[{ text: 'Cancelar',onPress: () => console.log('Cancel Pressed'), style: 'cancel'  },
+				  {text: 'Limpar', onPress: () => {
+						AsyncStorage.removeItem('userData');
+						AsyncStorage.removeItem('auth');
+						AsyncStorage.removeItem('hospitalizationList');
+						AsyncStorage.removeItem('morbidityComorbityList');
+						AsyncStorage.removeItem('hospitalList');
+						AsyncStorage.removeItem('dateSync');
+						this.props.navigation.navigate("SignIn");
+				  }},
+				],
+				{cancelable: false},
+			);
+
+		}}>
+			
+			<Icon name="trash" style={{ color: 'white', fontSize: 15}}/>
+
+		</TouchableWithoutFeedback>;
+	}
+
+	clearPartialData() {
 		AsyncStorage.removeItem('userData');
 		AsyncStorage.removeItem('auth');
 	}
@@ -70,7 +98,7 @@ export default class Sidebar extends Component {
 							<TouchableWithoutFeedback key={key} onPress={() => { 
 
 								if (item.screenToNavigate == 'SignIn') {
-									this.clearAllData();
+									this.clearPartialData();
 								}
 
 								this.props.navigation.closeDrawer(); this.props.navigation.navigate(item.screenToNavigate); 
@@ -90,7 +118,7 @@ export default class Sidebar extends Component {
 					</View>
 					<View style={styles.boxButton}>
 						<Image source={require('../images/logo-rededor.png')} style={styles.sideMenuLogoIcon} />
-						<Text style={{ fontSize: 15, bottom: 20, textAlign: 'right', color: '#FFF', fontWeight: "bold"}}> Versão 1.0.1 </Text>
+						<Text style={{ fontSize: 15, bottom: 20, textAlign: 'right', color: '#FFF', fontWeight: "bold"}}> Versão 1.0.1 [ { this.renderIconTrash() } ]</Text>
 					</View>
 				</View>
 			</LinearGradient>

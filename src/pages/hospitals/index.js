@@ -187,7 +187,7 @@ export default class Hospital extends Component {
 		}
 	}
 
-	clearAllData() {
+	clearPartialData() {
 		AsyncStorage.removeItem('userData');
 		AsyncStorage.removeItem('auth');
 	}
@@ -243,6 +243,17 @@ export default class Hospital extends Component {
 					if (patient.patientWeight != null) {
 						parse[json[i].id]['patientWeight'] = parse[json[i].id]['patientWeight'].toString().replace(',', '.');
 					}
+				}
+
+				if (parse[json[i].id].hasOwnProperty('observationList')) {
+
+					let listOfOrderedPatientObservations = _.orderBy(parse[json[i].id]['observationList'], ['observationDate'], ['desc']);
+
+					let lastElementVisit = listOfOrderedPatientObservations[0];
+
+					parse[json[i].id]['observationList'] = [];
+
+					parse[json[i].id]['observationList'].push(lastElementVisit);
 				}
 			}
 		}
@@ -425,7 +436,7 @@ export default class Hospital extends Component {
 										[
 											{
 												text: 'OK', onPress: () => {
-													this.clearAllData();
+													this.clearPartialData();
 													this.props.navigation.navigate("SignIn");
 												}
 											},
@@ -452,7 +463,7 @@ export default class Hospital extends Component {
 										[
 											{
 												text: 'OK', onPress: () => {
-													this.clearAllData();
+													this.clearPartialData();
 													this.props.navigation.navigate("SignIn");
 												}
 											},
@@ -487,7 +498,7 @@ export default class Hospital extends Component {
 						[
 							{
 								text: 'OK', onPress: () => {
-									this.clearAllData();
+									this.clearPartialData();
 									this.props.navigation.navigate("SignIn");
 								}
 							},
