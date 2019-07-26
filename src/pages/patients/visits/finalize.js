@@ -137,11 +137,17 @@ export default class Finalize extends Component {
 			} ];
 		}
 		await this.handleUpdatePatient('observationList', observationList);
+		this.setState({
+			patient: {
+				...this.state.patient,
+				observationList
+			}
+		});
 		Alert.alert('Finalizar', "Finalização realizada com sucesso.", [{ text: 'OK', onPress: ()=>this._goBack() }]);
 	}
 
 	_goBack = () => {
-		this.props.navigation.navigate('PatientDetail');
+		this.props.navigation.navigate('PatientDetail',  {patient: this.state.patient});
 	}
 	
 	toggleModal = (modalName) => {
