@@ -1,0 +1,36 @@
+// Colocar esse método do patientDetail
+
+handleGetPatient = async (patientId) => {
+
+	let patient = null;
+
+	await AsyncStorage.getItem('hospitalList', (err, res) => {
+
+		let hospitalList = JSON.parse(res);
+
+		for (var h = 0; h < hospitalList.length; h++) {		
+
+			for (var i = 0; i < hospitalList[h].hospitalizationList.length; i++) {
+				
+				let p = hospitalList[h].hospitalizationList[i];
+
+				if(patientId == p.id)
+				{
+					patient = hospitalList[h].hospitalizationList[i];
+				}
+			}
+		}
+
+	});
+
+	return patient;
+}
+
+// Essa seria a chamada
+let handleGetPatient = this.props.handleGetPatient(this.state.patient.id).then(p => {
+	console.log(p);
+	return p;
+});
+
+// Passar para as tabs filhas
+return <Profile patient={this.state.patient} handleGetPatient={this.handleGetPatient} handleUpdatePatient={this.handleUpdatePatient} isEditable={this.state.isEditable} navigation={this.props.navigation} />;
