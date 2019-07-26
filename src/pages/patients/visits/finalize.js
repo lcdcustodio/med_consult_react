@@ -139,6 +139,12 @@ export default class Finalize extends Component {
 			} ];
 		}
 		await this.handleUpdatePatient('observationList', observationList);
+		this.setState({
+			patient: {
+				...this.state.patient,
+				observationList
+			}
+		});
 		Alert.alert('Finalizar', "Finalização realizada com sucesso.", [{ text: 'OK', onPress: ()=>this._goBack() }]);
 	}
 

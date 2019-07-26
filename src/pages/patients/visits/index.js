@@ -45,6 +45,7 @@ export default class Visitas extends React.Component {
 
 		this.setState({
 			hospitalId,
+			patient,
 			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
 		});
 	});
@@ -215,7 +216,7 @@ export default class Visitas extends React.Component {
 	}
 
 	finalize = () => {
-		const patient = new Patient(this.state.patient);
+		const patient = new Patient(this.props.patient);
 		const errors = patient.validateFinalization();
 
 		if (!errors.length) {
@@ -402,8 +403,6 @@ export default class Visitas extends React.Component {
 		if (this.props.patient.observationList){
 			listOfOrderedObservationDate = _.orderBy(this.props.patient.observationList, ['observationDate'], ['desc'])
 		}
-
-		console.log(listOfOrderedObservationDate);
 
 		return (
 			<View style={ styles.container }>
