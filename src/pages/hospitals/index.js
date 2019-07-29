@@ -642,26 +642,23 @@ export default class Hospital extends Component {
                 (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)
             )
             {
-
 				patient.observationList.forEach( item => {
 
-					if (lastVisit != null) {
+					if (item.observationDate != null) {
 
-						let visit = new Date(item.observationDate);
+	            		let visit = new Date(item.observationDate);
 
-						if(lastVisit < visit){
-							lastVisit = visit;
-						}
-					}
-					else
-					{
-						if (item.observationDate != null) {
+	            		if (lastVisit != null) {
 
-		            		lastVisit = moment(item.observationDate).format('YYYY-MM-DD');
+	            			if(lastVisit < visit){
+								lastVisit = visit;
+							}
 
-		            		lastVisit = new Date(lastVisit);
-						}
-
+	            		}
+	            		else
+	            		{
+	            			lastVisit = visit;
+	            		}
 					}
 				});
 			}
@@ -674,7 +671,7 @@ export default class Hospital extends Component {
 		{
 			let visit = lastVisit;
 
-			var day = (visit.getDay() < 10 ? '0' : '') + visit.getDay();
+			var day = (visit.getDate() < 10 ? '0' : '') + visit.getDate();
 
 			var month = ((visit.getMonth() + 1) < 10 ? '0' : '') + (visit.getMonth() + 1);
 
