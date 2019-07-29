@@ -136,7 +136,7 @@ export default class Report extends Component {
 		}
 	}
 
-	clearAllData() {
+	clearPartialData() {
 		AsyncStorage.removeItem('userData');
 		AsyncStorage.removeItem('auth');
 	}
@@ -152,6 +152,10 @@ export default class Report extends Component {
 				if (attrname == 'id') continue;
 
 				let patient = this.getPatient(json[i].id);
+
+				if (patient == null) {
+					continue;
+				}
 
 				if (parse.hasOwnProperty(json[i].id)) {
 					
@@ -192,6 +196,17 @@ export default class Report extends Component {
 					if (patient.patientWeight != null) {
 						parse[json[i].id]['patientWeight'] = parse[json[i].id]['patientWeight'].toString().replace(',', '.');
 					}
+				}
+
+				if (parse[json[i].id].hasOwnProperty('observationList')) {
+
+					let listOfOrderedPatientObservations = _.orderBy(parse[json[i].id]['observationList'], ['observationDate'], ['desc']);
+
+					let lastElementVisit = listOfOrderedPatientObservations[0];
+
+					parse[json[i].id]['observationList'] = [];
+
+					parse[json[i].id]['observationList'].push(lastElementVisit);
 				}
 			}
 		}
@@ -281,9 +296,9 @@ export default class Report extends Component {
 
 		            if (Session.current.user == null) {
 		            	Session.current.user = parse;
-		            }
+					}
 
-		            this.state.token = parse.token;
+		            this.state.token = Session.current.user.token;
 					
 					AsyncStorage.getItem('hospitalizationList', (err, res) => {
 						
@@ -294,16 +309,6 @@ export default class Report extends Component {
 							let hospitalizationList = JSON.parse(res);
 
 							for (var i = 0; i < hospitalizationList.length; i++) {
-
-								if (hospitalizationList[i].value instanceof Array) {
-
-									for (var key = 0; key < hospitalizationList[i].value.length; key++) {
-										if (hospitalizationList[i].value[key].beginDate) {
-											delete hospitalizationList[i].value[key]['beginDate'];
-										}
-									}
-									
-								}
 
 								let array = {};
 								array['id'] = hospitalizationList[i].idPatient;
@@ -376,9 +381,10 @@ export default class Report extends Component {
 										'Erro ao carregar informações',
 										response,
 										[
+											{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
 											{
-												text: 'OK', onPress: () => {
-													this.clearAllData();
+												text: 'Fazer login', onPress: () => {
+													this.clearPartialData();
 													this.props.navigation.navigate("SignIn");
 												}
 											},
@@ -403,9 +409,10 @@ export default class Report extends Component {
 										'Erro ao carregar informações',
 										error.message,
 										[
+											{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
 											{
-												text: 'OK', onPress: () => {
-													this.clearAllData();
+												text: 'Fazer login', onPress: () => {
+													this.clearPartialData();
 													this.props.navigation.navigate("SignIn");
 												}
 											},
@@ -437,9 +444,10 @@ export default class Report extends Component {
 						'Erro ao carregar informações',
 						error,
 						[
+							{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
 							{
-								text: 'OK', onPress: () => {
-									this.clearAllData();
+								text: 'Fazer login', onPress: () => {
+									this.clearPartialData();
 									this.props.navigation.navigate("SignIn");
 								}
 							},

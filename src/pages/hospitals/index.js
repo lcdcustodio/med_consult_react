@@ -443,8 +443,9 @@ export default class Hospital extends Component {
 										'Erro ao carregar informações',
 										response,
 										[
+											{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
 											{
-												text: 'OK', onPress: () => {
+												text: 'Fazer login', onPress: () => {
 													this.clearPartialData();
 													this.props.navigation.navigate("SignIn");
 												}
@@ -470,8 +471,9 @@ export default class Hospital extends Component {
 										'Erro ao carregar informações',
 										error.message,
 										[
+											{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
 											{
-												text: 'OK', onPress: () => {
+												text: 'Fazer login', onPress: () => {
 													this.clearPartialData();
 													this.props.navigation.navigate("SignIn");
 												}
@@ -505,8 +507,9 @@ export default class Hospital extends Component {
 						'Erro ao carregar informações',
 						error,
 						[
+							{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
 							{
-								text: 'OK', onPress: () => {
+								text: 'Fazer login', onPress: () => {
 									this.clearPartialData();
 									this.props.navigation.navigate("SignIn");
 								}
