@@ -139,29 +139,23 @@ export default class Hospital extends Component {
 			let iconNumber = patientClass.getIconNumber();
 
 			let listOfOrderedPatientObservations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+			let listOfOrderedPatientTrackingList = _.orderBy(patient.trackingList, ['startDate'], ['desc']);
 
-			if (
-
-                (listOfOrderedPatientObservations.length == 0) || 
-
-                (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)
-            ) {
-
-				if (iconNumber == this.state.ICON.OLHO_CINZA_COM_EXCLAMACAO ||
-					iconNumber == this.state.ICON.OLHO_AZUL ||
-					iconNumber == this.state.ICON.OLHO_CINZA_COM_CHECK) {
-					return totalPatients + 1;
-				}
-				else
-				{
+			if(listOfOrderedPatientTrackingList.length == 0 || (!listOfOrderedPatientTrackingList[0].endMode || listOfOrderedPatientTrackingList[0].endMode != 'CHANGE_INSURANCE_EXIT') ) {
+				if ( (listOfOrderedPatientObservations.length == 0) || (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)) {
+					if (iconNumber == this.state.ICON.OLHO_CINZA_COM_EXCLAMACAO ||
+						iconNumber == this.state.ICON.OLHO_AZUL ||
+						iconNumber == this.state.ICON.OLHO_CINZA_COM_CHECK) {
+						return totalPatients + 1;
+					} else {
+						return totalPatients;
+					}
+				} else {
 					return totalPatients;
 				}
-            }
-            else
-            {
-            	return totalPatients;
-            }
-
+			} else {
+				return totalPatients;
+			}
 		}, 0);
 
 		this.setState({ allPatients: listPatients });
@@ -601,28 +595,23 @@ export default class Hospital extends Component {
 		const today = moment().format('YYYY-MM-DD');
 
 		patients.forEach(patient => {
-
 	        let lastVisit = null;
-
 			let listOfOrderedPatientObservations = _.orderBy(patient.observationList, ['observationDate'], ['desc'])
-        	
-            if(
-                (listOfOrderedPatientObservations.length > 0) && 
+			let listOfOrderedPatientTrackingList = _.orderBy(patient.trackingList, ['startDate'], ['desc']);
+			
+			console.log("Tracking List => ", patient.trackingList);
 
-                (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)
-            )
-            {
-	            
-	            const today = moment();
-	            
-	            lastVisit = moment(moment(listOfOrderedPatientObservations[0].observationDate).format('YYYY-MM-DD'));
+			if(listOfOrderedPatientTrackingList.length == 0 || (!listOfOrderedPatientTrackingList[0].endMode || listOfOrderedPatientTrackingList[0].endMode != 'CHANGE_INSURANCE_EXIT') ) {
+				if((listOfOrderedPatientObservations.length > 0) && (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)) {
+					const today = moment();
+					lastVisit = moment(moment(listOfOrderedPatientObservations[0].observationDate).format('YYYY-MM-DD'));
+					lastVisit = today.diff(lastVisit, 'days');
+				}
 
-	            lastVisit = today.diff(lastVisit, 'days');
-	        }
-
-			if (lastVisit == 0) {
-				++totalPatientsVisited;
-			}
+				if (lastVisit == 0) {
+					++totalPatientsVisited;
+				}
+			}			
 		});
 
 		return totalPatientsVisited;
@@ -635,35 +624,27 @@ export default class Hospital extends Component {
 		patients.forEach(patient => {
 
 			let listOfOrderedPatientObservations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+			let listOfOrderedPatientTrackingList = _.orderBy(patient.trackingList, ['startDate'], ['desc']);
 
-			if(
-                (listOfOrderedPatientObservations.length > 0) && 
+			if(listOfOrderedPatientTrackingList.length == 0 || (!listOfOrderedPatientTrackingList[0].endMode || listOfOrderedPatientTrackingList[0].endMode != 'CHANGE_INSURANCE_EXIT') ) {
 
-                (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)
-            )
-            {
+				if((listOfOrderedPatientObservations.length > 0) && (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)) {
 
-				patient.observationList.forEach( item => {
+					patient.observationList.forEach( item => {
+						if (lastVisit != null) {
+							let visit = new Date(item.observationDate);
 
-					if (lastVisit != null) {
-
-						let visit = new Date(item.observationDate);
-
-						if(lastVisit < visit){
-							lastVisit = visit;
+							if(lastVisit < visit){
+								lastVisit = visit;
+							}
+						} else {
+							if (item.observationDate != null) {
+								lastVisit = moment(item.observationDate).format('YYYY-MM-DD');
+								lastVisit = new Date(lastVisit);
+							}
 						}
-					}
-					else
-					{
-						if (item.observationDate != null) {
-
-		            		lastVisit = moment(item.observationDate).format('YYYY-MM-DD');
-
-		            		lastVisit = new Date(lastVisit);
-						}
-
-					}
-				});
+					});
+				}
 			}
 		});
 

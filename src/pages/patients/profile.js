@@ -483,7 +483,36 @@ export default class Profile extends Component {
 		);
 	}
 
+	renderStartTrackingList() {
+		let listOfOrderedPatientTrackingList = _.orderBy(this.props.patient.trackingList, ['startDate'], ['desc']);
+		
+		if (listOfOrderedPatientTrackingList.length > 0 && listOfOrderedPatientTrackingList[0].startDate) {
+			return (
+				<ListItem>
+					<Body>
+						<Text style={{fontWeight: 'bold'}}>Data Início do Monitoramento{"\n"}<TextValue value={ moment(listOfOrderedPatientTrackingList[0].startDate).format('DD/MM/YYYY HH:mm') } /></Text>
+					</Body>
+				</ListItem>
+			)
+		}
+	}
+
+	renderEndTrackingList() {
+		let listOfOrderedPatientTrackingList = _.orderBy(this.props.patient.trackingList, ['startDate'], ['desc']);
+		
+		if (listOfOrderedPatientTrackingList.length > 0 && listOfOrderedPatientTrackingList[0].endDate) {
+			return (
+				<ListItem>
+					<Body>
+						<Text style={{fontWeight: 'bold'}}>Data Fim do Monitoramento{"\n"}<TextValue value={ moment(listOfOrderedPatientTrackingList[0].endDate).format('DD/MM/YYYY HH:mm') } /></Text>
+					</Body>
+				</ListItem>
+			)
+		}
+	}
+
 	render() {
+
 		return (
 			<ScrollView style={{ backgroundColor: 'white' }}>
 				
@@ -548,6 +577,10 @@ export default class Profile extends Component {
 						<Text style={{fontWeight: 'bold'}}>Data de Internação{"\n"}<TextValue value={ this.props.patient.admissionDate ? moment(this.props.patient.admissionDate).format('DD/MM/YYYY HH:mm') : ''} /></Text>
 					</Body>
 				</ListItem>
+
+				{ this.renderStartTrackingList() }
+
+				{ this.renderEndTrackingList() }
 
 				{
 					this.props.patient.exitDate ?
