@@ -47,7 +47,7 @@ export default class Hospital extends Component {
                 CASA_AZUL: 2
 			},
 			REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21],
-			REGIONAL_SP: [],
+			REGIONAL_SP: [161, 162, 163, 164],
 			REGIONAL_PE: [142, 141, 143, 144],
 			selectedRegionalHospital: '',
 			regions: [
@@ -583,6 +583,16 @@ export default class Hospital extends Component {
 			return require('../../images/logo_hospital/pe/esperancaOlinda.png');
         } else if(hospital.id === 141) {
 			return require('../../images/logo_hospital/pe/esperancaRecife.png');
+        }
+
+        else if(hospital.id === 161) {
+			return require('../../images/logo_hospital/sp/saoLuizItaim.png');
+        }else if(hospital.id === 162) {
+			return require('../../images/logo_hospital/sp/brasil.png');
+        }else if(hospital.id === 163) {
+			return require('../../images/logo_hospital/sp/assuncao.png');
+        }else if(hospital.id === 164) {
+			return require('../../images/logo_hospital/sp/saoLuizMorumbi.png');
         }  
 
 		return null;

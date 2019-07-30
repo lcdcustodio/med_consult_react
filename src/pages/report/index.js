@@ -46,7 +46,7 @@ export default class Report extends Component {
                 CASA_AZUL: 2
             },
             REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21],
-			REGIONAL_SP: [],
+			REGIONAL_SP: [161, 162, 163, 164],
 			REGIONAL_PE: [142, 141, 143, 144],
 			selectedRegionalHospital: '',
 			hospitalList: null,
