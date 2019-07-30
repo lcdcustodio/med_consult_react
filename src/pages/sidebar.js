@@ -43,6 +43,84 @@ export default class Sidebar extends Component {
 		}
 	}
 
+	parseObject(json) {
+
+		let parse = {};
+
+		for (var i = 0; i < json.length; i++) {
+
+			for (var attrname in json[i])
+			{
+				if (attrname == 'id') continue;
+
+				let patient = this.getPatient(json[i].id);
+
+				if (patient == null) {
+					continue;
+				}
+
+				if (parse.hasOwnProperty(json[i].id)) {
+					
+					parse[json[i].id][attrname] = json[i][attrname];
+				}
+				else
+				{
+					parse[json[i].id] = json[i];	
+				}
+
+				if (!parse[json[i].id].hasOwnProperty('recommendationClinicalIndication')) {
+					parse[json[i].id]['recommendationClinicalIndication'] = patient.recommendationClinicalIndication;
+				}
+
+				if (!parse[json[i].id].hasOwnProperty('recommendationMedicineReintegration')) {
+					parse[json[i].id]['recommendationMedicineReintegration'] = patient.recommendationMedicineReintegration;
+				}
+
+				if (!parse[json[i].id].hasOwnProperty('recommendationWelcomeHomeIndication')) {
+					parse[json[i].id]['recommendationWelcomeHomeIndication'] = patient.recommendationWelcomeHomeIndication;
+				}
+
+				if (!parse[json[i].id].hasOwnProperty('diagnosticHypothesisList')) {
+					parse[json[i].id]['diagnosticHypothesisList'] = null;
+				}
+
+				if (!parse[json[i].id].hasOwnProperty('secondaryCIDList')) {
+					parse[json[i].id]['secondaryCIDList'] = null;
+				}
+
+				if (parse[json[i].id].hasOwnProperty('patientHeight')) {
+					if (patient.patientHeight != null) {
+						parse[json[i].id]['patientHeight'] = parse[json[i].id]['patientHeight'].toString().replace(',', '.');
+					}
+				}
+
+				if (parse[json[i].id].hasOwnProperty('patientWeight')) {
+					if (patient.patientWeight != null) {
+						parse[json[i].id]['patientWeight'] = parse[json[i].id]['patientWeight'].toString().replace(',', '.');
+					}
+				}
+
+				if (parse[json[i].id].hasOwnProperty('observationList')) {
+
+					let listOfOrderedPatientObservations = _.orderBy(parse[json[i].id]['observationList'], ['observationDate'], ['desc']);
+
+					let lastElementVisit = listOfOrderedPatientObservations[0];
+
+					parse[json[i].id]['observationList'] = [];
+
+					parse[json[i].id]['observationList'].push(lastElementVisit);
+				}
+			}
+		}
+
+		var result = Object.keys(parse).map(function(key) {
+			let aux = parse[key];
+			return aux;
+		});
+
+		return result;
+	}
+
 	renderIconTrash() {
 
 		
@@ -73,9 +151,29 @@ export default class Sidebar extends Component {
 									text: 'Compartilhar', onPress: () => {
 
 										AsyncStorage.getItem('hospitalizationList', (err, res) => {
+
+											let obj = [];
+
+											if (res != null) {
+
+												let hospitalizationList = JSON.parse(res);
+
+												for (var i = 0; i < hospitalizationList.length; i++) {
+
+													let array = {};
+													array['id'] = hospitalizationList[i].idPatient;
+													array[hospitalizationList[i].key] = hospitalizationList[i].value;
+
+													obj.push(array);
+												}
+											}
+
+											let parseObj = this.parseObject(obj);
+
+											let data = { "hospitalizationList": parseObj };
 											
 											Share.share({
-												message: res,
+												message: data,
 										    }).then(response => {
 
 										    }).catch(error => {
