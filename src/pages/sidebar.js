@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, View, StyleSheet, Image, Text, Button, TouchableWithoutFeedback } from 'react-native';
+import { Alert, View, StyleSheet, Image, Text, Button, TouchableWithoutFeedback, Share } from 'react-native';
 import { Icon } from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -44,6 +44,7 @@ export default class Sidebar extends Component {
 	}
 
 	renderIconTrash() {
+
 		
 		return <TouchableWithoutFeedback onPress={() => {
 
@@ -54,11 +55,44 @@ export default class Sidebar extends Component {
 				  {text: 'Limpar', onPress: () => {
 						AsyncStorage.removeItem('userData');
 						AsyncStorage.removeItem('auth');
-						AsyncStorage.removeItem('hospitalizationList');
 						AsyncStorage.removeItem('morbidityComorbityList');
 						AsyncStorage.removeItem('hospitalList');
 						AsyncStorage.removeItem('dateSync');
-						this.props.navigation.navigate("SignIn");
+
+						Alert.alert(
+							'Compartilhar',
+							'Deseja compartilhar esses dados antes de apagar',
+							[
+								{ 
+									text: 'Não', onPress: () => {
+										AsyncStorage.removeItem('hospitalizationList');
+										this.props.navigation.navigate("SignIn");
+									} 
+								},
+								{
+									text: 'Compartilhar', onPress: () => {
+
+										AsyncStorage.getItem('hospitalizationList', (err, res) => {
+											
+											Share.share({
+												message: res,
+										    }).then(response => {
+
+										    }).catch(error => {
+
+										    });
+
+										    AsyncStorage.removeItem('hospitalizationList');
+										    this.props.navigation.navigate("SignIn");
+
+										});
+									}
+								},
+							],
+							{
+								cancelable: false
+							},
+						);
 				  }},
 				],
 				{cancelable: false},
@@ -118,7 +152,7 @@ export default class Sidebar extends Component {
 					</View>
 					<View style={styles.boxButton}>
 						<Image source={require('../images/logo-rededor.png')} style={styles.sideMenuLogoIcon} />
-						<Text style={{ fontSize: 15, bottom: 20, textAlign: 'right', color: '#FFF', fontWeight: "bold"}}> Versão 1.0.1 [ { this.renderIconTrash() } ]</Text>
+						<Text style={{ fontSize: 15, bottom: 20, textAlign: 'right', color: '#FFF', fontWeight: "bold"}}> Versão 1.0.2 [ { this.renderIconTrash() } ]</Text>
 					</View>
 				</View>
 			</LinearGradient>

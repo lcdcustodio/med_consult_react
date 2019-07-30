@@ -598,8 +598,6 @@ export default class Hospital extends Component {
 
 		let totalPatientsVisited = 0;
 
-		const today = moment().format('YYYY-MM-DD');
-
 		patients.forEach(patient => {
 
 	        let lastVisit = null;
@@ -612,12 +610,14 @@ export default class Hospital extends Component {
                 (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)
             )
             {
-	            
 	            const today = moment();
 	            
-	            lastVisit = moment(moment(listOfOrderedPatientObservations[0].observationDate).format('YYYY-MM-DD'));
+	            if (listOfOrderedPatientObservations[0].observationDate != null) {
 
-	            lastVisit = today.diff(lastVisit, 'days');
+		            lastVisit = moment(moment(listOfOrderedPatientObservations[0].observationDate).format('YYYY-MM-DD'));
+
+		            lastVisit = today.diff(lastVisit, 'days');
+		        }
 	        }
 
 			if (lastVisit == 0) {
@@ -646,7 +646,7 @@ export default class Hospital extends Component {
 
 					if (item.observationDate != null) {
 
-	            		let visit = new Date(item.observationDate);
+	            		let visit = moment(item.observationDate).format('YYYY-MM-DD');
 
 	            		if (lastVisit != null) {
 
@@ -669,13 +669,7 @@ export default class Hospital extends Component {
 		}
 		else
 		{
-			let visit = lastVisit;
-
-			var day = (visit.getDate() < 10 ? '0' : '') + visit.getDate();
-
-			var month = ((visit.getMonth() + 1) < 10 ? '0' : '') + (visit.getMonth() + 1);
-
-			lastVisit = day + "/" + month + "/" + (visit.getFullYear());
+			lastVisit = moment(lastVisit).format('DD/MM/YYYY');
 		}
 		
 		return lastVisit;
