@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders correctly 1`] = `
+exports[`my beverage Deve renderizar TextValue corretamente 1`] = `
 <Text
   onPress={[Function]}
   style={
