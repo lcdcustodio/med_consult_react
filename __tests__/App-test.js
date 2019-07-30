@@ -1,14 +1,15 @@
-/**
- * @format
- */
-
 import 'react-native';
 import React from 'react';
-import App from '../App';
-
-// Note: test renderer must be required after react-native.
 import renderer from 'react-test-renderer';
 
+import TextValue from '../src/components/TextValue';
+
 it('renders correctly', () => {
-  renderer.create(<App />);
+  const textValue = renderer.create(<TextValue />).toJSON();
+  expect(textValue).toMatchSnapshot();
+});
+
+it('renders correctly', () => {
+  const textValue = renderer.create(<TextValue />).toJSON();
+  expect(textValue).toMatchSnapshot();
 });

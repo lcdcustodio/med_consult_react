@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<Text
+  onPress={[Function]}
+  style={
+    Array [
+      Object {
+        "fontFamily": "Gotham Rounded",
+        "fontStyle": "normal",
+        "fontWeight": "normal",
+        "letterSpacing": 0,
+        "lineHeight": 30,
+      },
+      Object {
+        "color": "#3D3D3D",
+        "fontSize": 18,
+        "marginLeft": "0%",
+        "marginTop": "0%",
+      },
+    ]
+  }
+>
+  Value
+</Text>
+`;
