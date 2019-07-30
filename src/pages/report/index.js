@@ -483,33 +483,25 @@ export default class Report extends Component {
 		let totalPatients = patients.reduce((totalPatients, patient) => {
 			
 			const patientClass = new Patient(patient);
-
 			let iconNumber = patientClass.getIconNumber();
-
 			let listOfOrderedPatientObservations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
-
-			if (
-
-                (listOfOrderedPatientObservations.length == 0) || 
-
-                (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)
-            ) {
-
-				if (iconNumber == this.state.ICON.OLHO_CINZA_COM_EXCLAMACAO ||
-					iconNumber == this.state.ICON.OLHO_AZUL ||
-					iconNumber == this.state.ICON.OLHO_CINZA_COM_CHECK) {
-					return totalPatients + 1;
-				}
-				else
-				{
+			let listOfOrderedPatientTrackingList = _.orderBy(patient.trackingList, ['startDate'], ['desc']);
+                        
+			if(listOfOrderedPatientTrackingList.length == 0 || (!listOfOrderedPatientTrackingList[0].endMode || listOfOrderedPatientTrackingList[0].endMode != 'CHANGE_INSURANCE_EXIT') ) {
+				if ((listOfOrderedPatientObservations.length == 0) || (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)) {
+					if (iconNumber == this.state.ICON.OLHO_CINZA_COM_EXCLAMACAO ||
+						iconNumber == this.state.ICON.OLHO_AZUL ||
+						iconNumber == this.state.ICON.OLHO_CINZA_COM_CHECK) {
+						return totalPatients + 1;
+					} else {
+						return totalPatients;
+					}
+				} else {
 					return totalPatients;
 				}
-            }
-            else
-            {
-            	return totalPatients;
-            }
-
+			} else {
+				return totalPatients;
+			}
 		}, 0);
 
 		return totalPatients;
@@ -604,81 +596,69 @@ export default class Report extends Component {
 
 					let listOfOrderedPatientObservations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
 					
-					if (
+					let listOfOrderedPatientTrackingList = _.orderBy(patient.trackingList, ['startDate'], ['desc']);
+                        
+					if(listOfOrderedPatientTrackingList.length == 0 || (!listOfOrderedPatientTrackingList[0].endMode || listOfOrderedPatientTrackingList[0].endMode != 'CHANGE_INSURANCE_EXIT') ) {
+						if ((listOfOrderedPatientObservations.length == 0) || (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)) {
 
-		                (listOfOrderedPatientObservations.length == 0) || 
+							if (iconNumber == this.state.ICON.OLHO_CINZA_COM_EXCLAMACAO ||
+								iconNumber == this.state.ICON.OLHO_AZUL ||
+								iconNumber == this.state.ICON.OLHO_CINZA_COM_CHECK) {
 
-		                (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)
-		            ) 
-		            {
+									if (patient.hospitalizationType == "CLINICAL") 
+									{
+										report.hospitalizationType_room_clinical += 1;
+									}
+									else if (patient.hospitalizationType == "SURGICAL") 
+									{
+										report.hospitalizationType_room_surgical += 1;
+									}
+									else 
+									{
+										report.hospitalizationType_room_other += 1;
+									}
 
-						if (iconNumber == this.state.ICON.OLHO_CINZA_COM_EXCLAMACAO ||
-							iconNumber == this.state.ICON.OLHO_AZUL ||
-							iconNumber == this.state.ICON.OLHO_CINZA_COM_CHECK) {
+									if (patient.attendanceType == "EMERGENCY") 
+									{
+										report.attendanceType_emergency += 1;
+									}
+									else if (patient.attendanceType == "ELECTIVE") 
+									{
+										report.attendanceType_elective += 1;
+									}
+									else 
+									{
+										report.attendanceType_other += 1;
+									}
 
-				            if(
-				                (listOfOrderedPatientObservations.length == 0) || 
+									if (patient.locationType == "CTI" || patient.locationType == "UTI") 
+									{
+										report.locationType_room_ctiuti += 1;
+									}
+									else if (patient.locationType == "USI") 
+									{
+										report.locationType_room_usi += 1;
+									}
+									else 
+									{
+										report.locationType_room_other += 1;
+									}
 
-				                (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)
-				            )
-				            {
+									let days = await this.calculateDaysOfHospitalization(patient);
 
-				            	if (patient.hospitalizationType == "CLINICAL") 
-								{
-									report.hospitalizationType_room_clinical += 1;
-								}
-								else if (patient.hospitalizationType == "SURGICAL") 
-								{
-									report.hospitalizationType_room_surgical += 1;
-								}
-								else 
-								{
-									report.hospitalizationType_room_other += 1;
-								}
-
-								if (patient.attendanceType == "EMERGENCY") 
-								{
-									report.attendanceType_emergency += 1;
-								}
-								else if (patient.attendanceType == "ELECTIVE") 
-								{
-									report.attendanceType_elective += 1;
-								}
-								else 
-								{
-									report.attendanceType_other += 1;
-								}
-
-								if (patient.locationType == "CTI" || patient.locationType == "UTI") 
-								{
-									report.locationType_room_ctiuti += 1;
-								}
-								else if (patient.locationType == "USI") 
-								{
-									report.locationType_room_usi += 1;
-								}
-								else 
-								{
-									report.locationType_room_other += 1;
-								}
-
-								let days = await this.calculateDaysOfHospitalization(patient);
-
-								if (days <= 5)
-								{
-									report.attendanceType_time_until_five += 1;
-								}
-								else if (days > 5 && days <= 15)
-								{
-									report.attendanceType_time_between_five_and_fortynine += 1;
-								}
-								else 
-								{
-									report.attendanceType_time_other += 1;
-								}
-
+									if (days <= 5)
+									{
+										report.attendanceType_time_until_five += 1;
+									}
+									else if (days > 5 && days <= 15)
+									{
+										report.attendanceType_time_between_five_and_fortynine += 1;
+									}
+									else 
+									{
+										report.attendanceType_time_other += 1;
+									}
 							}
-
 						}
 					}
 				}
@@ -840,13 +820,18 @@ export default class Report extends Component {
 		const patientClass = new Patient(patient);
 		let iconNumber = patientClass.getIconNumber();
 		let listOfOrderedPatientObservations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+		let listOfOrderedPatientTrackingList = _.orderBy(patient.trackingList, ['startDate'], ['desc']);
 
-		if ( (listOfOrderedPatientObservations.length == 0) || (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease) ) {
+		if(listOfOrderedPatientTrackingList.length == 0 || (!listOfOrderedPatientTrackingList[0].endMode || listOfOrderedPatientTrackingList[0].endMode != 'CHANGE_INSURANCE_EXIT') ) {
+			if ( (listOfOrderedPatientObservations.length == 0) || (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease) ) {
 
-			if (iconNumber == this.state.ICON.OLHO_CINZA_COM_EXCLAMACAO ||
-				iconNumber == this.state.ICON.OLHO_AZUL ||
-				iconNumber == this.state.ICON.OLHO_CINZA_COM_CHECK) {
-				return true;
+				if (iconNumber == this.state.ICON.OLHO_CINZA_COM_EXCLAMACAO ||
+					iconNumber == this.state.ICON.OLHO_AZUL ||
+					iconNumber == this.state.ICON.OLHO_CINZA_COM_CHECK) {
+					return true;
+				} else {
+					return false;
+				}
 			} else {
 				return false;
 			}

@@ -47,29 +47,25 @@ export default class Patients extends Component {
                     hospital.hospitalizationList.forEach( patient => {
 
                         let listOfOrderedPatientObservations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+                        let listOfOrderedPatientTrackingList = _.orderBy(patient.trackingList, ['startDate'], ['desc']);
+                        
+                        if(listOfOrderedPatientTrackingList.length == 0 || (!listOfOrderedPatientTrackingList[0].endMode || listOfOrderedPatientTrackingList[0].endMode != 'CHANGE_INSURANCE_EXIT') ) {
+                            if ((listOfOrderedPatientObservations.length == 0) || (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)) {
+                                const patientClass = new Patient(patient);
 
-                        if (
+                                let iconNumber = patientClass.getIconNumber();
 
-                            (listOfOrderedPatientObservations.length == 0) || 
-
-                            (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)
-                        )
-                        {
-                            const patientClass = new Patient(patient);
-
-                            let iconNumber = patientClass.getIconNumber();
-
-                            patient.totalDaysOfHospitalization = this.calculateDaysOfHospitalization(patient);
-                            patient.colorNumber = this.getColorNumber(patient);
-                            patient.colorName = this.getColor(patient.colorNumber);
-                            patient.backgroundColor = this.getBackgroundColor(patient.colorNumber);
-                            patient.lastVisit = this.getLastVisit(patient);
-                            patient.iconNumber = iconNumber;
-                            patient.icon = patientClass.getIcon(iconNumber);
-                            patient.orderField = this.getOrderField(patient);
-                            patients.push(patient);
+                                patient.totalDaysOfHospitalization = this.calculateDaysOfHospitalization(patient);
+                                patient.colorNumber = this.getColorNumber(patient);
+                                patient.colorName = this.getColor(patient.colorNumber);
+                                patient.backgroundColor = this.getBackgroundColor(patient.colorNumber);
+                                patient.lastVisit = this.getLastVisit(patient);
+                                patient.iconNumber = iconNumber;
+                                patient.icon = patientClass.getIcon(iconNumber);
+                                patient.orderField = this.getOrderField(patient);
+                                patients.push(patient);
+                            }
                         }
-
                     });
 
                     patients = _.orderBy(patients, ['orderField'], ['asc']);
