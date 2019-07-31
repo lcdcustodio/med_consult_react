@@ -110,24 +110,30 @@ export default class Patient extends JsonEntity<Patient> {
     }
 
 	public validateFinalization(): FinalizationErrorEnum[] {
-		const { patientHeight, patientWeight, attendanceType, hospitalizationType, diagnosticHypothesisList,
-				mainProcedureCRM } = this.json;
+		const { patientHeight, patientWeight, attendanceType, hospitalizationType, diagnosticHypothesisList, mainProcedureCRM } = this.json;
 		const errors = [];
-		if (patientHeight == null || patientWeight == null) {
-			errors.push(FinalizationErrorEnum.HeightAndWeightMissing);
+
+		if ( (!patientHeight || (typeof patientHeight === 'string' && patientHeight.trim() == '')) || 
+		     (!patientWeight || (typeof patientWeight === 'string' && patientWeight.trim() == ''))) {
+				errors.push(FinalizationErrorEnum.HeightAndWeightMissing);
 		}
-		if (!attendanceType) {
+
+		if (!attendanceType || (typeof attendanceType === 'string' && attendanceType.trim() == '')) {
 			errors.push(FinalizationErrorEnum.AttendanceTypeMissing);
 		}
-		if (!hospitalizationType) {
+
+		if (!hospitalizationType || (typeof hospitalizationType === 'string' && hospitalizationType.trim() == '')) {
 			errors.push(FinalizationErrorEnum.HospitalizationTypeMissing);
 		}
-		if (!diagnosticHypothesisList || !diagnosticHypothesisList.length) {
+
+		if (!diagnosticHypothesisList || _.isEmpty(_.first(diagnosticHypothesisList))) {
 			errors.push(FinalizationErrorEnum.PrimaryCidMissing);
 		}
-		if (!mainProcedureCRM && attendanceType === HospitalizationTypeEnum.Surgical) {
+
+		if ( (!mainProcedureCRM || (typeof mainProcedureCRM === 'string' && mainProcedureCRM.trim() == '') ) && hospitalizationType === HospitalizationTypeEnum.Surgical) {
 			errors.push(FinalizationErrorEnum.CrmMissing);
 		}
+
 		return errors;
 	}
 
@@ -190,13 +196,13 @@ export default class Patient extends JsonEntity<Patient> {
 }
 
 export enum AttendanceTypeEnum {
-	Elective,
-	Emergency,
+	Elective = 'ELECTIVE',
+	Emergency = 'EMERGENCY',
 }
 
 export enum HospitalizationTypeEnum {
-	Surgical,
-	Clinical,
+	Surgical = 'SURGICAL',
+	Clinical = 'CLINICAL',
 }
 
 export enum FinalizationErrorEnum {

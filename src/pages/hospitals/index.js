@@ -599,7 +599,7 @@ export default class Hospital extends Component {
 			let listOfOrderedPatientObservations = _.orderBy(patient.observationList, ['observationDate'], ['desc'])
 			let listOfOrderedPatientTrackingList = _.orderBy(patient.trackingList, ['startDate'], ['desc']);
 			
-			console.log("Tracking List => ", patient.trackingList);
+			console.log("Tracking List => ", patient);
 
 			if(listOfOrderedPatientTrackingList.length == 0 || (!listOfOrderedPatientTrackingList[0].endMode || listOfOrderedPatientTrackingList[0].endMode != 'CHANGE_INSURANCE_EXIT') ) {
 				if((listOfOrderedPatientObservations.length > 0) && (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)) {

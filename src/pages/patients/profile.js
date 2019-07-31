@@ -512,7 +512,7 @@ export default class Profile extends Component {
 	}
 
 	render() {
-		console.log("paciente => ", JSON.stringify(this.props.navigation.getParam('patient')))
+		console.log("paciente => ", this.props.navigation.getParam('patient') )
 		
 		return (
 			<ScrollView style={{ backgroundColor: 'white' }}>
