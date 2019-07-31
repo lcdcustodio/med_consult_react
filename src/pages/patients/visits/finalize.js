@@ -59,7 +59,12 @@ export default class Finalize extends Component {
 			patientStorage.typePatient = this.getTypePatient(patientStorage.patientBornDate);
 			patientStorage.brittlenessIndex = this.calculateBrittlenessIndex(patientStorage);
 			patientStorage.labelAccordionMorbidityComorbity = this.getLabelAccordionMorbidityComorbity(patientStorage);
-			patientStorage.exitCID = patientStorage.diagnosticHypothesisList[0];
+
+			patientStorage.diagnosticHypothesisList && patientStorage.diagnosticHypothesisList.map((cid) => {
+				if (cid.endDate === null) {
+					patientStorage.exitCID = cid;			
+				}
+			});
 
 			await this.setClinicalIndication(patientStorage);
 			await this.setMedicineReintegration(patientStorage);
@@ -721,7 +726,13 @@ export default class Finalize extends Component {
 				<Content padder style={ styles.body }>
 					<Card elevation={10} style={ styles.card }>
 						<Card.Content>
-							<FormItem label='CID de Entrada' value={patient.diagnosticHypothesisList ? patient.diagnosticHypothesisList[0].cidDisplayName : ''}/>
+							{
+								this.state.patient.diagnosticHypothesisList && this.state.patient.diagnosticHypothesisList.map((prop, index) => {
+									if (prop.endDate === null) {
+										return (<FormItem key={index} label='CID de Entrada' value={prop.cidDisplayName}/>);
+									}
+								})
+							}
 							<FormItem label='CID de Saída' value={this.state.patient.exitCID ? this.state.patient.exitCID.cidDisplayName : 'ESCOLHER'} onPress={ () => {this.toggleModal('modalExitCID')} }/>
 						</Card.Content>
 					</Card>
