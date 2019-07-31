@@ -87,7 +87,7 @@ export default class Sidebar extends Component {
 													let data = { "hospitalizationList": builder };
 													
 													Share.share({
-														message: data,
+														message: JSON.stringify(data),
 												    }).then(response => {
 
 												    }).catch(error => {
