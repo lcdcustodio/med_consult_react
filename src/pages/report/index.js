@@ -15,6 +15,7 @@ import { DataTable } from 'react-native-paper';
 import { RdRootHeader } from '../../components/rededor-base';
 import type { ViewStyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import Patient from '../../model/Patient';
+import Builder from '../../util/Builder';
 import RNPickerSelect, { inputIOS } from 'react-native-picker-select';
 
 export default class Report extends Component {
@@ -120,103 +121,9 @@ export default class Report extends Component {
 
 	});
 
-	getPatient(patientId) {
-
-		for (var h = 0; h < this.state.hospitals.length; h++) {		
-
-			for (var i = 0; i < this.state.hospitals[h].hospitalizationList.length; i++) {
-				
-				let p = this.state.hospitals[h].hospitalizationList[i];
-
-				if(patientId == p.id)
-				{
-					return this.state.hospitals[h].hospitalizationList[i];
-				}
-			}
-		}
-	}
-
 	clearPartialData() {
 		AsyncStorage.removeItem('userData');
 		AsyncStorage.removeItem('auth');
-	}
-
-	parseObject(json) {
-
-		let parse = {};
-
-		for (var i = 0; i < json.length; i++) {
-
-			for (var attrname in json[i])
-			{
-				if (attrname == 'id') continue;
-
-				let patient = this.getPatient(json[i].id);
-
-				if (patient == null) {
-					continue;
-				}
-
-				if (parse.hasOwnProperty(json[i].id)) {
-					
-					parse[json[i].id][attrname] = json[i][attrname];
-				}
-				else
-				{
-					parse[json[i].id] = json[i];	
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('recommendationClinicalIndication')) {
-					parse[json[i].id]['recommendationClinicalIndication'] = patient.recommendationClinicalIndication;
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('recommendationMedicineReintegration')) {
-					parse[json[i].id]['recommendationMedicineReintegration'] = patient.recommendationMedicineReintegration;
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('recommendationWelcomeHomeIndication')) {
-					parse[json[i].id]['recommendationWelcomeHomeIndication'] = patient.recommendationWelcomeHomeIndication;
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('diagnosticHypothesisList')) {
-					parse[json[i].id]['diagnosticHypothesisList'] = null;
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('secondaryCIDList')) {
-					parse[json[i].id]['secondaryCIDList'] = null;
-				}
-
-				if (parse[json[i].id].hasOwnProperty('patientHeight')) {
-					if (patient.patientHeight != null) {
-						parse[json[i].id]['patientHeight'] = parse[json[i].id]['patientHeight'].toString().replace(',', '.');
-					}
-				}
-
-				if (parse[json[i].id].hasOwnProperty('patientWeight')) {
-					if (patient.patientWeight != null) {
-						parse[json[i].id]['patientWeight'] = parse[json[i].id]['patientWeight'].toString().replace(',', '.');
-					}
-				}
-
-				if (parse[json[i].id].hasOwnProperty('observationList')) {
-
-					let listOfOrderedPatientObservations = _.orderBy(parse[json[i].id]['observationList'], ['observationDate'], ['desc']);
-
-					let lastElementVisit = listOfOrderedPatientObservations[0];
-
-					parse[json[i].id]['observationList'] = [];
-
-					parse[json[i].id]['observationList'].push(lastElementVisit);
-				}
-			}
-		}
-
-		var result = Object.keys(parse).map(function(key) {
-			let aux = parse[key];
-			return aux;
-		});
-
-		return result;
 	}
 
 	loadHospitals = async () => {
@@ -302,26 +209,12 @@ export default class Report extends Component {
 					
 					AsyncStorage.getItem('hospitalizationList', (err, res) => {
 						
-						let obj = [];
+						let builder = new Builder();
 
-						if (res != null) {
+						builder = builder.parseToSync(res, this.state.hospitals);
 
-							let hospitalizationList = JSON.parse(res);
+						let data = { "hospitalizationList": builder };
 
-							for (var i = 0; i < hospitalizationList.length; i++) {
-
-								let array = {};
-								array['id'] = hospitalizationList[i].idPatient;
-								array[hospitalizationList[i].key] = hospitalizationList[i].value;
-
-								obj.push(array);
-							}
-						}
-
-						let parseObj = this.parseObject(obj);
-
-						let data = { "hospitalizationList": parseObj };
-					
 						api.post('/api/v2.0/sync', data, 
 						{
 							headers: {
@@ -923,7 +816,7 @@ export default class Report extends Component {
 							this.state.hospital_report.hospital_report && this.state.hospital_report.hospital_report.map((prop, index) => {
 								let background = (index % 2) === 0 ? '#ffffff' : '#ededed';
 								return ( 
-									<DataTable.Row key={prop.name} style={{color:'blue', backgroundColor: `${background}`, minHeight: 32, paddingTop: '1.7%'}}>
+									<DataTable.Row key={prop.name} style={{backgroundColor: `${background}`, minHeight: 32, paddingTop: '1.7%'}}>
 										<View style={{flexDirection: 'row', width: '100%', flexWrap: 'wrap'}}>
 											<View style={{alignItems: 'flex-start', width: '90%'}}>
 												<DataTable.Cell onPress={ () => { this.toogle(prop) }}>{prop.name}</DataTable.Cell>

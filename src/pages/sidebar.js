@@ -3,6 +3,7 @@ import { Alert, View, StyleSheet, Image, Text, Button, TouchableWithoutFeedback,
 import { Icon } from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-community/async-storage';
+import Builder from '../util/Builder';
 
 import Session from '../Session';
 
@@ -43,87 +44,8 @@ export default class Sidebar extends Component {
 		}
 	}
 
-	parseObject(json) {
-
-		let parse = {};
-
-		for (var i = 0; i < json.length; i++) {
-
-			for (var attrname in json[i])
-			{
-				if (attrname == 'id') continue;
-
-				let patient = this.getPatient(json[i].id);
-
-				if (patient == null) {
-					continue;
-				}
-
-				if (parse.hasOwnProperty(json[i].id)) {
-					
-					parse[json[i].id][attrname] = json[i][attrname];
-				}
-				else
-				{
-					parse[json[i].id] = json[i];	
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('recommendationClinicalIndication')) {
-					parse[json[i].id]['recommendationClinicalIndication'] = patient.recommendationClinicalIndication;
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('recommendationMedicineReintegration')) {
-					parse[json[i].id]['recommendationMedicineReintegration'] = patient.recommendationMedicineReintegration;
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('recommendationWelcomeHomeIndication')) {
-					parse[json[i].id]['recommendationWelcomeHomeIndication'] = patient.recommendationWelcomeHomeIndication;
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('diagnosticHypothesisList')) {
-					parse[json[i].id]['diagnosticHypothesisList'] = null;
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('secondaryCIDList')) {
-					parse[json[i].id]['secondaryCIDList'] = null;
-				}
-
-				if (parse[json[i].id].hasOwnProperty('patientHeight')) {
-					if (patient.patientHeight != null) {
-						parse[json[i].id]['patientHeight'] = parse[json[i].id]['patientHeight'].toString().replace(',', '.');
-					}
-				}
-
-				if (parse[json[i].id].hasOwnProperty('patientWeight')) {
-					if (patient.patientWeight != null) {
-						parse[json[i].id]['patientWeight'] = parse[json[i].id]['patientWeight'].toString().replace(',', '.');
-					}
-				}
-
-				if (parse[json[i].id].hasOwnProperty('observationList')) {
-
-					let listOfOrderedPatientObservations = _.orderBy(parse[json[i].id]['observationList'], ['observationDate'], ['desc']);
-
-					let lastElementVisit = listOfOrderedPatientObservations[0];
-
-					parse[json[i].id]['observationList'] = [];
-
-					parse[json[i].id]['observationList'].push(lastElementVisit);
-				}
-			}
-		}
-
-		var result = Object.keys(parse).map(function(key) {
-			let aux = parse[key];
-			return aux;
-		});
-
-		return result;
-	}
-
 	renderIconTrash() {
 
-		
 		return <TouchableWithoutFeedback onPress={() => {
 
 			Alert.alert(
@@ -131,10 +53,10 @@ export default class Sidebar extends Component {
 				'Tem certeza que deseja limpar todos os dados?',
 				[{ text: 'Cancelar',onPress: () => console.log('Cancel Pressed'), style: 'cancel'  },
 				  {text: 'Limpar', onPress: () => {
+
 						AsyncStorage.removeItem('userData');
 						AsyncStorage.removeItem('auth');
 						AsyncStorage.removeItem('morbidityComorbityList');
-						AsyncStorage.removeItem('hospitalList');
 						AsyncStorage.removeItem('dateSync');
 
 						Alert.alert(
@@ -150,39 +72,35 @@ export default class Sidebar extends Component {
 								{
 									text: 'Compartilhar', onPress: () => {
 
-										AsyncStorage.getItem('hospitalizationList', (err, res) => {
+										AsyncStorage.getItem('hospitalList', (err, res) => {
 
-											let obj = [];
+											if (res !== null) {
 
-											if (res != null) {
+												let hospitalList = JSON.parse(res);
+												
+												AsyncStorage.getItem('hospitalizationList', (err, res) => {
 
-												let hospitalizationList = JSON.parse(res);
+													let builder = new Builder();
 
-												for (var i = 0; i < hospitalizationList.length; i++) {
+													builder = builder.parseToSync(res, hospitalList);
 
-													let array = {};
-													array['id'] = hospitalizationList[i].idPatient;
-													array[hospitalizationList[i].key] = hospitalizationList[i].value;
+													let data = { "hospitalizationList": builder };
+													
+													Share.share({
+														message: data,
+												    }).then(response => {
 
-													obj.push(array);
-												}
+												    }).catch(error => {
+
+												    });
+
+												    AsyncStorage.removeItem('hospitalList');
+												    AsyncStorage.removeItem('hospitalizationList');
+
+												    this.props.navigation.navigate("SignIn");
+
+												});
 											}
-
-											let parseObj = this.parseObject(obj);
-
-											let data = { "hospitalizationList": parseObj };
-											
-											Share.share({
-												message: data,
-										    }).then(response => {
-
-										    }).catch(error => {
-
-										    });
-
-										    AsyncStorage.removeItem('hospitalizationList');
-										    this.props.navigation.navigate("SignIn");
-
 										});
 									}
 								},
@@ -209,10 +127,15 @@ export default class Sidebar extends Component {
 	}
 
 	render() {
+
 		let user = Session.current.user;
+		
 		if (!user) {
 			return null;
 		}
+
+		let enviroment = Session.current.enviroment._name;
+		
 		return (
 				<LinearGradient colors={['#005cd1', '#35d8a6']} style={styles.linearGradient}>
 
@@ -250,7 +173,7 @@ export default class Sidebar extends Component {
 					</View>
 					<View style={styles.boxButton}>
 						<Image source={require('../images/logo-rededor.png')} style={styles.sideMenuLogoIcon} />
-						<Text style={{ fontSize: 15, bottom: 20, textAlign: 'right', color: '#FFF', fontWeight: "bold"}}> Versão 1.0.2 [ { this.renderIconTrash() } ]</Text>
+						<Text style={{ fontSize: 15, bottom: 20, textAlign: 'right', color: '#FFF', fontWeight: "bold"}}> { enviroment } Versão 1.0.2 [ { this.renderIconTrash() } ]</Text>
 					</View>
 				</View>
 			</LinearGradient>
