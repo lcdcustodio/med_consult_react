@@ -194,8 +194,6 @@ export default class SignIn extends Component {
 			        	Session.current.enviroment = new Enviroment(strenv_prd);
 			        }
 
-			        console.log(Session.current);
-
 					AsyncStorage.multiSet([
 					    ["auth", JSON.stringify(params)],
 					    ["userData", JSON.stringify(content)]
