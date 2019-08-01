@@ -2,7 +2,7 @@ import moment from 'moment';
 import uuid from 'uuid/v4';
 
 import Patient from '../src/model/Patient';
-import { IconEyeEnum, FinalizationErrorEnum, HospitalizationTypeEnum, AttendanceTypeEnum, HospitalizationStatusEnum } from '../src/model/Patient';
+import { IconEyeEnum, FinalizationErrorEnum, HospitalizationTypeEnum, AttendanceTypeEnum, HospitalizationStatusEnum, StatusVisitEnum } from '../src/model/Patient';
 
 
 let patientJSON = null;
@@ -720,7 +720,7 @@ describe('Class Patients', () => {
             }
         });
 
-        it('Deve enum HospitalizationStatusEnum.Open', () => {
+        it('Deve retornar enum HospitalizationStatusEnum.Open', () => {
             let patient = new Patient(patientJSON);
             
             patient.json.trackingList = [
@@ -761,7 +761,7 @@ describe('Class Patients', () => {
             expect(patient.getHospitalizationStatusEnum()).toEqual(HospitalizationStatusEnum.Open);
         });
 
-        it('Deve enum HospitalizationStatusEnum.Closed (MedicalRelease true)', () => {
+        it('Deve retornar enum HospitalizationStatusEnum.Closed (MedicalRelease true)', () => {
             let patient = new Patient(patientJSON);
             
             patient.json.observationList = [
@@ -797,7 +797,7 @@ describe('Class Patients', () => {
             expect(patient.getHospitalizationStatusEnum()).toEqual(HospitalizationStatusEnum.Closed);
         });
 
-        it('Deve enum HospitalizationStatusEnum.Closed (EndTracking true)', () => {
+        it('Deve retornar enum HospitalizationStatusEnum.Closed (EndTracking true)', () => {
             let patient = new Patient(patientJSON);
             
             patient.json.observationList = [
@@ -833,7 +833,7 @@ describe('Class Patients', () => {
             expect(patient.getHospitalizationStatusEnum()).toEqual(HospitalizationStatusEnum.Closed);
         });
 
-        it('Deve enum HospitalizationStatusEnum.CanBeClosed (Com observação sem EndTracking e MedicalRelease)', () => {
+        it('Deve retornar enum HospitalizationStatusEnum.CanBeClosed (Com observação sem EndTracking e MedicalRelease)', () => {
             let patient = new Patient(patientJSON);
             
             patient.json.observationList = [
@@ -869,14 +869,14 @@ describe('Class Patients', () => {
             expect(patient.getHospitalizationStatusEnum()).toEqual(HospitalizationStatusEnum.CanBeClosed);
         });
 
-        it('Deve enum HospitalizationStatusEnum.CanBeClosed (Sem observação)', () => {
+        it('Deve retornar enum HospitalizationStatusEnum.CanBeClosed (Sem observação)', () => {
             let patient = new Patient(patientJSON);
 
             expect(patient.getHospitalizationStatusEnum()).toEqual(HospitalizationStatusEnum.CanBeClosed);
         });
     });
 
-    describe('getHospitalizationStatusEnum', () => {
+    describe('isHospitalizationActive', () => {
         beforeEach(() => {
             patientJSON = {
                 "recommendationClinicalIndication":null,
@@ -935,6 +935,534 @@ describe('Class Patients', () => {
             }
         });
 
-        
+        it('Deve retornar hospitalização ativa', () => {
+            let patient = new Patient(patientJSON);
+
+            expect(patient.isHospitalizationActive()).toBeTruthy();
+        });
+
+        it('Deve retornar hospitalização inativa (Por exitDate preenchido)', () => {
+            let patient = new Patient(patientJSON);
+            
+            patient.json.exitDate = new moment();
+
+            expect(patient.isHospitalizationActive()).toBeFalsy();
+        });
+
+        it('Deve retornar hospitalização inativa (Por último TrackingList com endDate preenchido)', () => {
+            let patient = new Patient(patientJSON);
+            
+            patient.json.trackingList = [
+                {
+                    "endDate":"2019-02-19T17:50:00+0000",
+                    "startDate":null,
+                    "trackingId":6668,
+                    "hospitalizationId":6812,
+                    "startMode":"HOSPITALIZATIION_ENTRANCE",
+                    "endMode":"ADMIN_DISCHARGE_EXIT"
+                },
+                {
+                    "endDate":"2019-02-19T17:50:00+0000",
+                    "startDate":"2019-02-18T17:40:00+0000",
+                    "trackingId":6668,
+                    "hospitalizationId":6812,
+                    "startMode":"HOSPITALIZATIION_ENTRANCE",
+                    "endMode":"ADMIN_DISCHARGE_EXIT"
+                },
+                {
+                    "endDate":"2019-05-28T14:10:00+0000",
+                    "startDate":"2019-05-28T03:10:00+0000",
+                    "trackingId":7265,
+                    "hospitalizationId":6812,
+                    "startMode":"HOSPITALIZATIION_ENTRANCE",
+                    "endMode":"ADMIN_DISCHARGE_EXIT"
+                },
+                {
+                    "endDate":"2019-05-28T01:10:00+0000",
+                    "startDate":"2019-05-23T01:10:00+0000",
+                    "trackingId":7264,
+                    "hospitalizationId":6812,
+                    "startMode":"HOSPITALIZATIION_ENTRANCE",
+                    "endMode":"ADMIN_DISCHARGE_EXIT"
+                }
+            ];
+
+            expect(patient.isHospitalizationActive()).toBeFalsy();
+        });
+
+    });
+
+    describe('hasObservationToday', () => {
+        beforeEach(() => {
+            patientJSON = {
+                "recommendationClinicalIndication":null,
+                "recommendationWelcomeHomeIndication":null,
+                "recommendationMedicineReintegration":null,
+                "previousHospitalizations":[],
+                "id":7450,
+                "patientName":"Ana Julia Carvalho de Serro Azul Dias",
+                "patientBornDate":"1981-08-17",
+                "patientHeight":null,
+                "patientWeight":null,
+                "admissionDate":"2019-07-26T14:07:02+0000",
+                "exitDate":null,
+                "death":false,
+                "barCode":"15368882",
+                "externalPatient":false,
+                "medicalExitDate":null,
+                "exitDescription":null,
+                "plane":"",
+                "agreement":"",
+                "locationType":"NORMAL",
+                "locationSession":"Ap Hosp",
+                "locationBed":"1110",
+                "locationDateFrom":null,
+                "attendanceType":null,
+                "hospitalizationType":null,
+                "medicalRecordsNumber":"2269576",
+                "mainProcedureTUSSId":null,
+                "mainProcedureTUSSDisplayName":null,
+                "mainProcedureCRM":null,
+                "diagnosticHypothesisList":[],
+                "secondaryCIDList":[],
+                "observationList":[],
+                "examRequestList":[],
+                "furtherOpinionList":[],
+                "medicalProceduresList":[],
+                "medicineUsageList":[],
+                "timeDependentMedicineUsageList":[],
+                "morbidityComorbityList":[],
+                "clinicalIndication":null,
+                "medicineReintegration":null,
+                "welcomeHomeIndication":null,
+                "complementaryInfoHospitalizationAPI":{"id":3471,"hemoglobin":null,"isNotHemoglobin":false,"isNotSerumSodium":false,"serumSodium":null,"isPancreateColectomyHepatic":false,"isUrgentEmergHospitatization":false,"isHospitatizationFiveDays":false,"hospitalizationsInTwelveMonths":null,"isHighOncologicalServiceOrProcedure":false,"result":null},
+                "lastLocalModification":null,
+                "removedItemList":null,
+                "hospitalName":"HOSPITAL ITAIM",
+                "hospitalId":142,
+                "totalDaysOfHospitalization":5,
+                "colorNumber":2,
+                "colorName":"black",
+                "backgroundColor":"#fff",
+                "lastVisit":"S/ visita",
+                "iconNumber":1,
+                "icon":18,
+                "orderField":"12Ana Julia Carvalho de Serro Azul Dias",
+            }
+        });
+
+        it('Deve retornar TRUE para observação na data corrente', () => {
+            let patient = new Patient(patientJSON);
+
+            patient.json.observationList = [
+                {
+                    "uuid":"3DB352D7-E4DB-4C1C-BCC9-6F7E2D76F5F3",
+                    "observationDate": new moment(),
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com melhora importante da dor , ligaremos para o Dr. Aulus agora e provavelmente liberaremos PCR 3,4 .",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"D4DDF6C3-7465-45ED-887F-477B50688766",
+                    "observationDate":"2019-03-22T15:25:14+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente ainda não liberado e aparentemente sem balizamento técnico para permanência. Avaliarei  detalhadamente a permanência nas últimas 24 horas ",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"6602EA1E-C2F9-46B0-BCB8-D8BA6437C6C1",
+                    "observationDate":"2019-03-20T16:31:14+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com artrodese coluna L5-S1 há 48h no caxias D’Or procurou hospital com dor intensa. Em uso de analgésico e opióides em casa chegou no setor de emergência “ chorando de dor. Internação devido a pela intensidade da dor.",
+                    "removedAt":null
+                }
+            ];
+
+            expect(patient.hasObservationToday()).toBeTruthy();
+        });
+
+        it('Deve retornar FALSE para observação na data corrente (com observações)', () => {
+            let patient = new Patient(patientJSON);
+            
+            patient.json.observationList = [
+                {
+                    "uuid":"3DB352D7-E4DB-4C1C-BCC9-6F7E2D76F5F3",
+                    "observationDate":"2019-03-21T12:36:22+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com melhora importante da dor , ligaremos para o Dr. Aulus agora e provavelmente liberaremos PCR 3,4 .",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"D4DDF6C3-7465-45ED-887F-477B50688766",
+                    "observationDate":"2019-03-22T15:25:14+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente ainda não liberado e aparentemente sem balizamento técnico para permanência. Avaliarei  detalhadamente a permanência nas últimas 24 horas ",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"6602EA1E-C2F9-46B0-BCB8-D8BA6437C6C1",
+                    "observationDate":"2019-03-20T16:31:14+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com artrodese coluna L5-S1 há 48h no caxias D’Or procurou hospital com dor intensa. Em uso de analgésico e opióides em casa chegou no setor de emergência “ chorando de dor. Internação devido a pela intensidade da dor.",
+                    "removedAt":null
+                }
+            ];
+
+            expect(patient.hasObservationToday()).toBeFalsy();
+        });
+
+        it('Deve retornar FALSE para observação na data corrente (sem observações)', () => {
+            let patient = new Patient(patientJSON);
+
+            expect(patient.hasObservationToday()).toBeFalsy();
+        });
+
+    });
+
+    describe('getStatusVisitEnum', () => {
+        beforeEach(() => {
+            patientJSON = {
+                "recommendationClinicalIndication":null,
+                "recommendationWelcomeHomeIndication":null,
+                "recommendationMedicineReintegration":null,
+                "previousHospitalizations":[],
+                "id":7450,
+                "patientName":"Ana Julia Carvalho de Serro Azul Dias",
+                "patientBornDate":"1981-08-17",
+                "patientHeight":null,
+                "patientWeight":null,
+                "admissionDate":"2019-07-26T14:07:02+0000",
+                "exitDate":null,
+                "death":false,
+                "barCode":"15368882",
+                "externalPatient":false,
+                "medicalExitDate":null,
+                "exitDescription":null,
+                "plane":"",
+                "agreement":"",
+                "locationType":"NORMAL",
+                "locationSession":"Ap Hosp",
+                "locationBed":"1110",
+                "locationDateFrom":null,
+                "attendanceType":null,
+                "hospitalizationType":null,
+                "medicalRecordsNumber":"2269576",
+                "mainProcedureTUSSId":null,
+                "mainProcedureTUSSDisplayName":null,
+                "mainProcedureCRM":null,
+                "diagnosticHypothesisList":[],
+                "secondaryCIDList":[],
+                "observationList":[],
+                "examRequestList":[],
+                "furtherOpinionList":[],
+                "medicalProceduresList":[],
+                "medicineUsageList":[],
+                "timeDependentMedicineUsageList":[],
+                "morbidityComorbityList":[],
+                "clinicalIndication":null,
+                "medicineReintegration":null,
+                "welcomeHomeIndication":null,
+                "complementaryInfoHospitalizationAPI":{"id":3471,"hemoglobin":null,"isNotHemoglobin":false,"isNotSerumSodium":false,"serumSodium":null,"isPancreateColectomyHepatic":false,"isUrgentEmergHospitatization":false,"isHospitatizationFiveDays":false,"hospitalizationsInTwelveMonths":null,"isHighOncologicalServiceOrProcedure":false,"result":null},
+                "lastLocalModification":null,
+                "removedItemList":null,
+                "hospitalName":"HOSPITAL ITAIM",
+                "hospitalId":142,
+                "totalDaysOfHospitalization":5,
+                "colorNumber":2,
+                "colorName":"black",
+                "backgroundColor":"#fff",
+                "lastVisit":"S/ visita",
+                "iconNumber":1,
+                "icon":18,
+                "orderField":"12Ana Julia Carvalho de Serro Azul Dias",
+            }
+        });
+
+        it('Deve retornar enum StatusVisitEnum.Visited', () => {
+            let patient = new Patient(patientJSON);
+
+            patient.json.observationList = [
+                {
+                    "uuid":"3DB352D7-E4DB-4C1C-BCC9-6F7E2D76F5F3",
+                    "observationDate": new moment(),
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com melhora importante da dor , ligaremos para o Dr. Aulus agora e provavelmente liberaremos PCR 3,4 .",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"D4DDF6C3-7465-45ED-887F-477B50688766",
+                    "observationDate":"2019-03-22T15:25:14+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente ainda não liberado e aparentemente sem balizamento técnico para permanência. Avaliarei  detalhadamente a permanência nas últimas 24 horas ",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"6602EA1E-C2F9-46B0-BCB8-D8BA6437C6C1",
+                    "observationDate":"2019-03-20T16:31:14+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com artrodese coluna L5-S1 há 48h no caxias D’Or procurou hospital com dor intensa. Em uso de analgésico e opióides em casa chegou no setor de emergência “ chorando de dor. Internação devido a pela intensidade da dor.",
+                    "removedAt":null
+                }
+            ];
+
+            expect(patient.getStatusVisitEnum()).toEqual(StatusVisitEnum.Visited);
+        });
+
+        it('Deve retornar enum StatusVisitEnum.NotVisited', () => {
+            let patient = new Patient(patientJSON);
+
+            patient.json.observationList = [
+                {
+                    "uuid":"3DB352D7-E4DB-4C1C-BCC9-6F7E2D76F5F3",
+                    "observationDate":"2019-03-21T12:36:22+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com melhora importante da dor , ligaremos para o Dr. Aulus agora e provavelmente liberaremos PCR 3,4 .",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"D4DDF6C3-7465-45ED-887F-477B50688766",
+                    "observationDate":"2019-03-22T15:25:14+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente ainda não liberado e aparentemente sem balizamento técnico para permanência. Avaliarei  detalhadamente a permanência nas últimas 24 horas ",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"6602EA1E-C2F9-46B0-BCB8-D8BA6437C6C1",
+                    "observationDate":"2019-03-20T16:31:14+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com artrodese coluna L5-S1 há 48h no caxias D’Or procurou hospital com dor intensa. Em uso de analgésico e opióides em casa chegou no setor de emergência “ chorando de dor. Internação devido a pela intensidade da dor.",
+                    "removedAt":null
+                }
+            ];
+
+            expect(patient.getStatusVisitEnum()).toEqual(StatusVisitEnum.NotVisited);
+        });
+
+        it('Deve retornar enum StatusVisitEnum.NotVisitedAlert', () => {
+            let patient = new Patient(patientJSON);
+
+            patient.json.observationList = [
+                {
+                    "uuid":"3DB352D7-E4DB-4C1C-BCC9-6F7E2D76F5F3",
+                    "observationDate":"2019-03-21T12:36:22+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com melhora importante da dor , ligaremos para o Dr. Aulus agora e provavelmente liberaremos PCR 3,4 .",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"D4DDF6C3-7465-45ED-887F-477B50688766",
+                    "observationDate":"2019-03-22T15:25:14+0000",
+                    "alert":true,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente ainda não liberado e aparentemente sem balizamento técnico para permanência. Avaliarei  detalhadamente a permanência nas últimas 24 horas ",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"6602EA1E-C2F9-46B0-BCB8-D8BA6437C6C1",
+                    "observationDate":"2019-03-20T16:31:14+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com artrodese coluna L5-S1 há 48h no caxias D’Or procurou hospital com dor intensa. Em uso de analgésico e opióides em casa chegou no setor de emergência “ chorando de dor. Internação devido a pela intensidade da dor.",
+                    "removedAt":null
+                }
+            ];
+
+            expect(patient.getStatusVisitEnum()).toEqual(StatusVisitEnum.NotVisitedAlert);
+        });
+
+        it('Deve retornar enum StatusVisitEnum.VisitedDischarged', () => {
+            let patient = new Patient(patientJSON);
+
+            patient.json.exitDate = new moment();
+            patient.json.observationList = [
+                {
+                    "uuid":"3DB352D7-E4DB-4C1C-BCC9-6F7E2D76F5F3",
+                    "observationDate":"2019-03-21T12:36:22+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com melhora importante da dor , ligaremos para o Dr. Aulus agora e provavelmente liberaremos PCR 3,4 .",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"D4DDF6C3-7465-45ED-887F-477B50688766",
+                    "observationDate":"2019-03-22T15:25:14+0000",
+                    "alert":false,
+                    "medicalRelease":true,
+                    "endTracking":false,
+                    "observation":"Paciente ainda não liberado e aparentemente sem balizamento técnico para permanência. Avaliarei  detalhadamente a permanência nas últimas 24 horas ",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"6602EA1E-C2F9-46B0-BCB8-D8BA6437C6C1",
+                    "observationDate":"2019-03-20T16:31:14+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com artrodese coluna L5-S1 há 48h no caxias D’Or procurou hospital com dor intensa. Em uso de analgésico e opióides em casa chegou no setor de emergência “ chorando de dor. Internação devido a pela intensidade da dor.",
+                    "removedAt":null
+                }
+            ];
+
+            expect(patient.getStatusVisitEnum()).toEqual(StatusVisitEnum.VisitedDischarged);
+        });
+
+        it('Deve retornar enum StatusVisitEnum.VisitedEndTracking', () => {
+            let patient = new Patient(patientJSON);
+
+            patient.json.exitDate = new moment();
+            patient.json.observationList = [
+                {
+                    "uuid":"3DB352D7-E4DB-4C1C-BCC9-6F7E2D76F5F3",
+                    "observationDate":"2019-03-21T12:36:22+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com melhora importante da dor , ligaremos para o Dr. Aulus agora e provavelmente liberaremos PCR 3,4 .",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"D4DDF6C3-7465-45ED-887F-477B50688766",
+                    "observationDate":"2019-03-22T15:25:14+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":true,
+                    "observation":"Paciente ainda não liberado e aparentemente sem balizamento técnico para permanência. Avaliarei  detalhadamente a permanência nas últimas 24 horas ",
+                    "removedAt":null
+                },
+                {
+                    "uuid":"6602EA1E-C2F9-46B0-BCB8-D8BA6437C6C1",
+                    "observationDate":"2019-03-20T16:31:14+0000",
+                    "alert":false,
+                    "medicalRelease":false,
+                    "endTracking":false,
+                    "observation":"Paciente com artrodese coluna L5-S1 há 48h no caxias D’Or procurou hospital com dor intensa. Em uso de analgésico e opióides em casa chegou no setor de emergência “ chorando de dor. Internação devido a pela intensidade da dor.",
+                    "removedAt":null
+                }
+            ];
+
+            expect(patient.getStatusVisitEnum()).toEqual(StatusVisitEnum.VisitedEndTracking);
+        });
+
+        it('Deve retornar enum StatusVisitEnum.NotVisitedDischarged', () => {
+            let patient = new Patient(patientJSON);
+
+            patient.json.exitDate = new moment();
+            patient.json.trackingList = [
+                {
+                    "endDate":"2019-02-19T17:50:00+0000",
+                    "startDate":null,
+                    "trackingId":6668,
+                    "hospitalizationId":6812,
+                    "startMode":"HOSPITALIZATIION_ENTRANCE",
+                    "endMode":"ADMIN_DISCHARGE_EXIT"
+                },
+                {
+                    "endDate":"2019-02-19T17:50:00+0000",
+                    "startDate":"2019-02-18T17:40:00+0000",
+                    "trackingId":6668,
+                    "hospitalizationId":6812,
+                    "startMode":"HOSPITALIZATIION_ENTRANCE",
+                    "endMode":"ADMIN_DISCHARGE_EXIT"
+                },
+                {
+                    "endDate":"2019-05-28T14:10:00+0000",
+                    "startDate":"2019-05-28T03:10:00+0000",
+                    "trackingId":7265,
+                    "hospitalizationId":6812,
+                    "startMode":"HOSPITALIZATIION_ENTRANCE",
+                    "endMode":"ADMIN_DISCHARGE_EXIT"
+                },
+                {
+                    "endDate":"2019-05-28T01:10:00+0000",
+                    "startDate":"2019-05-23T01:10:00+0000",
+                    "trackingId":7264,
+                    "hospitalizationId":6812,
+                    "startMode":"HOSPITALIZATIION_ENTRANCE",
+                    "endMode":"ADMIN_DISCHARGE_EXIT"
+                }
+            ];
+
+            expect(patient.getStatusVisitEnum()).toEqual(StatusVisitEnum.NotVisitedDischarged);
+        });
+
+        it('Deve retornar enum StatusVisitEnum.NotVisitedEndTracking', () => {
+            let patient = new Patient(patientJSON);
+
+            patient.json.exitDate = new moment();
+            patient.json.trackingList = [
+                {
+                    "endDate":"2019-02-19T17:50:00+0000",
+                    "startDate":null,
+                    "trackingId":6668,
+                    "hospitalizationId":6812,
+                    "startMode":"HOSPITALIZATIION_ENTRANCE",
+                    "endMode":"ADMIN_DISCHARGE_EXIT"
+                },
+                {
+                    "endDate":"2019-02-19T17:50:00+0000",
+                    "startDate":"2019-02-18T17:40:00+0000",
+                    "trackingId":6668,
+                    "hospitalizationId":6812,
+                    "startMode":"HOSPITALIZATIION_ENTRANCE",
+                    "endMode":"ADMIN_DISCHARGE_EXIT"
+                },
+                {
+                    "endDate":"2019-05-28T14:10:00+0000",
+                    "startDate":"2019-05-28T03:10:00+0000",
+                    "trackingId":7265,
+                    "hospitalizationId":6812,
+                    "startMode":"HOSPITALIZATIION_ENTRANCE",
+                    "endMode":"CHANGE_INSURANCE_EXIT"
+                },
+                {
+                    "endDate":"2019-05-28T01:10:00+0000",
+                    "startDate":"2019-05-23T01:10:00+0000",
+                    "trackingId":7264,
+                    "hospitalizationId":6812,
+                    "startMode":"HOSPITALIZATIION_ENTRANCE",
+                    "endMode":"ADMIN_DISCHARGE_EXIT"
+                }
+            ];
+
+            expect(patient.getStatusVisitEnum()).toEqual(StatusVisitEnum.NotVisitedEndTracking);
+        });
+
+        it('Deve retornar enum StatusVisitEnum.Unexpected', () => {
+            let patient = new Patient(patientJSON);
+
+            patient.json.exitDate = new moment();
+
+            expect(patient.getStatusVisitEnum()).toEqual(StatusVisitEnum.Unexpected);
+        });
+
     });
 });
