@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Alert, View, StyleSheet, Image, Text, Button, TouchableWithoutFeedback } from 'react-native';
+import { Alert, View, StyleSheet, Image, Text, Button, TouchableWithoutFeedback, Share } from 'react-native';
 import { Icon } from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-community/async-storage';
+import Builder from '../util/Builder';
 
 import Session from '../Session';
 
@@ -44,7 +45,7 @@ export default class Sidebar extends Component {
 	}
 
 	renderIconTrash() {
-		
+
 		return <TouchableWithoutFeedback onPress={() => {
 
 			Alert.alert(
@@ -52,13 +53,62 @@ export default class Sidebar extends Component {
 				'Tem certeza que deseja limpar todos os dados?',
 				[{ text: 'Cancelar',onPress: () => console.log('Cancel Pressed'), style: 'cancel'  },
 				  {text: 'Limpar', onPress: () => {
+
 						AsyncStorage.removeItem('userData');
 						AsyncStorage.removeItem('auth');
-						AsyncStorage.removeItem('hospitalizationList');
 						AsyncStorage.removeItem('morbidityComorbityList');
-						AsyncStorage.removeItem('hospitalList');
 						AsyncStorage.removeItem('dateSync');
-						this.props.navigation.navigate("SignIn");
+
+						Alert.alert(
+							'Compartilhar',
+							'Deseja compartilhar esses dados antes de apagar',
+							[
+								{ 
+									text: 'Não', onPress: () => {
+										AsyncStorage.removeItem('hospitalizationList');
+										this.props.navigation.navigate("SignIn");
+									} 
+								},
+								{
+									text: 'Compartilhar', onPress: () => {
+
+										AsyncStorage.getItem('hospitalList', (err, res) => {
+
+											if (res !== null) {
+
+												let hospitalList = JSON.parse(res);
+												
+												AsyncStorage.getItem('hospitalizationList', (err, res) => {
+
+													let builder = new Builder();
+
+													builder = builder.parseToSync(res, hospitalList);
+
+													let data = { "hospitalizationList": builder };
+													
+													Share.share({
+														message: JSON.stringify(data),
+												    }).then(response => {
+
+												    }).catch(error => {
+
+												    });
+
+												    AsyncStorage.removeItem('hospitalList');
+												    AsyncStorage.removeItem('hospitalizationList');
+
+												    this.props.navigation.navigate("SignIn");
+
+												});
+											}
+										});
+									}
+								},
+							],
+							{
+								cancelable: false
+							},
+						);
 				  }},
 				],
 				{cancelable: false},
@@ -77,10 +127,15 @@ export default class Sidebar extends Component {
 	}
 
 	render() {
+
 		let user = Session.current.user;
+		
 		if (!user) {
 			return null;
 		}
+
+		let enviroment = Session.current.enviroment._name;
+		
 		return (
 				<LinearGradient colors={['#005cd1', '#35d8a6']} style={styles.linearGradient}>
 
@@ -118,7 +173,7 @@ export default class Sidebar extends Component {
 					</View>
 					<View style={styles.boxButton}>
 						<Image source={require('../images/logo-rededor.png')} style={styles.sideMenuLogoIcon} />
-						<Text style={{ fontSize: 15, bottom: 20, textAlign: 'right', color: '#FFF', fontWeight: "bold"}}> Versão 1.0.1 [ { this.renderIconTrash() } ]</Text>
+						<Text style={{ fontSize: 15, bottom: 20, textAlign: 'right', color: '#FFF', fontWeight: "bold"}}> { enviroment } Versão 1.0.2 [ { this.renderIconTrash() } ]</Text>
 					</View>
 				</View>
 			</LinearGradient>

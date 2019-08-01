@@ -18,6 +18,7 @@ import TextValue from '../../components/TextValue';
 import baseStyles from '../../styles';
 import styles from './style';
 import Patient from '../../model/Patient';
+import Builder from '../../util/Builder';
 import RNPickerSelect, { inputIOS } from 'react-native-picker-select';
 
 export default class Hospital extends Component {
@@ -47,7 +48,7 @@ export default class Hospital extends Component {
                 CASA_AZUL: 2
 			},
 			REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21],
-			REGIONAL_SP: [],
+			REGIONAL_SP: [161, 162, 163, 164],
 			REGIONAL_PE: [142, 141, 143, 144],
 			selectedRegionalHospital: '',
 			regions: [
@@ -163,110 +164,9 @@ export default class Hospital extends Component {
 		return totalPatients;
 	}
 
-	getPatient(patientId) {
-
-		if (this.state.hospitals) {
-
-			for (var h = 0; h < this.state.hospitals.length; h++) {		
-
-				for (var i = 0; i < this.state.hospitals[h].hospitalizationList.length; i++) {
-					
-					let p = this.state.hospitals[h].hospitalizationList[i];
-
-					if(patientId == p.id)
-					{
-						return this.state.hospitals[h].hospitalizationList[i];
-					}
-				}
-			}
-		}
-		else
-		{
-			return null;
-		}
-	}
-
 	clearPartialData() {
 		AsyncStorage.removeItem('userData');
 		AsyncStorage.removeItem('auth');
-	}
-
-	parseObject(json) {
-
-		let parse = {};
-
-		for (var i = 0; i < json.length; i++) {
-
-			for (var attrname in json[i])
-			{
-				if (attrname == 'id') continue;
-
-				let patient = this.getPatient(json[i].id);
-
-				if (patient == null) {
-					continue;
-				}
-
-				if (parse.hasOwnProperty(json[i].id)) {
-					
-					parse[json[i].id][attrname] = json[i][attrname];
-				}
-				else
-				{
-					parse[json[i].id] = json[i];	
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('recommendationClinicalIndication')) {
-					parse[json[i].id]['recommendationClinicalIndication'] = patient.recommendationClinicalIndication;
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('recommendationMedicineReintegration')) {
-					parse[json[i].id]['recommendationMedicineReintegration'] = patient.recommendationMedicineReintegration;
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('recommendationWelcomeHomeIndication')) {
-					parse[json[i].id]['recommendationWelcomeHomeIndication'] = patient.recommendationWelcomeHomeIndication;
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('diagnosticHypothesisList')) {
-					parse[json[i].id]['diagnosticHypothesisList'] = null;
-				}
-
-				if (!parse[json[i].id].hasOwnProperty('secondaryCIDList')) {
-					parse[json[i].id]['secondaryCIDList'] = null;
-				}
-
-				if (parse[json[i].id].hasOwnProperty('patientHeight')) {
-					if (patient.patientHeight != null) {
-						parse[json[i].id]['patientHeight'] = parse[json[i].id]['patientHeight'].toString().replace(',', '.');
-					}
-				}
-
-				if (parse[json[i].id].hasOwnProperty('patientWeight')) {
-					if (patient.patientWeight != null) {
-						parse[json[i].id]['patientWeight'] = parse[json[i].id]['patientWeight'].toString().replace(',', '.');
-					}
-				}
-
-				if (parse[json[i].id].hasOwnProperty('observationList')) {
-
-					let listOfOrderedPatientObservations = _.orderBy(parse[json[i].id]['observationList'], ['observationDate'], ['desc']);
-
-					let lastElementVisit = listOfOrderedPatientObservations[0];
-
-					parse[json[i].id]['observationList'] = [];
-
-					parse[json[i].id]['observationList'].push(lastElementVisit);
-				}
-			}
-		}
-
-		var result = Object.keys(parse).map(function(key) {
-			let aux = parse[key];
-			return aux;
-		});
-
-		return result;
 	}
 
 	loadHospitals = async () => {
@@ -351,27 +251,13 @@ export default class Hospital extends Component {
 		            this.state.token = Session.current.user.token;
 
 		            AsyncStorage.getItem('hospitalizationList', (err, res) => {
-										
-						let obj = [];
+								
+						let builder = new Builder();
 
-						if (res != null) {
+						builder = builder.parseToSync(res, this.state.hospitals);
 
-							let hospitalizationList = JSON.parse(res);
+						let data = { "hospitalizationList": builder };
 
-							for (var i = 0; i < hospitalizationList.length; i++) {
-
-								let array = {};
-								array['id'] = hospitalizationList[i].idPatient;
-								array[hospitalizationList[i].key] = hospitalizationList[i].value;
-
-								obj.push(array);
-							}
-						}
-
-						let parseObj = this.parseObject(obj);
-
-						let data = { "hospitalizationList": parseObj };
-						
 						api.post('/api/v2.0/sync', data, 
 						{
 							headers: {
@@ -583,6 +469,16 @@ export default class Hospital extends Component {
 			return require('../../images/logo_hospital/pe/esperancaOlinda.png');
         } else if(hospital.id === 141) {
 			return require('../../images/logo_hospital/pe/esperancaRecife.png');
+        }
+
+        else if(hospital.id === 161) {
+			return require('../../images/logo_hospital/sp/saoLuizItaim.png');
+        }else if(hospital.id === 162) {
+			return require('../../images/logo_hospital/sp/brasil.png');
+        }else if(hospital.id === 163) {
+			return require('../../images/logo_hospital/sp/assuncao.png');
+        }else if(hospital.id === 164) {
+			return require('../../images/logo_hospital/sp/saoLuizMorumbi.png');
         }  
 
 		return null;
@@ -592,20 +488,26 @@ export default class Hospital extends Component {
 
 		let totalPatientsVisited = 0;
 
-		const today = moment().format('YYYY-MM-DD');
-
 		patients.forEach(patient => {
+	       
 	        let lastVisit = null;
+			
 			let listOfOrderedPatientObservations = _.orderBy(patient.observationList, ['observationDate'], ['desc'])
+
 			let listOfOrderedPatientTrackingList = _.orderBy(patient.trackingList, ['startDate'], ['desc']);
 			
-			console.log("Tracking List => ", patient);
-
 			if(listOfOrderedPatientTrackingList.length == 0 || (!listOfOrderedPatientTrackingList[0].endMode || listOfOrderedPatientTrackingList[0].endMode != 'CHANGE_INSURANCE_EXIT') ) {
+				
 				if((listOfOrderedPatientObservations.length > 0) && (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)) {
+					
 					const today = moment();
-					lastVisit = moment(moment(listOfOrderedPatientObservations[0].observationDate).format('YYYY-MM-DD'));
-					lastVisit = today.diff(lastVisit, 'days');
+	            
+		            if (listOfOrderedPatientObservations[0].observationDate != null) {
+
+			            lastVisit = moment(moment(listOfOrderedPatientObservations[0].observationDate).format('YYYY-MM-DD'));
+
+			            lastVisit = today.diff(lastVisit, 'days');
+			        }
 				}
 
 				if (lastVisit == 0) {
@@ -631,17 +533,22 @@ export default class Hospital extends Component {
 				if((listOfOrderedPatientObservations.length > 0) && (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)) {
 
 					patient.observationList.forEach( item => {
-						if (lastVisit != null) {
-							let visit = new Date(item.observationDate);
 
-							if(lastVisit < visit){
-								lastVisit = visit;
-							}
-						} else {
-							if (item.observationDate != null) {
-								lastVisit = moment(item.observationDate).format('YYYY-MM-DD');
-								lastVisit = new Date(lastVisit);
-							}
+						if (item.observationDate != null) {
+
+		            		let visit = moment(item.observationDate).format('YYYY-MM-DD');
+
+		            		if (lastVisit != null) {
+
+		            			if(lastVisit < visit){
+									lastVisit = visit;
+								}
+
+		            		}
+		            		else
+		            		{
+		            			lastVisit = visit;
+		            		}
 						}
 					});
 				}
@@ -653,13 +560,7 @@ export default class Hospital extends Component {
 		}
 		else
 		{
-			let visit = lastVisit;
-
-			var day = (visit.getDay() < 10 ? '0' : '') + visit.getDay();
-
-			var month = ((visit.getMonth() + 1) < 10 ? '0' : '') + (visit.getMonth() + 1);
-
-			lastVisit = day + "/" + month + "/" + (visit.getFullYear());
+			lastVisit = moment(lastVisit).format('DD/MM/YYYY');
 		}
 		
 		return lastVisit;

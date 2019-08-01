@@ -7,6 +7,7 @@ import NetInfo from "@react-native-community/netinfo";
 
 import Session from '../../Session';
 import User from '../../model/User'
+import Enviroment from '../../model/Enviroment'
 import api from '../../services/api';
 import {Container, Logo, Input, ErrorMessage, Button, ButtonText} from './styles';
 
@@ -53,6 +54,18 @@ export default class SignIn extends Component {
 						let user = JSON.parse(userData);
 
 						Session.current.user = new User(user.name, user.profile);
+
+						let strenv_hmg = 'HMG'; 
+						let strenv_prd = 'PRD'; 
+
+						if(api.defaults.baseURL.includes('-hmg'))
+				        {
+				        	Session.current.enviroment = new Enviroment(strenv_hmg);
+				        }
+				        else
+				        {
+				        	Session.current.enviroment = new Enviroment(strenv_prd);
+				        }
 
 						this.setState({loading: false});
 						
@@ -168,6 +181,18 @@ export default class SignIn extends Component {
 					let content = response.data.content;
 					
 					Session.current.user = new User(content.name, content.profile);
+
+					let strenv_hmg = 'HMG'; 
+					let strenv_prd = 'PRD'; 
+
+					if(api.defaults.baseURL.includes('-hmg'))
+			        {
+			        	Session.current.enviroment = new Enviroment(strenv_hmg);
+			        }
+			        else
+			        {
+			        	Session.current.enviroment = new Enviroment(strenv_prd);
+			        }
 
 					AsyncStorage.multiSet([
 					    ["auth", JSON.stringify(params)],
