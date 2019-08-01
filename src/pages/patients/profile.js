@@ -469,7 +469,7 @@ export default class Profile extends Component {
 					<TextValue value={'NÃO INFORMADO'} />
 				:
 					this.props.patient.secondaryCIDList.map((prop) => {
-						return ( <TextValue key={prop.cidId} value={prop.cidDisplayName} /> )
+						return ( <TextValue key={prop.cidId} value={` ${prop.cidDisplayName} \n`}/> )
 					})
 		);
 	}
@@ -479,7 +479,7 @@ export default class Profile extends Component {
 			this.state.isEditable ?
 				<TextValue color={'#0000FF'} value={this.props.patient.mainProcedureCRM !== null ? this.props.patient.mainProcedureCRM : 'INFORMAR'} press={ () => { this.setState({modalSelected: 'CRM', modalCRM: true}) }} />
 			:
-				<TextValue value={'NÃO INFORMADO'} />
+				<TextValue value={this.props.patient.mainProcedureCRM !== null ? this.props.patient.mainProcedureCRM : 'INFORMAR'} />
 		);
 	}
 
