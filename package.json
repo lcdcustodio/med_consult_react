@@ -44,7 +44,15 @@
     "react-test-renderer": "16.8.3"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "verbose": true,
+    "collectCoverage": true,
+    "coverageReporters": ["text", "lcov"],
+    "coveragePathIgnorePatterns": [
+      "android", "ios", "__tests__", "assets", "coverage", "images", "native-base-theme", "babel.config.js", "metro.config.js", "src/config/StatusBarConfig.js", "Enviroment.ts", "style.js", ".vscode",
+      "package.json", "package-lock.json", "app.json", "data.json"
+    ],
+    "collectCoverageFrom": ["!**/node_modules/**"]
   },
   "rnpm": {
     "assets": [
