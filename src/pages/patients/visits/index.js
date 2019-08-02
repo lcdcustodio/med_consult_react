@@ -282,9 +282,9 @@ export default class Visitas extends React.Component {
 								
 								<CardItem bordered>
 									<Body>
-										<Text>
-											{item.observation}
-										</Text>
+										{
+											item.alert ? <Text style={{color: '#FF0000'}}> {item.observation} </Text> : <Text> {item.observation} </Text>
+										}
 									</Body>
 								</CardItem>
 							</Card>
