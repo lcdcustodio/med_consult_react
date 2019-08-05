@@ -181,7 +181,7 @@ class PatientDetail extends Component {
                     textContent={this.state.textContent}
                     textStyle={styles.spinnerTextStyle} />
 				<RdHeader
-					title='Detalhes do Paciente'
+					title={this.state.patient.patientName ? this.state.patient.patientName : ''}
 					goBack={this._goBack}/>
 				<Content contentContainerStyle={{ ...baseStyles.container, flex: 1 }}>
 					{ this.renderSelectedTab() }
