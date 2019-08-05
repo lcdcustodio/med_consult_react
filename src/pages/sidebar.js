@@ -173,7 +173,7 @@ export default class Sidebar extends Component {
 					</View>
 					<View style={styles.boxButton}>
 						<Image source={require('../images/logo-rededor.png')} style={styles.sideMenuLogoIcon} />
-						<Text style={{ fontSize: 15, bottom: 20, textAlign: 'right', color: '#FFF', fontWeight: "bold"}}> { enviroment } Versão 1.0.2 [ { this.renderIconTrash() } ]</Text>
+						<Text style={{ fontSize: 15, bottom: 20, textAlign: 'right', color: '#FFF', fontWeight: "bold"}}> { enviroment } Versão 1.0.5 [ { this.renderIconTrash() } ]</Text>
 					</View>
 				</View>
 			</LinearGradient>
