@@ -319,27 +319,27 @@ export default class Finalize extends Component {
 		let totalRisk = 0;
 		let risk = null;
 
-		if (patient.complementaryInfoHospitalizationAPI.isNotHemoglobin && patient.complementaryInfoHospitalizationAPI.hemoglobin !== '' && patient.complementaryInfoHospitalizationAPI.hemoglobin !== null && patient.complementaryInfoHospitalizationAPI.hemoglobin < 12) {
+		if (patient.complementaryInfoHospitalizationAPI && patient.complementaryInfoHospitalizationAPI.isNotHemoglobin && patient.complementaryInfoHospitalizationAPI.hemoglobin !== '' && patient.complementaryInfoHospitalizationAPI.hemoglobin !== null && (patient.complementaryInfoHospitalizationAPI.hemoglobin > 0 && patient.complementaryInfoHospitalizationAPI.hemoglobin < 12)) {
+			totalRisk += 1;
+		}
+		
+		if (patient.complementaryInfoHospitalizationAPI && patient.complementaryInfoHospitalizationAPI.isNotSerumSodium && patient.complementaryInfoHospitalizationAPI.serumSodium !== '' && patient.complementaryInfoHospitalizationAPI.serumSodium !== null && (patient.complementaryInfoHospitalizationAPI.serumSodium > 0 && patient.complementaryInfoHospitalizationAPI.serumSodium <= 135)) {
 			totalRisk += 1;
 		}
 
-		if (patient.complementaryInfoHospitalizationAPI.isNotSerumSodium && patient.complementaryInfoHospitalizationAPI.serumSodium !== '' && patient.complementaryInfoHospitalizationAPI.serumSodium !== null && patient.complementaryInfoHospitalizationAPI.serumSodium <= 135) {
-			totalRisk += 1;
-		}
-
-		if (patient.complementaryInfoHospitalizationAPI.isHighOncologicalServiceOrProcedure !== null && patient.complementaryInfoHospitalizationAPI.isHighOncologicalServiceOrProcedure) {
+		if (patient.complementaryInfoHospitalizationAPI && patient.complementaryInfoHospitalizationAPI.isHighOncologicalServiceOrProcedure !== null && patient.complementaryInfoHospitalizationAPI.isHighOncologicalServiceOrProcedure) {
 			totalRisk += 2;
 		}
 
-		if (patient.complementaryInfoHospitalizationAPI.isPancreateColectomyHepatic !== null && patient.complementaryInfoHospitalizationAPI.isPancreateColectomyHepatic) {
+		if (patient.complementaryInfoHospitalizationAPI && patient.complementaryInfoHospitalizationAPI.isPancreateColectomyHepatic !== null && patient.complementaryInfoHospitalizationAPI.isPancreateColectomyHepatic) {
 			totalRisk += 1;
 		}
 
-		if (patient.complementaryInfoHospitalizationAPI.isUrgentEmergHospitatization !== null && patient.complementaryInfoHospitalizationAPI.isUrgentEmergHospitatization) {
+		if (patient.complementaryInfoHospitalizationAPI && patient.complementaryInfoHospitalizationAPI.isUrgentEmergHospitatization !== null && patient.complementaryInfoHospitalizationAPI.isUrgentEmergHospitatization) {
 			totalRisk += 1;
 		}
 
-		if (patient.complementaryInfoHospitalizationAPI.isHospitalizationMoreFiveDays !== null && patient.complementaryInfoHospitalizationAPI.isHospitalizationMoreFiveDays) {
+		if (patient.complementaryInfoHospitalizationAPI && patient.complementaryInfoHospitalizationAPI.isHospitalizationMoreFiveDays !== null && patient.complementaryInfoHospitalizationAPI.isHospitalizationMoreFiveDays) {
 			totalRisk += 2;
 		}
 
