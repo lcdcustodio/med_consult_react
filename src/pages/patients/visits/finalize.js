@@ -46,8 +46,7 @@ export default class Finalize extends Component {
 		let patientId = payload.state.params.patientId;
 		await this.getPatient(patientId, hospitalId);
 		let patientStorage = this.state.patient;
-		let morbidityComorbityStorage = await AsyncStorage.getItem('morbidityComorbityList');
-		let morbidityComorbityList = JSON.parse(morbidityComorbityStorage);
+		let morbidityComorbityList = data.morbidityComorbityList;
 
 		if (patientStorage) {
 			patientStorage.complementaryInfoHospitalizationAPI.isUrgentEmergHospitatization = patientStorage.attendanceType === 'EMERGENCY' ? true : false;

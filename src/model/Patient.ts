@@ -64,7 +64,11 @@ export default class Patient extends JsonEntity<Patient> {
             lastVisit = today.diff(lastVisit, 'days');
         }
 
-        if(observationList.length > 0 && listOfOrderedPatientObservations[0].alert && exitDate == null) // TEVE VISITA E COM ALERTA E NÃO TEVE ALTA
+        if(lastVisit > 0 && observationList.length > 0 && listOfOrderedPatientObservations[0].alert && exitDate == null) // NÃO TEVE VISITA HOJE TEVE VISITA E COM ALERTA E NÃO TEVE ALTA
+        {
+            return IconEyeEnum.OLHO_AZUL_COM_EXCLAMACAO;
+        }
+        else if(lastVisit == 0 && observationList.length > 0 && listOfOrderedPatientObservations[0].alert && exitDate == null) // TEVE VISITA HOJE E COM ALERTA E NÃO TEVE ALTA
         {
             return IconEyeEnum.OLHO_CINZA_COM_EXCLAMACAO;
         }
@@ -86,26 +90,6 @@ export default class Patient extends JsonEntity<Patient> {
         else if (exitDate != null) // TEVE ALTA
         {
             return IconEyeEnum.CASA_AZUL;
-        }
-    }
-
-    public getIcon(iconNumber) {
-        
-        if(iconNumber == IconEyeEnum.OLHO_CINZA_COM_CHECK)
-        {
-            return require('../images/ic_visibility_green_24px.png');
-        }
-        else if(iconNumber == IconEyeEnum.OLHO_AZUL)
-        {
-            return require('../images/ic_visibility_blue_24px.png');
-        }
-        else if(iconNumber == IconEyeEnum.CASA_AZUL)
-        {
-            return require('../images/ic_home_24px.png');
-        }
-        else if(iconNumber == IconEyeEnum.OLHO_CINZA_COM_EXCLAMACAO)
-        {
-            return require('../images/ic_visibility_exclamation_24px.png');
         }
     }
 
@@ -193,6 +177,30 @@ export default class Patient extends JsonEntity<Patient> {
 		}
 		return false;
     }
+
+    public getIcon(iconNumber) {
+        
+        if(iconNumber == IconEyeEnum.OLHO_CINZA_COM_CHECK)
+        {
+            return require('../images/_OLHO_CINZA_COM_CHECK.png');
+        }
+        else if(iconNumber == IconEyeEnum.OLHO_AZUL)
+        {
+            return require('../images/_OLHO_AZUL.png');
+        }
+        else if(iconNumber == IconEyeEnum.CASA_AZUL)
+        {
+            return require('../images/_CASA_AZUL.png');
+        }
+        else if(iconNumber == IconEyeEnum.OLHO_CINZA_COM_EXCLAMACAO)
+        {
+            return require('../images/_OLHO_CINZA_COM_EXCLAMACAO.jpg');
+        }
+        else if(iconNumber == IconEyeEnum.OLHO_AZUL_COM_EXCLAMACAO)
+        {
+            return require('../images/_OLHO_AZUL_COM_EXCLAMACAO.png');
+        }
+    }
 }
 
 export enum AttendanceTypeEnum {
@@ -231,8 +239,9 @@ export enum StatusVisitEnum {
 }
 
 export enum IconEyeEnum {
-    OLHO_CINZA_COM_CHECK = 3,
+    OLHO_CINZA_COM_CHECK = 4,
     OLHO_AZUL = 1,
-    OLHO_CINZA_COM_EXCLAMACAO = 0,
+    OLHO_CINZA_COM_EXCLAMACAO = 3,
+    OLHO_AZUL_COM_EXCLAMACAO = 0,
     CASA_AZUL = 2,
 }

@@ -41,9 +41,10 @@ export default class Report extends Component {
 			hospital_report: [],
 			patientQuery: null,
 			ICON: {
-                OLHO_CINZA_COM_CHECK: 3,
+                OLHO_CINZA_COM_CHECK: 4,
                 OLHO_AZUL: 1,
-                OLHO_CINZA_COM_EXCLAMACAO: 0,
+                OLHO_CINZA_COM_EXCLAMACAO: 3,
+                OLHO_AZUL_COM_EXCLAMACAO: 0,
                 CASA_AZUL: 2
             },
             REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21],
@@ -215,7 +216,7 @@ export default class Report extends Component {
 
 						let data = { "hospitalizationList": builder };
 
-						api.post('/api/v2.0/sync', data, 
+						api.post('/api/v3.0/save', data, 
 						{
 							headers: {
 								"Content-Type": "application/json",
@@ -223,75 +224,117 @@ export default class Report extends Component {
 							  	"Token": this.state.token, 
 							}
 
-						}).then(response => {
+						}).then(res => {
 
-							clearTimeout(timer);
-
-							this.setState({loading: false});
-
-							if(response && response.status === 200) {
-
-								this.setRequireSyncTimer(null);
-
-								AsyncStorage.setItem('hospitalizationList', JSON.stringify([]));
-								AsyncStorage.setItem('morbidityComorbityList', JSON.stringify(response.data.content.morbidityComorbityList));
-
-								let hospitalListOrdered = _.orderBy(response.data.content.hospitalList, ['name'], ['asc']);
-								
-								let user = Session.current.user;
-
-								let listHospital = []
-								
-								if (user.profile == 'CONSULTANT') {
-
-									hospitalListOrdered.forEach( hospital => {
-										if(this.isTheSameHospital(hospital, parse)){
-											listHospital.push(hospital)
-										}
-									});
-								
-								} 
-								else
-								{
-									listHospital = hospitalListOrdered;
+							api.post('/api/v3.0/load', {}, 
+							{
+								headers: {
+									"Content-Type": "application/json",
+								  	"Accept": "application/json",
+								  	"Token": this.state.token, 
 								}
 
-								const dateSync = moment().format('DD/MM/YYYY [às] HH:mm:ss');
+							}).then(response => {
 
-								this.setState({dateSync: dateSync});
+								clearTimeout(timer);
 
-								AsyncStorage.setItem('dateSync', JSON.stringify(dateSync));
+								this.setState({loading: false});
 
-								AsyncStorage.setItem('hospitalList', JSON.stringify(listHospital));
+								if(response && response.status === 200) {
 
-								this.report(listHospital);
-							
-							} else {
+									this.setRequireSyncTimer(null);
 
-								setTimeout(() => {
+									AsyncStorage.setItem('hospitalizationList', JSON.stringify([]));
 
-									Alert.alert(
-										'Erro ao carregar informações',
-										response,
-										[
-											{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+									let hospitalListOrdered = _.orderBy(response.data.body.content.hospitalList, ['name'], ['asc']);
+									
+									let user = Session.current.user;
+
+									let listHospital = []
+									
+									if (user.profile == 'CONSULTANT') {
+
+										hospitalListOrdered.forEach( hospital => {
+											if(this.isTheSameHospital(hospital, parse)){
+												listHospital.push(hospital)
+											}
+										});
+									
+									} 
+									else
+									{
+										listHospital = hospitalListOrdered;
+									}
+
+									const dateSync = moment().format('DD/MM/YYYY [às] HH:mm:ss');
+
+									this.setState({dateSync: dateSync});
+
+									AsyncStorage.setItem('dateSync', JSON.stringify(dateSync));
+
+									AsyncStorage.setItem('hospitalList', JSON.stringify(listHospital));
+
+									this.report(listHospital);
+								
+								} else {
+
+									setTimeout(() => {
+
+										Alert.alert(
+											'Erro ao carregar informações',
+											response,
+											[
+												{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+												{
+													text: 'Fazer login', onPress: () => {
+														this.clearPartialData();
+														this.props.navigation.navigate("SignIn");
+													}
+												},
+											],
 											{
-												text: 'Fazer login', onPress: () => {
-													this.clearPartialData();
-													this.props.navigation.navigate("SignIn");
-												}
+												cancelable: false
 											},
-										],
-										{
-											cancelable: false
-										},
-									);
+										);
 
-								}, 100);
+									}, 100);
+
+									return false;
+								}
+												
+							}).catch(error => {
+
+								this.setState({loading: false}, function(){
+
+									setTimeout(() => {
+
+										Alert.alert(
+											'Erro ao carregar informações',
+											error.message,
+											[
+												{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+												{
+													text: 'Fazer login', onPress: () => {
+														this.clearPartialData();
+														this.props.navigation.navigate("SignIn");
+													}
+												},
+											],
+											{
+												cancelable: false
+											},
+										);
+
+									}, 100);
+
+									clearTimeout(timer);
+
+								});
 
 								return false;
-							}
-											
+						
+							});
+
 						}).catch(error => {
 
 							this.setState({loading: false}, function(){
@@ -382,9 +425,12 @@ export default class Report extends Component {
                         
 			if(listOfOrderedPatientTrackingList.length == 0 || (!listOfOrderedPatientTrackingList[0].endMode || listOfOrderedPatientTrackingList[0].endMode != 'CHANGE_INSURANCE_EXIT') ) {
 				if ((listOfOrderedPatientObservations.length == 0) || (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)) {
+					
 					if (iconNumber == this.state.ICON.OLHO_CINZA_COM_EXCLAMACAO ||
+						iconNumber == this.state.ICON.OLHO_AZUL_COM_EXCLAMACAO ||
 						iconNumber == this.state.ICON.OLHO_AZUL ||
 						iconNumber == this.state.ICON.OLHO_CINZA_COM_CHECK) {
+
 						return totalPatients + 1;
 					} else {
 						return totalPatients;

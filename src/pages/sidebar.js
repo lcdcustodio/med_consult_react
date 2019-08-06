@@ -56,7 +56,6 @@ export default class Sidebar extends Component {
 
 						AsyncStorage.removeItem('userData');
 						AsyncStorage.removeItem('auth');
-						AsyncStorage.removeItem('morbidityComorbityList');
 						AsyncStorage.removeItem('dateSync');
 
 						Alert.alert(
