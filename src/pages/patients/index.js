@@ -228,7 +228,7 @@ export default class Patients extends Component {
                         </View>
                         
                         <View style={{ width: '25%', justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{fontSize: 14, color: '#666', fontWeight:'normal', paddingRight: 10}}>Última visita</Text>
+                            <Text style={{fontSize: 14, color: '#666', fontWeight:'normal', paddingRight: 10}}>Últ. visita</Text>
                             <Text style={{fontSize: 14, color: '#666', fontWeight:'bold', paddingRight: 10}}>{item.lastVisit}</Text>
                         </View>
                     

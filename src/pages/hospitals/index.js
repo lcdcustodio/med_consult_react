@@ -126,8 +126,6 @@ export default class Hospital extends Component {
 
 	countTotalPatients = (patients, hospital) => {
 
-		console.log(hospital.name);
-
 		let listPatients = this.state.allPatients;
 		
 		let totalPatients = patients.reduce((totalPatients, patient) => {
@@ -166,8 +164,6 @@ export default class Hospital extends Component {
 		}, 0);
 
 		this.setState({ allPatients: listPatients });
-
-		console.log(totalPatients);
 
 		return totalPatients;
 	}
@@ -266,7 +262,7 @@ export default class Hospital extends Component {
 
 						let data = { "hospitalizationList": builder };
 
-						api.post('/api/v3.0/save', data, 
+						api.post('/v3.0/save', data, 
 						{
 							headers: {
 								"Content-Type": "application/json",
@@ -276,7 +272,7 @@ export default class Hospital extends Component {
 
 						}).then(res => {
 
-							api.post('/api/v3.0/load', {}, 
+							api.post('/v3.0/load', {}, 
 							{
 								headers: {
 									"Content-Type": "application/json",

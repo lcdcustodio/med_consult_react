@@ -216,7 +216,7 @@ export default class Report extends Component {
 
 						let data = { "hospitalizationList": builder };
 
-						api.post('/api/v3.0/save', data, 
+						api.post('/v3.0/save', data, 
 						{
 							headers: {
 								"Content-Type": "application/json",
@@ -226,7 +226,7 @@ export default class Report extends Component {
 
 						}).then(res => {
 
-							api.post('/api/v3.0/load', {}, 
+							api.post('/v3.0/load', {}, 
 							{
 								headers: {
 									"Content-Type": "application/json",

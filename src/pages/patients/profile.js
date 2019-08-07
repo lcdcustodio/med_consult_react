@@ -267,11 +267,11 @@ export default class Profile extends Component {
 							<Dialog.Title>Altura (m) e Peso (Kg)</Dialog.Title>
 							
 							<Dialog.Content>
-								<TextInput mode='outlined' maxLength={4} keyboardType='numeric' label='Altura' value={ (this.state.patientHeightTMP && this.state.patientHeightTMP != 0.00) ? this.state.patientHeightTMP.toString().replace('.', ',') : ''} onChangeText={height => { this.handleHeight(height) }}/>
+								<TextInput mode='outlined' maxLength={4} keyboardType='numeric' label='Altura' value={ (this.state.patientHeightTMP ? this.state.patientHeightTMP.toString().replace('.', ',') : '') } onChangeText={height => { this.handleHeight(height) }}/>
 
 								<Text> {'\n'} </Text>								
 
-								<TextInput mode='outlined' maxLength={4} keyboardType='numeric' label='Peso' value={this.state.patientWeightTMP ? this.state.patientWeightTMP.toString() : this.state.patientWeightTMP} onChangeText={weight => { this.handleWeight(weight) }} />
+								<TextInput mode='outlined' maxLength={4} keyboardType='numeric' label='Peso' value={ (this.state.patientWeightTMP ? this.state.patientWeightTMP.toString().replace('.', ',') : '') } onChangeText={weight => { this.handleWeight(weight) }} />
 							</Dialog.Content>
 
 							<Divider />
@@ -383,15 +383,17 @@ export default class Profile extends Component {
 	}
 
 	renderHeightAndWeight() {
-		let patientHeight = Number(this.props.patient.patientHeight ? this.props.patient.patientHeight.toString().replace(',', '.') : '').toFixed(2);
-		patientHeight = patientHeight.toString().replace('.', ',');
+		
+		let patientHeight = this.props.patient.patientHeight ? this.props.patient.patientHeight.toString().replace('.', ',') : '';
+
+		let patientWeight = this.props.patient.patientWeight ? this.props.patient.patientWeight.toString().replace('.', ',') : '';
 			
 		return (
 
 			this.state.isEditable ?
-				<TextValue color={'#0000FF'} value={ patientHeight && this.props.patient.patientWeight ? `${patientHeight}m / ${this.props.patient.patientWeight}kg` : 'INFORMAR' } press={ () => { this.setState({modalSelected: 'HeightAndWeight', modalHeightAndWeight: true}) }}/>
+				<TextValue color={'#0000FF'} value={ patientHeight && patientWeight ? `${patientHeight}m / ${patientWeight}kg` : 'INFORMAR' } press={ () => { this.setState({modalSelected: 'HeightAndWeight', modalHeightAndWeight: true}) }}/>
 			:
-				<TextValue value={ patientHeight && this.props.patient.patientWeight ? `${patientHeight}m / ${this.props.patient.patientWeight}kg` : 'NÃO INFORMADO' } />
+				<TextValue value={ patientHeight && patientWeight ? `${patientHeight}m / ${patientWeight}kg` : 'NÃO INFORMADO' } />
 		);
 	}
 
@@ -409,7 +411,7 @@ export default class Profile extends Component {
 
 		if (patientHeight && patientWeight) {
 			return (
-				<TextValue size={13} value={ 'IMC ' + (Number(patientWeight) / Math.pow(Number(patientHeight), 2)).toFixed(2) } />
+				<TextValue size={13} value={ 'IMC ' + ((Number(patientWeight) / Math.pow(Number(patientHeight), 2)).toFixed(2)).toString().replace('.', ',') } />
 			);
 		}
 		return <Text />
