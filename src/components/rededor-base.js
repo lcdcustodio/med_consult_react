@@ -1,6 +1,6 @@
 import React from 'react';
 import { Header, View, Body, Title, Left, Right, Text } from 'native-base';
-import { StyleSheet } from "react-native";
+import { StyleSheet, StatusBar } from "react-native";
 import { Icon } from 'native-base';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -9,6 +9,9 @@ import baseStyles from '../styles';
 
 export const RdRootHeader = (props) => (
     <Header style={ styles.header }>
+
+        <StatusBar barStyle="light-content" />
+
         <View style={{ flex: 1 }}>
             <TouchableOpacity onPress={ props.menu }>
                 <Icon ios='ios-menu' android="md-menu" style={ styles.headerIcon }/>
@@ -27,6 +30,9 @@ export const RdRootHeader = (props) => (
 
 export const RdHeader = (props) => (
     <Header style={ styles.header }>
+
+        <StatusBar barStyle="light-content" />
+
         <View style={{ flex: 1 }}>
             <TouchableOpacity onPress={ props.goBack }>
                 <IconFontAwesome name="angle-left" style={ styles.headerIcon } />

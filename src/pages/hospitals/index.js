@@ -168,6 +168,41 @@ export default class Hospital extends Component {
 		return totalPatients;
 	}
 
+	countTotalPatientsMedialRelease = (patients, hospital) => {
+		
+		let totalPatientsMedialRelease = patients.reduce((totalPatientsMedialRelease, patient) => {
+			
+			patient.hospitalName = hospital.name;
+
+			patient.hospitalId = hospital.id;
+
+			const patientClass = new Patient(patient);
+
+			let iconNumber = patientClass.getIconNumber();
+
+			let listOfOrderedPatientObservations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
+			let listOfOrderedPatientTrackingList = _.orderBy(patient.trackingList, ['startDate'], ['desc']);
+
+			if(listOfOrderedPatientTrackingList.length == 0 || (!listOfOrderedPatientTrackingList[0].endMode || listOfOrderedPatientTrackingList[0].endMode != 'CHANGE_INSURANCE_EXIT') ) {
+				if ( (listOfOrderedPatientObservations.length == 0) || (!listOfOrderedPatientObservations[0].endTracking && !listOfOrderedPatientObservations[0].medicalRelease)) {
+
+					if (iconNumber == this.state.ICON.CASA_AZUL) {
+
+						return totalPatientsMedialRelease + 1;
+					} else {
+						return totalPatientsMedialRelease;
+					}
+				} else {
+					return totalPatientsMedialRelease;
+				}
+			} else {
+				return totalPatientsMedialRelease;
+			}
+		}, 0);
+
+		return totalPatientsMedialRelease;
+	}
+
 	clearPartialData() {
 		AsyncStorage.removeItem('userData');
 		AsyncStorage.removeItem('auth');
@@ -472,6 +507,7 @@ export default class Hospital extends Component {
 			hospital.logomarca = this.getLogomarca(hospital)
 			hospital.totalPatientsVisitedToday = this.countTotalPatientsVisited(hospital.hospitalizationList)
 			hospital.totalPatients = this.countTotalPatients(hospital.hospitalizationList, hospital)
+			hospital.totalPatientsMedialRelease = this.countTotalPatientsMedialRelease(hospital.hospitalizationList, hospital)
 			hospital.lastVisit = this.setLastVisit(hospital.hospitalizationList)
 			hospital.regional = this.setRegional(hospital.id)
 		}); 
@@ -709,7 +745,7 @@ export default class Hospital extends Component {
 		<TouchableOpacity
 			onPress={() => {
 
-				if(item.totalPatients === 0) {
+				if(item.totalPatients === 0 && item.totalPatientsMedialRelease === 0) {
 
 					Alert.alert(
 						item.name,

@@ -250,7 +250,8 @@ export default class SignIn extends Component {
 							visible={this.state.loading}
 							textContent={this.state.textContent}
 							textStyle={styles.spinnerTextStyle} />
-						<StatusBar hidden />
+
+						<StatusBar barStyle="light-content" />
 						
 						<Logo source={require('../../images/logo-medico-consultor-branca.png')} resizeMode="contain" /> 
 							
