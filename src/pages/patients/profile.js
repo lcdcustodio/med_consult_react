@@ -327,14 +327,16 @@ export default class Profile extends Component {
 							
 							<Dialog.Content>
 								<RadioButton.Group onValueChange={ value => { this.handleHospitalizationType(value) } } value={hospitalizationType}>
-									<View style={{flexDirection: 'row', alignItems: 'center'}}>
-										<RadioButton value="CLINICAL" status={hospitalizationType === 'CLINICAL' ? 'checked' : 'unchecked'} Enabled/>
-										<Text onPress={ () => { this.handleHospitalizationType('CLINICAL') } }>Clínico</Text>
-									</View>
+									
 									<View style={{flexDirection: 'row', alignItems: 'center'}}>
 										<RadioButton value="SURGICAL" status={hospitalizationType === 'SURGICAL' ? 'checked' : 'unchecked'} Enabled/>
 										<Text onPress={ () => { this.handleHospitalizationType('SURGICAL') } }>Cirúrgico</Text>
 									</View>
+									<View style={{flexDirection: 'row', alignItems: 'center'}}>
+										<RadioButton value="CLINICAL" status={hospitalizationType === 'CLINICAL' ? 'checked' : 'unchecked'} Enabled/>
+										<Text onPress={ () => { this.handleHospitalizationType('CLINICAL') } }>Clínico</Text>
+									</View>
+									
 								</RadioButton.Group>
 							</Dialog.Content>
 

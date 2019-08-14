@@ -12,12 +12,12 @@ export const RdRootHeader = (props) => (
 
         <StatusBar barStyle="light-content" />
 
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, flexDirection: 'row', }}>
             <TouchableOpacity onPress={ props.menu }>
                 <Icon ios='ios-menu' android="md-menu" style={ styles.headerIcon }/>
             </TouchableOpacity>
         </View>
-        <Body style={{ flex: 6 }}>
+        <Body style={{ flex: 6, flexDirection: 'row' }}>
             <Title style={ styles.headerTitle }>{ props.title }</Title>
         </Body>
         <View style={{ flex: 1, ...styles.headerSyncIconView }}>
@@ -33,14 +33,15 @@ export const RdHeader = (props) => (
 
         <StatusBar barStyle="light-content" />
 
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, flexDirection: 'row' }}>
             <TouchableOpacity onPress={ props.goBack }>
                 <IconFontAwesome name="angle-left" style={ styles.headerIcon } />
             </TouchableOpacity>
         </View>
-        <Body style={{ flex: 7 }}>
+        <Body style={{ flex: 7, flexDirection: 'row' }}>
             <Title style={ styles.headerTitle }>{ props.title }</Title>
         </Body>
+
     </Header>
 );
 

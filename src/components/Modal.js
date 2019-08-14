@@ -50,11 +50,11 @@ export default class ModalPrimaryCID extends Component {
         const newList = this.props.list.filter(item => {
             if(item.code != null) {
                 return (
-                    item.normalizedName.toUpperCase().includes(query.toUpperCase()) || 
+                    item.name.toUpperCase().includes(query.toUpperCase()) || 
                     item.code.toUpperCase().includes(query.toUpperCase())
                 )  
             } else {
-                return (item.normalizedName.toUpperCase().includes(query.toUpperCase()))
+                return (item.name.toUpperCase().includes(query.toUpperCase()))
             }
         });
     
