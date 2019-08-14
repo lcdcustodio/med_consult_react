@@ -836,11 +836,13 @@ export default class Hospital extends Component {
 
 	filterPatients = (patientQuery) => {
 
-		if(patientQuery !== '') {
+		const str = patientQuery.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+
+		if(str !== '') {
 
 			const patientsFilteredNew = this.state.allPatients.filter(item => {
 				return (
-					item.patientName.toUpperCase().includes(patientQuery.toUpperCase())
+					item.patientName.toUpperCase().includes(str)
 				)
 			});
 	

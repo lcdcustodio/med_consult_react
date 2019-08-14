@@ -49,6 +49,8 @@ export default class Profile extends Component {
 			crmTMP: this.props.navigation.getParam('patient').mainProcedureCRM,
 			keyboardSpace: 0
 		}
+
+		console.log(this.state.cid);
 	}
 
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
