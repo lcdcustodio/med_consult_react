@@ -136,19 +136,23 @@ describe('Class Patients', () => {
     describe('getIcon', () => {
 
         it('Deve retornar icone OLHO_CINZA_COM_CHECK', () => {
-            expect(new Patient().getIcon(IconEyeEnum.OLHO_CINZA_COM_CHECK).testUri).toEqual('../../../src/images/ic_visibility_green_24px.png');
+            expect(new Patient().getIcon(IconEyeEnum.OLHO_CINZA_COM_CHECK).testUri).toEqual('../../../src/images/_OLHO_CINZA_COM_CHECK.png');
         });
 
         it('Deve retornar icone OLHO_AZUL', () => {
-            expect(new Patient().getIcon(IconEyeEnum.OLHO_AZUL).testUri).toEqual('../../../src/images/ic_visibility_blue_24px.png');
+            expect(new Patient().getIcon(IconEyeEnum.OLHO_AZUL).testUri).toEqual('../../../src/images/_OLHO_AZUL.png');
         });
 
         it('Deve retornar icone CASA_AZUL', () => {
-            expect(new Patient().getIcon(IconEyeEnum.CASA_AZUL).testUri).toEqual('../../../src/images/ic_home_24px.png');
+            expect(new Patient().getIcon(IconEyeEnum.CASA_AZUL).testUri).toEqual('../../../src/images/_CASA_AZUL.png');
         });
 
         it('Deve retornar icone OLHO_CINZA_COM_EXCLAMACAO', () => {
-            expect(new Patient().getIcon(IconEyeEnum.OLHO_CINZA_COM_EXCLAMACAO).testUri).toEqual('../../../src/images/ic_visibility_exclamation_24px.png');
+            expect(new Patient().getIcon(IconEyeEnum.OLHO_CINZA_COM_EXCLAMACAO).testUri).toEqual('../../../src/images/_OLHO_CINZA_COM_EXCLAMACAO.jpg');
+        });
+
+        it('Deve retornar icone OLHO_AZUL_COM_EXCLAMACAO', () => {
+            expect(new Patient().getIcon(IconEyeEnum.OLHO_AZUL_COM_EXCLAMACAO).testUri).toEqual('../../../src/images/_OLHO_AZUL_COM_EXCLAMACAO.png');
         });
     });
     
