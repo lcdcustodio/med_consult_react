@@ -1704,10 +1704,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = br.com.rededor.medicoconsultorhmg;
+				PRODUCT_BUNDLE_IDENTIFIER = br.com.rededor.medicoconsultor;
 				PRODUCT_NAME = medicoconsultor;
 				PROVISIONING_PROFILE = "05eb3101-90c2-480c-b9be-a0aebafaa536";
-				PROVISIONING_PROFILE_SPECIFIER = "Médico Consultor HMG";
+				PROVISIONING_PROFILE_SPECIFIER = "Medico Consultor RDSL";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1739,10 +1739,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = br.com.rededor.medicoconsultorhmg;
+				PRODUCT_BUNDLE_IDENTIFIER = br.com.rededor.medicoconsultor;
 				PRODUCT_NAME = medicoconsultor;
 				PROVISIONING_PROFILE = "05eb3101-90c2-480c-b9be-a0aebafaa536";
-				PROVISIONING_PROFILE_SPECIFIER = "Médico Consultor HMG";
+				PROVISIONING_PROFILE_SPECIFIER = "Medico Consultor RDSL";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
