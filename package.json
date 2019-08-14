@@ -47,13 +47,40 @@
     "preset": "react-native",
     "verbose": true,
     "collectCoverage": true,
-    "coverageReporters": ["text", "lcov"],
-    "coveragePathIgnorePatterns": [
-      "android", "ios", "__tests__", "assets", "coverage", "images", "native-base-theme", "babel.config.js", "metro.config.js", "src/config/StatusBarConfig.js", 
-      "Enviroment.ts", "style.js", ".vscode", "package.json", "package-lock.json", "app.json", "data.json", "src/components", "src/services", "src/pages", 
-      "src/util", "src/App.js", "src/Session.ts", "src/styles.js", "index.js"
+    "coverageReporters": [
+      "text",
+      "lcov"
     ],
-    "collectCoverageFrom": ["!**/node_modules/**"]
+    "coveragePathIgnorePatterns": [
+      "android",
+      "ios",
+      "__tests__",
+      "assets",
+      "coverage",
+      "images",
+      "native-base-theme",
+      "babel.config.js",
+      "metro.config.js",
+      "src/config/StatusBarConfig.js",
+      "Enviroment.ts",
+      "style.js",
+      ".vscode",
+      "package.json",
+      "package-lock.json",
+      "app.json",
+      "data.json",
+      "src/components",
+      "src/services",
+      "src/pages",
+      "src/util",
+      "src/App.js",
+      "src/Session.ts",
+      "src/styles.js",
+      "index.js"
+    ],
+    "collectCoverageFrom": [
+      "!**/node_modules/**"
+    ]
   },
   "rnpm": {
     "assets": [
