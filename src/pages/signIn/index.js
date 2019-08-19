@@ -139,7 +139,7 @@ export default class SignIn extends Component {
 
 							Alert.alert(
 								'Servidor lento ou indisponível',
-								'O servidor não retornou um resultado dentro do período de 30 segundos, por favor tente novamente ou entre em contato com o suporte',
+								'O servidor não retornou um resultado dentro do período de 10 segundos, por favor tente novamente ou entre em contato com o suporte',
 								[
 									{
 										text: 'OK', onPress: () => {}
@@ -160,7 +160,7 @@ export default class SignIn extends Component {
 					
 				}
 
-		    }, 30000);
+		    }, 10000);
 			
 			const params = {
 				username: this.state.email,
