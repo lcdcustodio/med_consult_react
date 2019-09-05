@@ -251,7 +251,7 @@ export default class SignIn extends Component {
 							textContent={this.state.textContent}
 							textStyle={styles.spinnerTextStyle} />
 
-						<StatusBar barStyle="light-content" />
+						<StatusBar barStyle="light-content"/>
 						
 						<Logo source={require('../../images/logo-medico-consultor-branca.png')} resizeMode="contain" /> 
 							
