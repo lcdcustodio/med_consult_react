@@ -77,12 +77,18 @@ class PatientDetail extends Component {
 		await AsyncStorage.getItem('hospitalizationList', async (err, res) => {
 
 			let hospitalizationList = JSON.parse(res);
+ 
+			if (hospitalizationList == null) {
+				hospitalizationList = [];
+			}
 
 			hospitalizationList.push({
 				idPatient: this.state.patient.id,
 				key: attribute,
 				value: value
 			});
+
+		
 
 			await AsyncStorage.setItem('hospitalizationList', JSON.stringify(hospitalizationList), () => {
 				this.setState({loading: false});

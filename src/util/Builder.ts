@@ -91,21 +91,21 @@ export default class Builder extends JsonEntity<Patient> {
                 }
 
                 if (parse[json[i].id].hasOwnProperty('patientHeight') && parse[json[i].id].patientHeight != null) {
-                    parse[json[i].id]['patientHeight'] = parse[json[i].id]['patientHeight'].toString().replace(',', '.');
+                    parse[json[i].id]['patientHeight'] = parse[json[i].id]['patientHeight'].toString().replace(',', '.').replace(/,/g, '');
                 }
 
                 if (parse[json[i].id].hasOwnProperty('patientWeight') && parse[json[i].id].patientWeight != null) {
-                    parse[json[i].id]['patientWeight'] = parse[json[i].id]['patientWeight'].toString().replace(',', '.');
+                    parse[json[i].id]['patientWeight'] = parse[json[i].id]['patientWeight'].toString().replace(',', '.').replace(/,/g, '');
                 }
 
                 if (parse[json[i].id].hasOwnProperty('complementaryInfoHospitalizationAPI') && parse[json[i].id].complementaryInfoHospitalizationAPI != null) {
                     
                     if (parse[json[i].id].complementaryInfoHospitalizationAPI.hemoglobin != null) {
-                        parse[json[i].id]['complementaryInfoHospitalizationAPI']['hemoglobin'] = parse[json[i].id]['complementaryInfoHospitalizationAPI']['hemoglobin'].toString().replace(',', '.');
+                        parse[json[i].id]['complementaryInfoHospitalizationAPI']['hemoglobin'] = parse[json[i].id]['complementaryInfoHospitalizationAPI']['hemoglobin'].toString().replace(',', '.').replace(/,/g, '');
                     }
 
                     if (parse[json[i].id].complementaryInfoHospitalizationAPI.serumSodium != null) {
-                        parse[json[i].id]['complementaryInfoHospitalizationAPI']['serumSodium'] = parse[json[i].id]['complementaryInfoHospitalizationAPI']['serumSodium'].toString().replace(',', '.');
+                        parse[json[i].id]['complementaryInfoHospitalizationAPI']['serumSodium'] = parse[json[i].id]['complementaryInfoHospitalizationAPI']['serumSodium'].toString().replace(',', '.').replace(/,/g, '');
                     }
                 }
 
