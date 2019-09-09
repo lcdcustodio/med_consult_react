@@ -13,7 +13,6 @@ import qs from "qs";
 import _ from 'lodash'
 import { DataTable } from 'react-native-paper';
 import { RdRootHeader } from '../../components/rededor-base';
-import type { ViewStyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import Patient from '../../model/Patient';
 import Builder from '../../util/Builder';
 import RNPickerSelect, { inputIOS } from 'react-native-picker-select';
@@ -415,9 +414,11 @@ export default class Report extends Component {
 	}
 
 	countTotalPatients = (patients, hospitalName) => {
+
+		let rooms = [];
 		
 		let totalPatients = patients.reduce((totalPatients, patient) => {
-			
+
 			const patientClass = new Patient(patient);
 			let iconNumber = patientClass.getIconNumber();
 			let listOfOrderedPatientObservations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
@@ -431,7 +432,17 @@ export default class Report extends Component {
 						iconNumber == this.state.ICON.OLHO_AZUL ||
 						iconNumber == this.state.ICON.OLHO_CINZA_COM_CHECK) {
 
-						return totalPatients + 1;
+						if(!rooms.includes(patient.locationBed))
+						{
+							rooms.push(patient.locationBed);
+
+							return totalPatients + 1;
+						}
+						else
+						{
+							return totalPatients;
+						}
+
 					} else {
 						return totalPatients;
 					}
@@ -442,6 +453,8 @@ export default class Report extends Component {
 				return totalPatients;
 			}
 		}, 0);
+
+		rooms = [];
 
 		return totalPatients;
 	}

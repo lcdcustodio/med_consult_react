@@ -126,6 +126,8 @@ export default class Hospital extends Component {
 
 	countTotalPatients = (patients, hospital) => {
 
+		let rooms = [];
+
 		let listPatients = this.state.allPatients;
 		
 		let totalPatients = patients.reduce((totalPatients, patient) => {
@@ -151,7 +153,17 @@ export default class Hospital extends Component {
 						iconNumber == this.state.ICON.OLHO_AZUL ||
 						iconNumber == this.state.ICON.OLHO_CINZA_COM_CHECK) {
 
-						return totalPatients + 1;
+						if(!rooms.includes(patient.locationBed))
+						{
+							rooms.push(patient.locationBed);
+
+							return totalPatients + 1;
+						}
+						else
+						{
+							return totalPatients;
+						}
+
 					} else {
 						return totalPatients;
 					}
@@ -164,6 +176,8 @@ export default class Hospital extends Component {
 		}, 0);
 
 		this.setState({ allPatients: listPatients });
+
+		rooms = [];
 
 		return totalPatients;
 	}
