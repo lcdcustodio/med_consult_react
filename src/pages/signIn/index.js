@@ -138,8 +138,8 @@ export default class SignIn extends Component {
 						setTimeout(() => {
 
 							Alert.alert(
-								'Servidor lento ou indisponível',
-								'O servidor não retornou um resultado dentro do período de 10 segundos, por favor tente novamente ou entre em contato com o suporte',
+								'Problema com a conexão',
+								'A sua conexão pode ter falhado ou o servidor não respondeu dentro do período de 10 segundos, por favor tente novamente ou entre em contato com o suporte.',
 								[
 									{
 										text: 'OK', onPress: () => {}
@@ -234,7 +234,29 @@ export default class SignIn extends Component {
 				}	
 				else
 				{
-					this.setState({ error: error.message }, () => false);
+					if (error.code === 'ECONNABORTED') 
+					{
+						setTimeout(() => {
+
+							Alert.alert(
+								'Problema com a conexão',
+								'A sua conexão pode ter falhado ou o servidor não respondeu dentro do período de 10 segundos, por favor tente novamente ou entre em contato com o suporte.',
+								[
+									{
+										text: 'OK', onPress: () => {}
+									},
+								],
+								{
+									cancelable: false
+								},
+							);
+
+						}, 100);
+					} 
+					else
+					{
+						this.setState({ error: error.message }, () => false);
+					}
 				}		
 			});
 		} 

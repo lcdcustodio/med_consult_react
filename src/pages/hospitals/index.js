@@ -261,8 +261,8 @@ export default class Hospital extends Component {
 						setTimeout(() => {
 
 							Alert.alert(
-								'Servidor lento ou indisponível',
-								'O servidor não retornou um resultado dentro do período de 2 minutos, por favor tente novamente ou entre em contato com o suporte',
+								'Problema com a conexão',
+								'A sua conexão pode ter falhado ou o servidor não respondeu dentro do período de 10 segundos, por favor tente novamente ou entre em contato com o suporte.',
 								[
 									{
 										text: 'OK', onPress: () => {}
@@ -409,22 +409,42 @@ export default class Hospital extends Component {
 
 									setTimeout(() => {
 
-										Alert.alert(
-											'Erro ao carregar informações',
-											error.message,
-											[
-												{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+										if (error.code === 'ECONNABORTED')
+										{
+											Alert.alert(
+												'Problema com a conexão',
+												'A sua conexão pode ter falhado ou o servidor não respondeu dentro do período de 10 segundos, por favor tente novamente ou entre em contato com o suporte.',
+												[
+													{
+														text: 'OK', onPress: () => {}
+													},
+												],
 												{
-													text: 'Fazer login', onPress: () => {
-														this.clearPartialData();
-														this.props.navigation.navigate("SignIn");
-													}
+													cancelable: false
 												},
-											],
-											{
-												cancelable: false
-											},
-										);
+											);
+
+										}
+										else
+										{
+											Alert.alert(
+												'Erro ao carregar informações',
+												error.message,
+												[
+													{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+													{
+														text: 'Fazer login', onPress: () => {
+															this.clearPartialData();
+															this.props.navigation.navigate("SignIn");
+														}
+													},
+												],
+												{
+													cancelable: false
+												},
+											);
+											
+										}
 
 									}, 100);
 
@@ -441,22 +461,43 @@ export default class Hospital extends Component {
 
 								setTimeout(() => {
 
-									Alert.alert(
-										'Erro ao carregar informações',
-										error.message,
-										[
-											{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+									if (error.code === 'ECONNABORTED')
+									{
+										Alert.alert(
+											'Problema com a conexão',
+											'A sua conexão pode ter falhado ou o servidor não respondeu dentro do período de 10 segundos, por favor tente novamente ou entre em contato com o suporte.',
+											[
+												{
+													text: 'OK', onPress: () => {}
+												},
+											],
 											{
-												text: 'Fazer login', onPress: () => {
-													this.clearPartialData();
-													this.props.navigation.navigate("SignIn");
-												}
+												cancelable: false
 											},
-										],
-										{
-											cancelable: false
-										},
-									);
+										);
+
+									}
+									else
+									{
+										Alert.alert(
+											'Erro ao carregar informações',
+											error.message,
+											[
+												{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+												{
+													text: 'Fazer login', onPress: () => {
+														this.clearPartialData();
+														this.props.navigation.navigate("SignIn");
+													}
+												},
+											],
+											{
+												cancelable: false
+											},
+										);
+										
+									}
+
 
 								}, 100);
 
