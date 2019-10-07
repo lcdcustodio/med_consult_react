@@ -13,11 +13,9 @@ export default StyleSheet.create({
 	},
 
 	patientTitle: {
-        height: 14,
-        fontSize: 12,
         fontStyle: "normal",
-        lineHeight: 17,
-        letterSpacing: 0,
+        lineHeight: 25,
+        fontSize: 16,
         textAlign: "left"
 	},
 
