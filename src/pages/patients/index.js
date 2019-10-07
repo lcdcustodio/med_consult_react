@@ -201,9 +201,9 @@ export default class Patients extends Component {
 
             <View style={{ paddingTop: 10, paddingLeft: 10, paddingRight: 10, backgroundColor: baseStyles.container.backgroundColor}}>
                 <Card>
-                    <CardItem header bordered style={{ flex: 1, height: 50}}>
+                    <CardItem header bordered style={{ flex: 1}}>
                         <View style={{width: '90%'}}>
-                            <Text style={[styles.patientTitle, {color: `${item.colorName}`, fontSize: 16, marginLeft: -10, width: '90%'} ]}> {item.patientName} </Text>
+                            <Text style={[styles.patientTitle, {color: `${item.colorName}`, width: '90%'} ]}> {item.patientName} </Text>
                         </View>
                         <Right>
                             <Image source={item.icon} style={{width: 25, height: 25}} />

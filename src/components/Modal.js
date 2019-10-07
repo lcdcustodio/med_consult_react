@@ -45,16 +45,19 @@ export default class ModalPrimaryCID extends Component {
             );
         }
     }
-    
-    filter = query => { 
+
+    filter = query => {
+
+        const str = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+
         const newList = this.props.list.filter(item => {
             if(item.code != null) {
                 return (
-                    item.name.toUpperCase().includes(query.toUpperCase()) || 
-                    item.code.toUpperCase().includes(query.toUpperCase())
+                    item.normalizedName.toUpperCase().includes(str) || 
+                    item.code.toUpperCase().includes(str)
                 )  
             } else {
-                return (item.name.toUpperCase().includes(query.toUpperCase()))
+                return (item.normalizedName.toUpperCase().includes(str))
             }
         });
     

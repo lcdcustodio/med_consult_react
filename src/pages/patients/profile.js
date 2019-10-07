@@ -44,7 +44,7 @@ export default class Profile extends Component {
 				{key: 1, value: 'CLINICAL', label: 'CLÍNICO'},
 				{key: 2, value: 'SURGICAL', label: 'CIRÚRGICO'}
 			],
-			patientHeightTMP: Number(this.props.navigation.getParam('patient').patientHeight ? this.props.navigation.getParam('patient').patientHeight.toString().replace(',', '.') : '').toFixed(2),
+			patientHeightTMP: this.props.navigation.getParam('patient').patientHeight,
 			patientWeightTMP: this.props.navigation.getParam('patient').patientWeight,
 			crmTMP: this.props.navigation.getParam('patient').mainProcedureCRM,
 			keyboardSpace: 0
@@ -58,7 +58,7 @@ export default class Profile extends Component {
 		this.setState({
 			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
 			patient: this.props.navigation.getParam('patient'),
-			patientHeightTMP: Number(this.props.navigation.getParam('patient').patientHeight ? this.props.navigation.getParam('patient').patientHeight.toString().replace(',', '.') : '').toFixed(2),
+			patientHeightTMP: this.props.navigation.getParam('patient').patientHeight,
 			patientWeightTMP: this.props.navigation.getParam('patient').patientWeight,
 			crmTMP: this.props.navigation.getParam('patient').mainProcedureCRM
 		});

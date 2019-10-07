@@ -39,7 +39,7 @@ export const RdHeader = (props) => (
             </TouchableOpacity>
         </View>
         <Body style={{ flex: 7, flexDirection: 'row' }}>
-            <Title style={ styles.headerTitle }>{ props.title }</Title>
+            <Text style={ styles.headerTitle }> { props.title } </Text>
         </Body>
 
     </Header>
