@@ -38,9 +38,14 @@ export const RdHeader = (props) => (
                 <IconFontAwesome name="angle-left" style={ styles.headerIcon } />
             </TouchableOpacity>
         </View>
-        <Body style={{ flex: 7, flexDirection: 'row' }}>
+        <Body style={{ flex: 6, flexDirection: 'row' }}>
             <Text style={ styles.headerTitle }> { props.title } </Text>
         </Body>
+        <View style={{ flex: 1, ...styles.headerSyncIconView }}>
+            <TouchableOpacity onPress={ props.sync }>
+                <Icon name="sync" style={ styles.headerSyncIcon }/>
+            </TouchableOpacity>
+        </View>
 
     </Header>
 );

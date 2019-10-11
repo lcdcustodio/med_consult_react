@@ -11,6 +11,7 @@ import { RdHeader } from '../../components/rededor-base';
 import baseStyles from '../../styles';
 import styles from './style';
 import Patient from '../../model/Patient';
+import { Sync } from '../Sync';
 
 export default class Patients extends Component {
     
@@ -20,27 +21,53 @@ export default class Patients extends Component {
 
         this.state = {
             hospital: {},
+            dateSync: null,
             loading: false,
+            hospitals: [],
             timerTextColor: "#005cd1",
             timerBackgroundColor: "#fff"
         }
     }
 
-    didFocus = this.props.navigation.addListener('didFocus', (res) => {
+    updateState = (obj) => {
+        this.setState(obj);
+    }
 
+    loadHospitalData = () => {
+        
         const hospitalId = this.props.navigation.getParam('hospitalId');
+
+        console.log(hospitalId);
 
         AsyncStorage.getItem('hospitalList', (err, res) => {
 
+            console.log(res);
+
             let hospitalList = JSON.parse(res);
+
+            console.log(hospitalList);
+
+            console.log(hospitalList.length);
 
             let hospital = [];
 
-            for (var h = 0; h < hospitalList.length; h++) {
-                
-                if (hospitalId == hospitalList[h].id) {
+            let listHospital = [];
 
-                    hospital = hospitalList[h];
+            for (var h = 0; h < hospitalList.length; h++) {
+
+                hospital = hospitalList[h];
+
+                listHospital.push(hospital);
+
+            }
+
+            this.setState({hospitals: listHospital});
+
+            for (var h = 0; h < hospitalList.length; h++) {
+
+                hospital = hospitalList[h];
+                
+                if (hospitalId == hospitalList[h].id) {    
 
                     let patients = [];
 
@@ -77,8 +104,14 @@ export default class Patients extends Component {
                     break;
 
                 }
-            }         
+            } 
+
         });
+    }
+
+    didFocus = this.props.navigation.addListener('didFocus', (res) => {
+
+        this.loadHospitalData();
 
         BackHandler.removeEventListener ('hardwareBackPress', () => {});
         
@@ -242,12 +275,15 @@ export default class Patients extends Component {
     render(){
         return (
            <Container>
+           
                 <Spinner
                     visible={this.state.loading}
                     textContent={this.state.textContent}
                     textStyle={styles.spinnerTextStyle} />
+
                 <RdHeader
                     title={this.state.hospital.name}
+                    sync={ () => Sync(this, true, 'patients') }
                     goBack={()=>this.props.navigation.navigate('Hospitals')}/>
                 <Content style={baseStyles.container}>
                     <View style={styles.container}>

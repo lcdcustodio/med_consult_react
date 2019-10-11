@@ -15,6 +15,7 @@ import baseStyles from '../../styles';
 import Profile from './profile';
 import Events from './events';
 import Visits from './visits';
+import { Sync } from '../Sync';
 
 class PatientDetail extends Component {
     
@@ -25,6 +26,7 @@ class PatientDetail extends Component {
 
 		this.state = {
             hospital: {},
+            hospitals: [],
 			hospitalId: this.props.navigation.getParam('hospitalId'),
 			patientId: this.props.navigation.getParam('patientId'),
 			patient: this.props.navigation.getParam('patient'),
@@ -32,9 +34,14 @@ class PatientDetail extends Component {
 			setprofile: null,
             timerTextColor: "#005cd1",
             timerBackgroundColor: "#fff",
+            dateSync: null,
 			selectedTab: TabEnum.Profile,
 			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease)
 		}
+	}
+
+	updateState = (obj) => {
+	    this.setState(obj);
 	}
 
 	handleUpdatePatient = async (attribute, value, showSpinner = true) => {
@@ -55,20 +62,33 @@ class PatientDetail extends Component {
 
 			let hospital = [];
 
+            let listHospital = [];
+
 			for (var h = 0; h < hospitalList.length; h++) {
 				
-				if (patient.hospitalName == hospitalList[h].name) {
+				hospital = hospitalList[h];
 
-					hospital = hospitalList[h];
+				if (this.state.hospitalId == hospitalList[h].id) {
 
 					for (var i = 0; i < hospitalList[h].hospitalizationList.length; i++) {
+
 						if (hospitalList[h].hospitalizationList[i].id == patient.id) {
+
 							hospitalList[h].hospitalizationList[i] = patient;
 						}
 					}
 				}
 			}
 
+			for (var h = 0; h < hospitalList.length; h++) {
+
+                hospital = hospitalList[h];
+
+                listHospital.push(hospital);
+
+            }
+
+			this.setState({hospitals: listHospital});
 			
 			await AsyncStorage.setItem('hospitalList', JSON.stringify(hospitalList));
 
@@ -88,9 +108,7 @@ class PatientDetail extends Component {
 				value: value
 			});
 
-		
-
-			await AsyncStorage.setItem('hospitalizationList', JSON.stringify(hospitalizationList), () => {
+			await AsyncStorage.setItem('hospitalizationList', JSON.stringify(hospitalizationList), () => {				
 				this.setState({loading: false});
 			});
 
@@ -108,28 +126,13 @@ class PatientDetail extends Component {
 		}
 	}
 
-	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
-		let observations = _.orderBy(this.props.navigation.getParam('patient').observationList, ['observationDate'], ['desc']);
-		
-		this.setState({
-			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
-			hospitalId: this.props.navigation.getParam('hospitalId'),
-			patientId: this.props.navigation.getParam('patientId'),
+	loadPatientData = () => {
 
-		});
+		let patientId = this.props.navigation.getParam('patientId');
 
-		const patientId = this.props.navigation.getParam('patientId');
+		let hospitalId = this.props.navigation.getParam('hospitalId');
 
-		const hospitalId = this.props.navigation.getParam('hospitalId');
-
-		if (this.state.setprofile != patientId) {
-			this.setState({ 
-				selectedTab: 'profile' 
-			});
-			this.state.setprofile =  patientId;
-		}
-
-        AsyncStorage.getItem('hospitalList', (err, res) => {
+		AsyncStorage.getItem('hospitalList', (err, res) => {
 
             let hospitalList = JSON.parse(res);
 
@@ -155,6 +158,29 @@ class PatientDetail extends Component {
                 }
             }
         });
+	}
+
+	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
+		
+		let patientId = this.props.navigation.getParam('patientId');
+
+		let observations = _.orderBy(this.props.navigation.getParam('patient').observationList, ['observationDate'], ['desc']);
+		
+		this.setState({
+			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
+			hospitalId: this.props.navigation.getParam('hospitalId'),
+			patientId: this.props.navigation.getParam('patientId'),
+
+		});
+
+		if (this.state.setprofile != patientId) {
+			this.setState({ 
+				selectedTab: 'profile' 
+			});
+			this.state.setprofile =  patientId;
+		}
+
+        this.loadPatientData();
 
 		BackHandler.removeEventListener ('hardwareBackPress', () => {});
         
@@ -182,13 +208,17 @@ class PatientDetail extends Component {
 		const visitsStyle = this.isSelected(TabEnum.Visits) ? styles.ativo : styles.inativo;
 		return (
 			<Container>
+
 				<Spinner
                     visible={this.state.loading}
                     textContent={this.state.textContent}
                     textStyle={styles.spinnerTextStyle} />
+
 				<RdHeader
 					title={this.state.patient.patientName ? this.state.patient.patientName : ''}
+					sync={ () => Sync(this, true, 'patient') }
 					goBack={this._goBack}/>
+
 				<Content contentContainerStyle={{ ...baseStyles.container, flex: 1 }}>
 					{ this.renderSelectedTab() }
 				</Content>
@@ -254,6 +284,9 @@ const styles = StyleSheet.create({
 		borderBottomColor: "#DDD",
 		padding: 20
 	},
+	spinnerTextStyle: {
+        color: '#FFF'
+    },
 	productTitle: {
 		fontSize: 18,
 		fontWeight: "bold",

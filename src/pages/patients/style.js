@@ -19,6 +19,10 @@ export default StyleSheet.create({
         textAlign: "left"
 	},
 
+    spinnerTextStyle: {
+        color: '#FFF'
+    },
+
 	productDescription: {
         width: 171,
         height: 14,
