@@ -174,6 +174,8 @@ export default class SignIn extends Component {
 			)
 			.then(response => {
 
+				console.log(response);
+
 				clearTimeout(timer);
 
 				if(response && response.data && response.data.success) {
@@ -240,7 +242,7 @@ export default class SignIn extends Component {
 
 							Alert.alert(
 								'Problema com a conexão',
-								'A sua conexão pode ter falhado ou o servidor não respondeu dentro do período de 10 segundos, por favor tente novamente ou entre em contato com o suporte.',
+								'A sua conexão pode ter falhado, por favor tente novamente ou entre em contato com o suporte.',
 								[
 									{
 										text: 'OK', onPress: () => {}

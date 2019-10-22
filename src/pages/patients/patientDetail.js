@@ -8,20 +8,21 @@ import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Icon as IconNativeBase} from 'native-base';
-
+import Timer from '../../components/Timer';
 import { RdHeader } from '../../components/rededor-base';
 import Session from '../../Session';
 import baseStyles from '../../styles';
 import Profile from './profile';
 import Events from './events';
 import Visits from './visits';
-import { Sync } from '../Sync';
+import { Sync, setRequireSyncTimer, getDateSync } from '../Sync';
 
 class PatientDetail extends Component {
     
 	constructor(props) {
 
 		super(props);
+
 		let observations = _.orderBy(this.props.navigation.getParam('patient').observationList, ['observationDate'], ['desc']);
 
 		this.state = {
@@ -44,11 +45,53 @@ class PatientDetail extends Component {
 	    this.setState(obj);
 	}
 
+	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
+		
+		let patientId = this.props.navigation.getParam('patientId');
+
+		let observations = _.orderBy(this.props.navigation.getParam('patient').observationList, ['observationDate'], ['desc']);
+		
+		this.setState({
+			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
+			hospitalId: this.props.navigation.getParam('hospitalId'),
+			patientId: this.props.navigation.getParam('patientId'),
+
+		});
+
+		if (this.state.setprofile != patientId) {
+			this.setState({ 
+				selectedTab: 'profile' 
+			});
+			this.state.setprofile =  patientId;
+		}
+
+        this.loadPatientData();
+
+        Sync(this, false, 'patient');
+
+		getDateSync(this);
+
+		BackHandler.removeEventListener ('hardwareBackPress', () => {});
+        
+        BackHandler.addEventListener('hardwareBackPress', () => {
+            this.props.navigation.navigate('Patients');
+            return true;
+        });
+	});
+
+	renderTimer(){
+		return <Timer dateSync={this.state.dateSync} timerTextColor={this.state.timerTextColor} timerBackgroundColor={this.state.timerBackgroundColor}/>;
+	}
+
 	handleUpdatePatient = async (attribute, value, showSpinner = true) => {
 
 		this.setState({loading: showSpinner});
 
-		await AsyncStorage.setItem('require_sync_at', JSON.stringify(moment().format('YYYY-MM-DD')));
+		let timer = JSON.stringify(moment().format('YYYY-MM-DD'));
+
+		setRequireSyncTimer(timer);
+
+		await AsyncStorage.setItem('require_sync_at', timer);
 
 		let patient = this.state.patient;
 
@@ -159,40 +202,6 @@ class PatientDetail extends Component {
             }
         });
 	}
-
-	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
-		
-		let patientId = this.props.navigation.getParam('patientId');
-
-		let observations = _.orderBy(this.props.navigation.getParam('patient').observationList, ['observationDate'], ['desc']);
-		
-		this.setState({
-			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
-			hospitalId: this.props.navigation.getParam('hospitalId'),
-			patientId: this.props.navigation.getParam('patientId'),
-
-		});
-
-		if (this.state.setprofile != patientId) {
-			this.setState({ 
-				selectedTab: 'profile' 
-			});
-			this.state.setprofile =  patientId;
-		}
-
-        this.loadPatientData();
-
-		BackHandler.removeEventListener ('hardwareBackPress', () => {});
-        
-        BackHandler.addEventListener('hardwareBackPress', () => {
-            this.props.navigation.navigate('Patients');
-            return true;
-        });
-	});
-
-	componentWillUnmount() {
-        this.didFocus.remove();
-	}
 	
 	isSelected = (tab) => {
 		return (tab === this.state.selectedTab);
@@ -218,6 +227,8 @@ class PatientDetail extends Component {
 					title={this.state.patient.patientName ? this.state.patient.patientName : ''}
 					sync={ () => Sync(this, true, 'patient') }
 					goBack={this._goBack}/>
+
+				{ this.renderTimer() }
 
 				<Content contentContainerStyle={{ ...baseStyles.container, flex: 1 }}>
 					{ this.renderSelectedTab() }

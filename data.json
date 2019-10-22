@@ -124573,12 +124573,48 @@
 		"wingType": "CTI"
 	}],
 	"morbidityComorbityList": [{
-		"morbidityComorbityId": 11,
-		"morbidityComorbityName": "Anemia falciforme",
+		"morbidityComorbityId": 1,
+		"morbidityComorbityName": "Neoplasia disseminada",
+		"morbidityComorbityProfileName": "Geral"
+	}, {
+		"morbidityComorbityId": 2,
+		"morbidityComorbityName": "Diabetes",
+		"morbidityComorbityProfileName": "Geral"
+	}, {
+		"morbidityComorbityId": 3,
+		"morbidityComorbityName": "Insuficiência hepática",
+		"morbidityComorbityProfileName": "Geral"
+	}, {
+		"morbidityComorbityId": 4,
+		"morbidityComorbityName": "Insuficiência renal",
+		"morbidityComorbityProfileName": "Geral"
+	}, {
+		"morbidityComorbityId": 5,
+		"morbidityComorbityName": "DPOC",
+		"morbidityComorbityProfileName": "Geral"
+	}, {
+		"morbidityComorbityId": 6,
+		"morbidityComorbityName": "Insuficiência coronariana",
+		"morbidityComorbityProfileName": "Geral"
+	}, {
+		"morbidityComorbityId": 7,
+		"morbidityComorbityName": "Pneumopatia crônica",
 		"morbidityComorbityProfileName": "Pediátrica"
 	}, {
 		"morbidityComorbityId": 8,
 		"morbidityComorbityName": "Cardiopatia congênita",
+		"morbidityComorbityProfileName": "Pediátrica"
+	}, {
+		"morbidityComorbityId": 9,
+		"morbidityComorbityName": "Paralisia cerebral",
+		"morbidityComorbityProfileName": "Pediátrica"
+	}, {
+		"morbidityComorbityId": 10,
+		"morbidityComorbityName": "Neuropatias congênitas",
+		"morbidityComorbityProfileName": "Pediátrica"
+	}, {
+		"morbidityComorbityId": 11,
+		"morbidityComorbityName": "Anemia falciforme",
 		"morbidityComorbityProfileName": "Pediátrica"
 	}, {
 		"morbidityComorbityId": 12,
@@ -124589,41 +124625,9 @@
 		"morbidityComorbityName": "Hipoplasia renal",
 		"morbidityComorbityProfileName": "Pediátrica"
 	}, {
-		"morbidityComorbityId": 10,
-		"morbidityComorbityName": "Neuropatias congênitas",
-		"morbidityComorbityProfileName": "Pediátrica"
-	}, {
-		"morbidityComorbityId": 9,
-		"morbidityComorbityName": "Paralisia cerebral",
-		"morbidityComorbityProfileName": "Pediátrica"
-	}, {
-		"morbidityComorbityId": 7,
-		"morbidityComorbityName": "Pneumopatia crônica",
-		"morbidityComorbityProfileName": "Pediátrica"
-	}, {
-		"morbidityComorbityId": 5,
-		"morbidityComorbityName": "DPOC",
-		"morbidityComorbityProfileName": "Geral"
-	}, {
-		"morbidityComorbityId": 2,
-		"morbidityComorbityName": "Diabetes",
-		"morbidityComorbityProfileName": "Geral"
-	}, {
-		"morbidityComorbityId": 6,
-		"morbidityComorbityName": "Insuficiência coronariana",
-		"morbidityComorbityProfileName": "Geral"
-	}, {
-		"morbidityComorbityId": 3,
-		"morbidityComorbityName": "Insuficiência hepática",
-		"morbidityComorbityProfileName": "Geral"
-	}, {
-		"morbidityComorbityId": 4,
-		"morbidityComorbityName": "Insuficiência renal dialítica",
-		"morbidityComorbityProfileName": "Geral"
-	}, {
-		"morbidityComorbityId": 1,
-		"morbidityComorbityName": "Neoplasia disseminada",
-		"morbidityComorbityProfileName": "Geral"
+		"morbidityComorbityId": 14,
+		"morbidityComorbityName": "Perda de peso",
+		"morbidityComorbityProfileName": "Idoso"
 	}, {
 		"morbidityComorbityId": 15,
 		"morbidityComorbityName": "Fadiga",
@@ -124641,8 +124645,24 @@
 		"morbidityComorbityName": "Lentidão da marcha",
 		"morbidityComorbityProfileName": "Idoso"
 	}, {
-		"morbidityComorbityId": 14,
-		"morbidityComorbityName": "Perda de peso",
-		"morbidityComorbityProfileName": "Idoso"
+		"morbidityComorbityId": 19,
+		"morbidityComorbityName": "Diabetes",
+		"morbidityComorbityProfileName": "Pediátrica"
+	}, {
+		"morbidityComorbityId": 20,
+		"morbidityComorbityName": "Transtornos psiquiátricos",
+		"morbidityComorbityProfileName": "Geral"
+	}, {
+		"morbidityComorbityId": 21,
+		"morbidityComorbityName": "Hipertensão",
+		"morbidityComorbityProfileName": "Geral"
+	}, {
+		"morbidityComorbityId": 22,
+		"morbidityComorbityName": "Lombalgia/ Cervicalgia",
+		"morbidityComorbityProfileName": "Geral"
+	}, {
+		"morbidityComorbityId": 23,
+		"morbidityComorbityName": "Dor crônica",
+		"morbidityComorbityProfileName": "Geral"
 	}]
 }

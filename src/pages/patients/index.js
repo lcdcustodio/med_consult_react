@@ -6,12 +6,12 @@ import moment from 'moment';
 import _ from 'lodash';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-
+import Timer from '../../components/Timer';
 import { RdHeader } from '../../components/rededor-base';
 import baseStyles from '../../styles';
 import styles from './style';
 import Patient from '../../model/Patient';
-import { Sync } from '../Sync';
+import { Sync, setRequireSyncTimer, getDateSync } from '../Sync';
 
 export default class Patients extends Component {
     
@@ -33,11 +33,30 @@ export default class Patients extends Component {
         this.setState(obj);
     }
 
+    didFocus = this.props.navigation.addListener('didFocus', (res) => {
+
+        this.loadHospitalData();
+
+        Sync(this, false, 'patients');
+
+        getDateSync(this);
+
+        BackHandler.removeEventListener ('hardwareBackPress', () => {});
+        
+        BackHandler.addEventListener('hardwareBackPress', () => {
+            this.props.navigation.navigate('Hospitals');
+            return true;
+        });
+
+    });
+    
+    renderTimer(){
+        return <Timer dateSync={this.state.dateSync} timerTextColor={this.state.timerTextColor} timerBackgroundColor={this.state.timerBackgroundColor}/>;
+    }
+
     loadHospitalData = () => {
         
         const hospitalId = this.props.navigation.getParam('hospitalId');
-
-        console.log(hospitalId);
 
         AsyncStorage.getItem('hospitalList', (err, res) => {
 
@@ -109,23 +128,6 @@ export default class Patients extends Component {
         });
     }
 
-    didFocus = this.props.navigation.addListener('didFocus', (res) => {
-
-        this.loadHospitalData();
-
-        BackHandler.removeEventListener ('hardwareBackPress', () => {});
-        
-        BackHandler.addEventListener('hardwareBackPress', () => {
-            this.props.navigation.navigate('Hospitals');
-            return true;
-        });
-
-    });
-    
-    componentWillUnmount() {
-        this.didFocus.remove();
-    }
-    
     exitDateBelow48Hours(date) {
         const today = moment()
         let dateFormatted = moment(moment(date).format('YYYY-MM-DD'))
@@ -285,6 +287,9 @@ export default class Patients extends Component {
                     title={this.state.hospital.name}
                     sync={ () => Sync(this, true, 'patients') }
                     goBack={()=>this.props.navigation.navigate('Hospitals')}/>
+
+                { this.renderTimer() }
+
                 <Content style={baseStyles.container}>
                     <View style={styles.container}>
                         <FlatList

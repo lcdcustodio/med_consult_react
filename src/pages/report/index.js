@@ -16,6 +16,7 @@ import { RdRootHeader } from '../../components/rededor-base';
 import Patient from '../../model/Patient';
 import Builder from '../../util/Builder';
 import RNPickerSelect, { inputIOS } from 'react-native-picker-select';
+import { Sync, setRequireSyncTimer, getDateSync } from '../Sync';
 
 export default class Report extends Component {
 
@@ -26,18 +27,15 @@ export default class Report extends Component {
 		this.state = {
 			infos: {},
 			hospitals: null,
-			isConnected: null,
+			filteredHospitals: null,
 			dateSync: null,
 			page: 1,
-			loading: false,
-			isEditable: true,
+			isEditable: Session.current.user.profile != 'ADMIN',
 			loading: false,
 			timerTextColor: "#005cd1",
 			timerBackgroundColor: "#fff",
-			errorSync: 0,
 			allPatients: [],
 			patientsFiltered: [],
-			hospital_report: [],
 			patientQuery: null,
 			ICON: {
                 OLHO_CINZA_COM_CHECK: 4,
@@ -46,11 +44,10 @@ export default class Report extends Component {
                 OLHO_AZUL_COM_EXCLAMACAO: 0,
                 CASA_AZUL: 2
             },
-            REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21],
+			REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21],
 			REGIONAL_SP: [161, 162, 163, 164],
 			REGIONAL_PE: [142, 141, 143, 144],
 			selectedRegionalHospital: '',
-			hospitalList: null,
 			regions: [
 				{
 				  label: 'Rio de Janeiro',
@@ -64,53 +61,29 @@ export default class Report extends Component {
 				  label: 'São Paulo',
 				  value: 'SP',
 				},
-			]
+			],
+			hospitalList: null,
+			hospital_report: []
 		}
-
-		this.setUser();
 	}
 
-	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
+	updateState = (obj) => {
+	    this.setState(obj);
+	}
 
-        this.setState({errorSync: 0});
+	didFocus = this.props.navigation.addListener('didFocus', (payload) => {	
 
-        this.setUser();
-
-        this.setState({ timerTextColor: "#005cd1", timerBackgroundColor: "#fff" });
-
-		NetInfo.fetch().then(state => {
-
-			this.setState({isConnected: state.isConnected});
-
-			this.setState({hospitals: null, filteredHospitals: null, selectedRegionalHospital: ''});
-
-			this.sincronizar();
-
-		});
-
-		AsyncStorage.getItem('dateSync', (err, res) => {
-			
-			res = JSON.parse(res);
-
-			if (res !== null) {
-
-				let today =  moment().format('DD/MM/YYYY');
-
-				let dateSync = res.substring(0, 10);
-
-				if (today > dateSync) {
-					this.setState({ timerTextColor: "#721c24", timerBackgroundColor: "#f8d7da" });
-				}				
-			}
-
-            this.setState({dateSync: res});
+        this.setState({
+        	timerTextColor: "#005cd1",
+        	timerBackgroundColor: "#fff",
+        	hospitals: null,
+        	filteredHospitals: null,
+        	selectedRegionalHospital: '' 
         });
 
-		AsyncStorage.getItem('require_sync_at', (err, res) => {
-			if (res != null) {
-				this.setRequireSyncTimer(res);
-			}
-		});
+		Sync(this, false, 'report');
+
+		getDateSync(this);
 
 		BackHandler.removeEventListener ('hardwareBackPress', () => {});
         
@@ -120,338 +93,6 @@ export default class Report extends Component {
         });
 
 	});
-
-	clearPartialData() {
-		AsyncStorage.removeItem('userData');
-		AsyncStorage.removeItem('auth');
-	}
-
-	loadHospitals = async () => {
-		
-		try {
-
-			let conn = await NetInfo.fetch().then(state => {
-				return state.isConnected;
-			});
-			
-			if (!conn) {
-				
-				Alert.alert(
-					'Sua conexão parece estar inativa',
-					'Por favor verifique sua conexão e tente novamente',
-					[
-						{
-							text: 'OK', onPress: () => {}
-						},
-					],
-					{
-						cancelable: false
-					},
-				);
-
-				return false;
-			}
-
-			this.setState({ textContent: 'Carregando informações...' });
-
-			this.setState({loading: true});
-
-			let timer = setTimeout(() => {
-
-				if (this.state.loading) {
-
-					this.setState({loading: false}, function(){
-
-						setTimeout(() => {
-
-							Alert.alert(
-								'Problema com a conexão',
-								'A sua conexão pode ter falhado ou o servidor não respondeu dentro do período de 10 segundos, por favor tente novamente ou entre em contato com o suporte.',
-								[
-									{
-										text: 'OK', onPress: () => {}
-									},
-								],
-								{
-									cancelable: false
-								},
-							);
-
-						}, 100);
-
-						clearTimeout(timer);
-
-					});
-
-					return false;
-					
-				}
-
-		    }, 120000);
-
-			AsyncStorage.getItem('userData', (err, res) => {
-
-				if (res == null) 
-				{
-					this.setState({loading: false});
-
-					this.props.navigation.navigate("SignIn");
-				}
-				else
-				{				
-		            let parse = JSON.parse(res);
-
-		            if (Session.current.user == null) {
-		            	Session.current.user = parse;
-					}
-
-		            this.state.token = Session.current.user.token;
-					
-					AsyncStorage.getItem('hospitalizationList', (err, res) => {
-						
-						let builder = new Builder();
-
-						builder = builder.parseToSync(res, this.state.hospitals);
-
-						let data = { "hospitalizationList": builder };
-
-						api.post('/v3.0/save', data, 
-						{
-							headers: {
-								"Content-Type": "application/json",
-							  	"Accept": "application/json",
-							  	"Token": this.state.token, 
-							}
-
-						}).then(res => {
-
-							api.post('/v3.0/load', {}, 
-							{
-								headers: {
-									"Content-Type": "application/json",
-								  	"Accept": "application/json",
-								  	"Token": this.state.token, 
-								}
-
-							}).then(response => {
-
-								clearTimeout(timer);
-
-								this.setState({loading: false});
-
-								if(response && response.status === 200) {
-
-									this.setRequireSyncTimer(null);
-
-									AsyncStorage.setItem('hospitalizationList', JSON.stringify([]));
-
-									let hospitalListOrdered = _.orderBy(response.data.body.content.hospitalList, ['name'], ['asc']);
-									
-									let user = Session.current.user;
-
-									let listHospital = []
-									
-									if (user.profile == 'CONSULTANT') {
-
-										hospitalListOrdered.forEach( hospital => {
-											if(this.isTheSameHospital(hospital, parse)){
-												listHospital.push(hospital)
-											}
-										});
-									
-									} 
-									else
-									{
-										listHospital = hospitalListOrdered;
-									}
-
-									const dateSync = moment().format('DD/MM/YYYY [às] HH:mm:ss');
-
-									this.setState({dateSync: dateSync});
-
-									AsyncStorage.setItem('dateSync', JSON.stringify(dateSync));
-
-									AsyncStorage.setItem('hospitalList', JSON.stringify(listHospital));
-
-									this.report(listHospital);
-								
-								} else {
-
-									setTimeout(() => {
-
-										if (error.code === 'ECONNABORTED')
-										{
-											Alert.alert(
-												'Problema com a conexão',
-												'A sua conexão pode ter falhado ou o servidor não respondeu dentro do período de 10 segundos, por favor tente novamente ou entre em contato com o suporte.',
-												[
-													{
-														text: 'OK', onPress: () => {}
-													},
-												],
-												{
-													cancelable: false
-												},
-											);
-
-										}
-										else
-										{
-											Alert.alert(
-												'Erro ao carregar informações',
-												error.message,
-												[
-													{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-													{
-														text: 'Fazer login', onPress: () => {
-															this.clearPartialData();
-															this.props.navigation.navigate("SignIn");
-														}
-													},
-												],
-												{
-													cancelable: false
-												},
-											);
-											
-										}
-
-									}, 100);
-
-									return false;
-								}
-												
-							}).catch(error => {
-
-								this.setState({loading: false}, function(){
-
-									setTimeout(() => {
-
-										if (error.code === 'ECONNABORTED')
-										{
-											Alert.alert(
-												'Problema com a conexão',
-												'A sua conexão pode ter falhado ou o servidor não respondeu dentro do período de 10 segundos, por favor tente novamente ou entre em contato com o suporte.',
-												[
-													{
-														text: 'OK', onPress: () => {}
-													},
-												],
-												{
-													cancelable: false
-												},
-											);
-
-										}
-										else
-										{
-											Alert.alert(
-												'Erro ao carregar informações',
-												error.message,
-												[
-													{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-													{
-														text: 'Fazer login', onPress: () => {
-															this.clearPartialData();
-															this.props.navigation.navigate("SignIn");
-														}
-													},
-												],
-												{
-													cancelable: false
-												},
-											);
-											
-										}
-
-									}, 100);
-
-									clearTimeout(timer);
-
-								});
-
-								return false;
-						
-							});
-
-						}).catch(error => {
-
-							this.setState({loading: false}, function(){
-
-								setTimeout(() => {
-
-									Alert.alert(
-										'Erro ao carregar informações',
-										error.message,
-										[
-											{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-											{
-												text: 'Fazer login', onPress: () => {
-													this.clearPartialData();
-													this.props.navigation.navigate("SignIn");
-												}
-											},
-										],
-										{
-											cancelable: false
-										},
-									);
-
-								}, 100);
-
-								clearTimeout(timer);
-
-							});
-
-							return false;
-						});
-					});
-				}
-			});
-
-        } catch(error) {
-        	
-        	this.setState({loading: false}, function(){
-
-				setTimeout(() => {
-
-					Alert.alert(
-						'Erro ao carregar informações',
-						error,
-						[
-							{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-							{
-								text: 'Fazer login', onPress: () => {
-									this.clearPartialData();
-									this.props.navigation.navigate("SignIn");
-								}
-							},
-						],
-						{
-							cancelable: false
-						},
-					);
-
-				}, 100);
-
-				clearTimeout(timer);
-
-			});
-
-			return false;
-        }        		
-	};
-
-	isTheSameHospital = (hospital, userData) =>  {
-		let hasHospitality = false
-		userData.hospitals.forEach(element => {
-			if(hospital.id === element.id) {
-				hasHospitality = true
-			}
-		})
-
-		return hasHospitality
-	}
 
 	countTotalPatients = (patients, hospitalName) => {
 
@@ -535,6 +176,8 @@ export default class Report extends Component {
 	}
 
 	report = async (hospitalList) => {
+
+		console.log(hospitalList);
 
 		let report = {
 			'hospital_report': [],
@@ -662,125 +305,8 @@ export default class Report extends Component {
 		this.setState({hospitalList: hospitalList});
 	}
 
-	loadHospitalsStorage = async () => {
-
-		AsyncStorage.getItem('hospitalList', (err, res) => {
-
-			if (res == null) {
-
-				Alert.alert(
-					'Erro ao carregar informações',
-					'Desculpe, não foi possível prosseguir offline, é necessário uma primeira sincronização conectado a internet!',
-					[
-						{
-							text: 'OK', onPress: () => {
-								this.props.navigation.navigate("SignIn");
-							}
-						},
-					],
-					{
-						cancelable: false
-					},
-				);
-			} 
-			else 
-			{
-				let hospitalList = JSON.parse(res);
-
-				this.setState({ hospitals: hospitalList });
-
-				this.report(JSON.parse(res));
-			}
-		});
-	}
-
-	sincronizar = async (fromServer) => {
-
-		let conn = await NetInfo.fetch().then(state => {
-			return state.isConnected;
-		});
-
-		if (fromServer) {
-
-			if (conn) 
-			{
-				this.loadHospitals();
-			}
-			else
-			{
-				Alert.alert(
-					'Sua conexão parece estar inativa',
-					'Por favor verifique sua conexão e tente novamente',
-					[
-						{
-							text: 'OK', onPress: () => {}
-						},
-					],
-					{
-						cancelable: false
-					},
-				);
-			}
-			
-		}
-		else
-		{
-			if (conn) {
-
-				AsyncStorage.getItem('hospitalList', (err, res) => {
-
-					if (res == null) {
-						this.sincronizar(true);
-					}
-					else
-					{
-						this.loadHospitalsStorage();
-					}
-				});
-			}
-			else
-			{
-				this.loadHospitalsStorage();
-			}
-		}
-	}
-
-	setRequireSyncTimer(timer){
-
-		let today =  moment().format('YYYY-MM-DD');
-
-		if (timer == null) 
-		{
-			AsyncStorage.removeItem('require_sync_at');
-
-			this.setState({ timerTextColor: "#005cd1", timerBackgroundColor: "#fff" });
-		}
-		else
-		{
-			let require_sync_at = JSON.parse(timer);
-			
-			if (require_sync_at == today) {
-				this.setState({ timerTextColor: "#856404", timerBackgroundColor: "#fff3cd" });
-			}
-
-			if (require_sync_at < today) {
-				this.setState({ timerTextColor: "#721c24", timerBackgroundColor: "#f8d7da" });
-			}
-		}
-
-	}
-
 	renderTimer(){
 		return <Timer dateSync={this.state.dateSync} timerTextColor={this.state.timerTextColor} timerBackgroundColor={this.state.timerBackgroundColor}/>;
-	}
-
-	setUser() {
-		AsyncStorage.getItem('userData', (err, res) => {
-			if(res) {
-				let parse = JSON.parse(res);
-				Session.current.user = parse;
-			}
-		});	
 	}
 
 	renderFilterHospital() {
@@ -793,7 +319,7 @@ export default class Report extends Component {
 			underline: { borderTopWidth: 0 }
 		};
 
-		if (Session.current.user && Session.current.user.profile !== 'CONSULTANT') {
+		//if (Session.current.user && Session.current.user.profile !== 'CONSULTANT') {
 			return (
 				<RNPickerSelect
 					items={this.state.regions}
@@ -805,7 +331,7 @@ export default class Report extends Component {
 					style={pickerStyle}
 				/>
 			);
-		}
+		//}
 	}
 
 	patientIsValid(patient) {
@@ -890,7 +416,7 @@ export default class Report extends Component {
 				<RdRootHeader
 					title='Relatório Consolidado'
 					menu={ () => this.props.navigation.openDrawer() }
-					sync={ () => this.sincronizar(true) }/>
+					sync={ () => Sync(this, true, 'report') }/>
 
 				{ this.renderTimer() }			
 
@@ -1060,4 +586,3 @@ export default class Report extends Component {
 	}
 }
 
-	

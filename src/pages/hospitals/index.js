@@ -20,7 +20,7 @@ import styles from './style';
 import Patient from '../../model/Patient';
 import Builder from '../../util/Builder';
 import RNPickerSelect, { inputIOS } from 'react-native-picker-select';
-import { Sync, setRequireSyncTimer } from '../Sync';
+import { Sync, setRequireSyncTimer, getDateSync } from '../Sync';
 
 export default class Hospital extends Component {
 
@@ -38,7 +38,6 @@ export default class Hospital extends Component {
 			loading: false,
 			timerTextColor: "#005cd1",
 			timerBackgroundColor: "#fff",
-			errorSync: 0,
 			allPatients: [],
 			patientsFiltered: [],
 			patientQuery: null,
@@ -68,8 +67,6 @@ export default class Hospital extends Component {
 				},
 			]
 		}
-
-		this.setUser();
 	}
 
 	updateState = (obj) => {
@@ -79,44 +76,19 @@ export default class Hospital extends Component {
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
 
 		this.setState({
-			errorSync: 0,
-			timerTextColor: "#005cd1", 
-			timerBackgroundColor: "#fff",
 			patientQuery: null,
 			patientsFiltered: [],
 		});
-
-        this.setUser();
         
-		NetInfo.fetch().then(state => {
+		Sync(this, false, 'hospitals');
 
-			this.setState({hospitals: null, filteredHospitals: null, selectedRegionalHospital: ''});
-
-			Sync(this, false, 'hospitals');
-
-		});
-
-		AsyncStorage.getItem('dateSync', (err, res) => {
-			
-			res = JSON.parse(res);
-
-			if (res !== null) {
-
-				let today =  moment().format('DD/MM/YYYY');
-
-				let dateSync = res.substring(0, 10);
-
-				if (today > dateSync) {
-					this.setState({ timerTextColor: "#721c24", timerBackgroundColor: "#f8d7da" });
-				}				
-			}
-
-            this.setState({dateSync: res});
-        });
+		getDateSync(this);
 
 		AsyncStorage.getItem('require_sync_at', (err, res) => {
 			if (res != null) {
 				setRequireSyncTimer(res);
+			} else {
+				setRequireSyncTimer(null);
 			}
 		});
 
@@ -217,6 +189,8 @@ export default class Hospital extends Component {
 
 		if(str !== '') {
 
+			console.log(this.state.allPatients);
+
 			const patientsFilteredNew = this.state.allPatients.filter(item => {
 				return (
 					item.patientName.toUpperCase().includes(str)
@@ -279,15 +253,6 @@ export default class Hospital extends Component {
 		
 	}
 
-	setUser() {
-		AsyncStorage.getItem('userData', (err, res) => {
-			if(res) {
-				let parse = JSON.parse(res);
-				Session.current.user = parse;
-			}
-		});	
-	}
-
 	renderFilterHospital() {
 		const pickerStyle = {
 			inputIOS: {
@@ -298,7 +263,7 @@ export default class Hospital extends Component {
 			underline: { borderTopWidth: 0 }
 		};
 
-		if (Session.current.user && Session.current.user.profile !== 'CONSULTANT') {
+		//if (Session.current.user && Session.current.user.profile !== 'CONSULTANT') {
 			return (
 				<RNPickerSelect
 					items={this.state.regions}
@@ -310,7 +275,7 @@ export default class Hospital extends Component {
 					style={pickerStyle}
 				/>
 			);
-		}
+		//}
 	}
 
 	render(){

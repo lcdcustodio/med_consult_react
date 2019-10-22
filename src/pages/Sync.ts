@@ -1,5 +1,9 @@
+import React, { Component } from "react";
+import { Container, Content, Text, Card, CardItem } from 'native-base';
+import { Alert, View, FlatList, TouchableOpacity, Image, BackHandler, Picker, Platform, StyleSheet } from "react-native";
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo";
+import Timer from '../../components/Timer';
 import moment from 'moment';
 import Session from '../Session';
 import Patient from '../model/Patient';
@@ -11,6 +15,45 @@ import _ from 'lodash';
 let instance = null;
 
 let instanceType = null;
+
+export function setUserData() {
+
+	AsyncStorage.getItem('userData', (err, res) => {
+		if(res) {
+			let parse = JSON.parse(res);
+			Session.current.user = parse;
+		}
+	});	
+}
+
+export function getDateSync(instance) {
+
+	AsyncStorage.getItem('dateSync', (err, res) => {
+            
+        res = JSON.parse(res);
+
+        if (res !== null) {
+
+            let today =  moment().format('DD/MM/YYYY');
+
+            let dateSync = res.substring(0, 10);
+
+            if (today > dateSync) {
+                instance.updateState({ timerTextColor: "#721c24", timerBackgroundColor: "#f8d7da" });
+            }                
+        }
+
+        instance.updateState({dateSync: res});
+    });
+
+    AsyncStorage.getItem('require_sync_at', (err, res) => {
+		if (res != null) {
+			setRequireSyncTimer(res);
+		} else {
+			setRequireSyncTimer(null);
+		}
+	});
+}
 
 export function getLogomarca(hospital) {
 
@@ -98,7 +141,7 @@ export function countTotalPatients(patients, hospital) {
 
 	let rooms = [];
 
-	let listPatients = instance.state.allPatients;
+	let listPatients = [];
 	
 	let totalPatients = patients.reduce((totalPatients, patient) => {
 		
@@ -262,6 +305,10 @@ export async function getInformationHospital(listHospital){
 		}); 
 	}
 
+	if(instanceType == 'report'){
+		instance.report(listHospital);
+	}
+
 	instance.updateState({
 		hospitals: [ ...listHospital], 
 		filteredHospitals: [ ...listHospital]
@@ -302,36 +349,27 @@ export function setRequireSyncTimer(timer){
 
 	let today =  moment().format('YYYY-MM-DD');
 
-	let updateState = false;
-
-	if(instanceType == 'hospitals'){
-		updateState = true;
-	}
-
 	if (timer == null) 
 	{
 		AsyncStorage.removeItem('require_sync_at');
 
-		if (updateState) {
-			instance.updateState({ timerTextColor: "#005cd1", timerBackgroundColor: "#fff" });
-		}
+		instance.updateState({ timerTextColor: "#005cd1", timerBackgroundColor: "#fff" });
 	}
 	else
 	{
 		let require_sync_at = JSON.parse(timer);
+
+		console.log(require_sync_at);
+		console.log(instanceType);
 		
-		if (updateState) {
+		if (require_sync_at == today) {
+			instance.updateState({ timerTextColor: "#856404", timerBackgroundColor: "#fff3cd" });
+		}
 
-			if (require_sync_at == today) {
-				instance.updateState({ timerTextColor: "#856404", timerBackgroundColor: "#fff3cd" });
-			}
-
-			if (require_sync_at < today) {
-				instance.updateState({ timerTextColor: "#721c24", timerBackgroundColor: "#f8d7da" });
-			}
+		if (require_sync_at < today) {
+			instance.updateState({ timerTextColor: "#721c24", timerBackgroundColor: "#f8d7da" });
 		}
 	}
-
 }
 
 export function  clearPartialData() {
@@ -378,7 +416,7 @@ export async function loadHospitals(){
 			return false;
 		}
 
-		instance.updateState({ textContent: 'Carregando informações...' });
+		instance.updateState({ textContent: 'Aguarde...' });
 
 		instance.updateState({ loading: true });
 
@@ -428,11 +466,9 @@ export async function loadHospitals(){
 
 	            let parse = JSON.parse(res);
 
-	            if (Session.current.user == null) {
-	            	Session.current.user = parse;
-				}
+	            Session.current.user = parse;
 
-	            instance.state.token = Session.current.user.token;
+	            instance.state.token = parse.token;
 
 	            AsyncStorage.getItem('hospitalizationList', (err, res) => {
 							
@@ -442,6 +478,8 @@ export async function loadHospitals(){
 
 					let data = { "hospitalizationList": builder };
 
+					instance.updateState({ textContent: 'Salvando as informações...' });
+
 					api.post('/v3.0/save', data, 
 					{
 						headers: {
@@ -450,28 +488,39 @@ export async function loadHospitals(){
 						  	"Token": instance.state.token, 
 						}
 
-					}).then(res => {
+					}).then(response => {
 
-						if(!res.data.body.success)
+						console.log(response);
+
+						if(!response.data.body.success)
 						{
-							Alert.alert(
-								'Erro ao carregar informações',
-								response,
-								[
-									{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+							instance.updateState({loading: false});
+
+							setTimeout(() => {
+
+								Alert.alert(
+									'Erro ao carregar informações',
+									response.data.body.responseError.msg,
+									[
+										{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+										{
+											text: 'Fazer login', onPress: () => {
+												clearPartialData();
+												instance.props.navigation.navigate("SignIn");
+											}
+										},
+									],
 									{
-										text: 'Fazer login', onPress: () => {
-											clearPartialData();
-											instance.props.navigation.navigate("SignIn");
-										}
+										cancelable: false
 									},
-								],
-								{
-									cancelable: false
-								},
-							);
+								);
+
+							}, 100);
+
 							return false;
 						}
+
+						instance.updateState({ textContent: 'Carregando as informações...' });
 
 						api.post('/v3.0/load', {}, 
 						{
@@ -483,21 +532,17 @@ export async function loadHospitals(){
 
 						}).then(response => {
 
-							clearTimeout(timer);
+							console.log(response);
 
-							instance.updateState({loading: false});
+							if(!response.data.body.success)
+							{
+								instance.updateState({loading: false});
 
-							if(response && response.status === 200) {
+								setTimeout(() => {
 
-								setRequireSyncTimer(null);
-
-								AsyncStorage.setItem('hospitalizationList', JSON.stringify([]));
-
-								if(!response.data.body.success)
-								{
 									Alert.alert(
 										'Erro ao carregar informações',
-										response,
+										response.data.body.responseError.msg,
 										[
 											{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
 											{
@@ -511,8 +556,21 @@ export async function loadHospitals(){
 											cancelable: false
 										},
 									);
-									return false;
-								}
+
+								}, 100);
+
+								return false;
+							}
+
+							clearTimeout(timer);
+
+							instance.updateState({loading: false});
+							
+							if(response && response.status === 200) {
+
+								setRequireSyncTimer(null);
+
+								AsyncStorage.setItem('hospitalizationList', JSON.stringify([]));
 
 								let hospitalListOrdered = _.orderBy(response.data.body.content.hospitalList, ['name'], ['asc']);
 									
@@ -556,6 +614,10 @@ export async function loadHospitals(){
 												instance.loadPatientData();
 											}
 
+											if(instanceType == 'report'){
+												instance.report(listHospital);
+											}
+
 										});
 
 							        });
@@ -568,7 +630,7 @@ export async function loadHospitals(){
 
 									Alert.alert(
 										'Erro ao carregar informações',
-										response,
+										response.data.body.responseError.msg,
 										[
 											{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
 											{
@@ -589,6 +651,9 @@ export async function loadHospitals(){
 							}
 
 						}).catch(error => {
+
+							console.log(error);
+							console.log(error.code);
 
 							instance.updateState({loading: false}, function(){
 
@@ -641,6 +706,9 @@ export async function loadHospitals(){
 						});
 						
 					}).catch(error => {
+
+						console.log(error);
+						console.log(error.code);
 
 						instance.updateState({loading: false}, function(){
 
@@ -770,7 +838,6 @@ export async function Sync(cls, fromServer, type) {
 			AsyncStorage.getItem('hospitalList', (err, res) => {
 
 				if (res == null) {
-
 					Sync(instance, true);
 				}
 				else
