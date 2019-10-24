@@ -49,7 +49,7 @@ export default class Hospital extends Component {
                 CASA_AZUL: 2
             },
 			REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21],
-			REGIONAL_SP: [161, 162, 163, 164],
+			REGIONAL_SP: [161, 162, 163, 164, 182, 181],
 			REGIONAL_PE: [142, 141, 143, 144],
 			selectedRegionalHospital: '',
 			regions: [
@@ -85,9 +85,15 @@ export default class Hospital extends Component {
         
 		NetInfo.fetch().then(state => {
 
-			this.setState({hospitals: null, filteredHospitals: null, selectedRegionalHospital: ''});
+			//this.setState({hospitals: null, filteredHospitals: null, selectedRegionalHospital: ''});
 
-			this.sincronizar();
+			if (this.state.selectedRegionalHospital) {
+				this.filterHospitals(this.state.selectedRegionalHospital);
+			}
+			else
+			{
+				this.sincronizar();
+			}
 
 		});
 
@@ -615,6 +621,10 @@ export default class Hospital extends Component {
 			return require('../../images/logo_hospital/sp/assuncao.png');
         }else if(hospital.id === 164) {
 			return require('../../images/logo_hospital/sp/saoLuizMorumbi.png');
+        }else if(hospital.id === 181) {
+			return require('../../images/logo_hospital/sp/daCrianca.png');
+        }else if(hospital.id === 182) {
+			return require('../../images/logo_hospital/sp/saoLuizJabaquara.png');
         }  
 
 		return null;
@@ -742,6 +752,8 @@ export default class Hospital extends Component {
 
 			if (conn) 
 			{
+				this.setState({filteredHospitals: null, selectedRegionalHospital: ''});
+
 				this.loadHospitals();
 			}
 			else
