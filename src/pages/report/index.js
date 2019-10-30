@@ -49,6 +49,7 @@ export default class Report extends Component {
             REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21],
 			REGIONAL_SP: [161, 162, 163, 164, 182, 181],
 			REGIONAL_PE: [142, 141, 143, 144],
+			REGIONAL_DF: [201, 202, 203],
 			selectedRegionalHospital: '',
 			hospitalList: null,
 			regions: [
@@ -63,6 +64,10 @@ export default class Report extends Component {
 				{
 				  label: 'São Paulo',
 				  value: 'SP',
+				},
+				{
+				  label: 'Brasília',
+				  value: 'DF',
 				},
 			]
 		}
@@ -524,6 +529,10 @@ export default class Report extends Component {
 
 		if (this.state.REGIONAL_PE.includes(hospitalId)) {
 			return 'PE'
+		}
+
+		if (this.state.REGIONAL_DF.includes(hospitalId)) {
+			return 'DF'
 		}
 	}
 

@@ -124601,6 +124601,10 @@
 		"morbidityComorbityName": "Pneumopatia crônica",
 		"morbidityComorbityProfileName": "Pediátrica"
 	}, {
+		"morbidityComorbityId": 21,
+		"morbidityComorbityName": "Diabetes",
+		"morbidityComorbityProfileName": "Pediátrica"
+	}, {
 		"morbidityComorbityId": 5,
 		"morbidityComorbityName": "DPOC",
 		"morbidityComorbityProfileName": "Geral"
@@ -124619,6 +124623,22 @@
 	}, {
 		"morbidityComorbityId": 4,
 		"morbidityComorbityName": "Insuficiência renal dialítica",
+		"morbidityComorbityProfileName": "Geral"
+	},{
+		"morbidityComorbityId": 22,
+		"morbidityComorbityName": "Transtornos psiquiátricos",
+		"morbidityComorbityProfileName": "Geral"
+	},{
+		"morbidityComorbityId": 23,
+		"morbidityComorbityName": "Hipertensão",
+		"morbidityComorbityProfileName": "Geral"
+	},{
+		"morbidityComorbityId": 26,
+		"morbidityComorbityName": "Lombalgia/ Cervicalgia",
+		"morbidityComorbityProfileName": "Geral"
+	},{
+		"morbidityComorbityId": 28,
+		"morbidityComorbityName": "Dor crônica",
 		"morbidityComorbityProfileName": "Geral"
 	}, {
 		"morbidityComorbityId": 1,
@@ -124643,6 +124663,22 @@
 	}, {
 		"morbidityComorbityId": 14,
 		"morbidityComorbityName": "Perda de peso",
+		"morbidityComorbityProfileName": "Idoso"
+	}, {
+		"morbidityComorbityId": 25,
+		"morbidityComorbityName": "Transtornos psiquiátricos",
+		"morbidityComorbityProfileName": "Idoso"
+	}, {
+		"morbidityComorbityId": 24,
+		"morbidityComorbityName": "Hipertensão",
+		"morbidityComorbityProfileName": "Idoso"
+	}, {
+		"morbidityComorbityId": 27,
+		"morbidityComorbityName": "Lombalgia/ Cervicalgia",
+		"morbidityComorbityProfileName": "Idoso"
+	}, {
+		"morbidityComorbityId": 29,
+		"morbidityComorbityName": "Dor crônica",
 		"morbidityComorbityProfileName": "Idoso"
 	}]
 }

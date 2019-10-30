@@ -51,6 +51,7 @@ export default class Hospital extends Component {
 			REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21],
 			REGIONAL_SP: [161, 162, 163, 164, 182, 181],
 			REGIONAL_PE: [142, 141, 143, 144],
+			REGIONAL_DF: [201, 202, 203],
 			selectedRegionalHospital: '',
 			regions: [
 				{
@@ -64,6 +65,10 @@ export default class Hospital extends Component {
 				{
 				  label: 'São Paulo',
 				  value: 'SP',
+				},
+				{
+				  label: 'Brasília',
+				  value: 'DF',
 				},
 			]
 		}
@@ -625,7 +630,13 @@ export default class Hospital extends Component {
 			return require('../../images/logo_hospital/sp/daCrianca.png');
         }else if(hospital.id === 182) {
 			return require('../../images/logo_hospital/sp/saoLuizJabaquara.png');
-        }  
+        }else if(hospital.id === 201) {
+			return require('../../images/logo_hospital/df/santaLuzia.png');
+        }else if(hospital.id === 202) {
+			return require('../../images/logo_hospital/df/doCoracao.png');
+        }else if(hospital.id === 203) {
+			return require('../../images/logo_hospital/df/santaHelena.png');
+        } 
 
 		return null;
 	}
@@ -950,6 +961,7 @@ export default class Hospital extends Component {
 	}
 
 	setRegional(hospitalId) {
+		
 		if (this.state.REGIONAL_RJ.includes(hospitalId)) {
 			return 'RJ'
 		}
@@ -960,6 +972,10 @@ export default class Hospital extends Component {
 
 		if (this.state.REGIONAL_PE.includes(hospitalId)) {
 			return 'PE'
+		}
+
+		if (this.state.REGIONAL_DF.includes(hospitalId)) {
+			return 'DF'
 		}
 	}
 
