@@ -124621,7 +124621,6 @@
 		"morbidityComorbityName": "Erros inatos do metabolismo",
 		"morbidityComorbityProfileName": "Pediátrica"
 	}, {
-<<<<<<< HEAD
 		"morbidityComorbityId": 21,
 		"morbidityComorbityName": "Diabetes",
 		"morbidityComorbityProfileName": "Pediátrica"
@@ -124661,11 +124660,6 @@
 		"morbidityComorbityId": 28,
 		"morbidityComorbityName": "Dor crônica",
 		"morbidityComorbityProfileName": "Geral"
-=======
-		"morbidityComorbityId": 13,
-		"morbidityComorbityName": "Hipoplasia renal",
-		"morbidityComorbityProfileName": "Pediátrica"
->>>>>>> homologacao-refactor
 	}, {
 		"morbidityComorbityId": 14,
 		"morbidityComorbityName": "Perda de peso",
@@ -124687,7 +124681,6 @@
 		"morbidityComorbityName": "Lentidão da marcha",
 		"morbidityComorbityProfileName": "Idoso"
 	}, {
-<<<<<<< HEAD
 		"morbidityComorbityId": 14,
 		"morbidityComorbityName": "Perda de peso",
 		"morbidityComorbityProfileName": "Idoso"
@@ -124707,26 +124700,5 @@
 		"morbidityComorbityId": 29,
 		"morbidityComorbityName": "Dor crônica",
 		"morbidityComorbityProfileName": "Idoso"
-=======
-		"morbidityComorbityId": 19,
-		"morbidityComorbityName": "Diabetes",
-		"morbidityComorbityProfileName": "Pediátrica"
-	}, {
-		"morbidityComorbityId": 20,
-		"morbidityComorbityName": "Transtornos psiquiátricos",
-		"morbidityComorbityProfileName": "Geral"
-	}, {
-		"morbidityComorbityId": 21,
-		"morbidityComorbityName": "Hipertensão",
-		"morbidityComorbityProfileName": "Geral"
-	}, {
-		"morbidityComorbityId": 22,
-		"morbidityComorbityName": "Lombalgia/ Cervicalgia",
-		"morbidityComorbityProfileName": "Geral"
-	}, {
-		"morbidityComorbityId": 23,
-		"morbidityComorbityName": "Dor crônica",
-		"morbidityComorbityProfileName": "Geral"
->>>>>>> homologacao-refactor
 	}]
 }

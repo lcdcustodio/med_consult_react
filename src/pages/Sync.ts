@@ -59,45 +59,76 @@ export function getLogomarca(hospital) {
 
 	if(hospital.id === 61) {
 		return require('../images/logo_hospital/rj/realDor.png');
-	} else if(hospital.id === 4) {
+	} 
+	else if(hospital.id === 4) {
 		return require('../images/logo_hospital/rj/copaDor.png');
-    }  else if(hospital.id === 5) {
+    }  
+    else if(hospital.id === 5) {
 		return require('../images/logo_hospital/rj/niteroiDor.png');
-    }  else if(hospital.id === 1) {
+    }  
+    else if(hospital.id === 1) {
 		return require('../images/logo_hospital/rj/bangu.png');
-    }  else if(hospital.id === 7) {
+    }  
+    else if(hospital.id === 7) {
 		return require('../images/logo_hospital/rj/oesteDor.png');
-    }  else if(hospital.id === 2) {
+    }  
+    else if(hospital.id === 2) {
 		return require('../images/logo_hospital/rj/barraDor.png');
-    }  else if(hospital.id === 9) {
+    }  
+    else if(hospital.id === 9) {
 		return require('../images/logo_hospital/rj/riosDor.png');
-    }  else if(hospital.id === 101) {
+    }  
+    else if(hospital.id === 101) {
 		return require('../images/logo_hospital/rj/badim.png');
-    }  else if(hospital.id === 6) {
+    }  
+    else if(hospital.id === 6) {
 		return require('../images/logo_hospital/rj/norteDor.png');
-	} else if(hospital.id === 3) {
+	} 
+	else if(hospital.id === 3) {
 		return require('../images/logo_hospital/rj/caxiasDor.png');
-    }  else if(hospital.id === 8) {
+    }  
+    else if(hospital.id === 8) {
 		return require('../images/logo_hospital/rj/quintaDor.png');
-    } else if(hospital.id === 144) {
+    } 
+    else if(hospital.id === 144) {
 		return require('../images/logo_hospital/pe/saoMarcos.png');
-    } else if(hospital.id === 143) {
+    } 
+    else if(hospital.id === 143) {
 		return require('../images/logo_hospital/pe/saoJose.png');
-    } else if(hospital.id === 142) {
+    } 
+    else if(hospital.id === 142) {
 		return require('../images/logo_hospital/pe/esperancaOlinda.png');
-    } else if(hospital.id === 141) {
+    } 
+    else if(hospital.id === 141) {
 		return require('../images/logo_hospital/pe/esperancaRecife.png');
     }
-
     else if(hospital.id === 161) {
 		return require('../images/logo_hospital/sp/saoLuizItaim.png');
-    }else if(hospital.id === 162) {
+    }
+    else if(hospital.id === 162) {
 		return require('../images/logo_hospital/sp/brasil.png');
-    }else if(hospital.id === 163) {
+    }
+    else if(hospital.id === 163) {
 		return require('../images/logo_hospital/sp/assuncao.png');
-    }else if(hospital.id === 164) {
+    }
+    else if(hospital.id === 164) {
 		return require('../images/logo_hospital/sp/saoLuizMorumbi.png');
-    }  
+    }
+    else if(hospital.id === 181) {
+        return require('../images/logo_hospital/sp/daCrianca.png');
+    }
+    else if(hospital.id === 182) {
+		return require('../images/logo_hospital/sp/saoLuizJabaquara.png');
+	}
+    else if(hospital.id === 201) {
+        return require('../images/logo_hospital/df/santaLuzia.png');
+    }
+    else if(hospital.id === 202) {
+        return require('../images/logo_hospital/df/doCoracao.png');
+    }
+    else if(hospital.id === 203) {
+        return require('../images/logo_hospital/df/santaHelena.png');
+    }
 
 	return null;
 }
@@ -278,6 +309,7 @@ export function setLastVisit(patients){
 }
 
 export function setRegional(hospitalId) {
+	
 	if (instance.state.REGIONAL_RJ.includes(hospitalId)) {
 		return 'RJ'
 	}
@@ -288,6 +320,10 @@ export function setRegional(hospitalId) {
 
 	if (instance.state.REGIONAL_PE.includes(hospitalId)) {
 		return 'PE'
+	}
+
+	if (instance.state.REGIONAL_DF.includes(hospitalId)) {
+		return 'DF'
 	}
 }
 
@@ -358,9 +394,6 @@ export function setRequireSyncTimer(timer){
 	else
 	{
 		let require_sync_at = JSON.parse(timer);
-
-		console.log(require_sync_at);
-		console.log(instanceType);
 		
 		if (require_sync_at == today) {
 			instance.updateState({ timerTextColor: "#856404", timerBackgroundColor: "#fff3cd" });
@@ -490,8 +523,6 @@ export async function loadHospitals(){
 
 					}).then(response => {
 
-						console.log(response);
-
 						if(!response.data.body.success)
 						{
 							instance.updateState({loading: false});
@@ -531,8 +562,6 @@ export async function loadHospitals(){
 							}
 
 						}).then(response => {
-
-							console.log(response);
 
 							if(!response.data.body.success)
 							{
@@ -652,9 +681,6 @@ export async function loadHospitals(){
 
 						}).catch(error => {
 
-							console.log(error);
-							console.log(error.code);
-
 							instance.updateState({loading: false}, function(){
 
 								setTimeout(() => {
@@ -706,9 +732,6 @@ export async function loadHospitals(){
 						});
 						
 					}).catch(error => {
-
-						console.log(error);
-						console.log(error.code);
 
 						instance.updateState({loading: false}, function(){
 

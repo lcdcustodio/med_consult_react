@@ -44,13 +44,8 @@ export default class Report extends Component {
                 OLHO_AZUL_COM_EXCLAMACAO: 0,
                 CASA_AZUL: 2
             },
-<<<<<<< HEAD
             REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21],
 			REGIONAL_SP: [161, 162, 163, 164, 182, 181],
-=======
-			REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21],
-			REGIONAL_SP: [161, 162, 163, 164],
->>>>>>> homologacao-refactor
 			REGIONAL_PE: [142, 141, 143, 144],
 			REGIONAL_DF: [201, 202, 203],
 			selectedRegionalHospital: '',
@@ -67,17 +62,13 @@ export default class Report extends Component {
 				  label: 'São Paulo',
 				  value: 'SP',
 				},
-<<<<<<< HEAD
 				{
 				  label: 'Brasília',
 				  value: 'DF',
 				},
-			]
-=======
 			],
 			hospitalList: null,
 			hospital_report: []
->>>>>>> homologacao-refactor
 		}
 	}
 
@@ -87,17 +78,15 @@ export default class Report extends Component {
 
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {	
 
-        this.setState({
-        	timerTextColor: "#005cd1",
-        	timerBackgroundColor: "#fff",
-        	hospitals: null,
-        	filteredHospitals: null,
-        	selectedRegionalHospital: '' 
-        });
+		if (this.state.selectedRegionalHospital) {
+			this.filterHospitals(this.state.selectedRegionalHospital);
+		}
+		else
+		{
+			Sync(this, false, 'report');
 
-		Sync(this, false, 'report');
-
-		getDateSync(this);
+			getDateSync(this);
+		}
 
 		BackHandler.removeEventListener ('hardwareBackPress', () => {});
         

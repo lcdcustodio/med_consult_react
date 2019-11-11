@@ -60,13 +60,7 @@ export default class Patients extends Component {
 
         AsyncStorage.getItem('hospitalList', (err, res) => {
 
-            console.log(res);
-
             let hospitalList = JSON.parse(res);
-
-            console.log(hospitalList);
-
-            console.log(hospitalList.length);
 
             let hospital = [];
 

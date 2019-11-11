@@ -174,8 +174,6 @@ export default class SignIn extends Component {
 			)
 			.then(response => {
 
-				console.log(response);
-
 				clearTimeout(timer);
 
 				if(response && response.data && response.data.success) {

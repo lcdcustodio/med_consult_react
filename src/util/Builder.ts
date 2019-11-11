@@ -31,8 +31,6 @@ export default class Builder extends JsonEntity<Patient> {
 
     public parseToSync(res, hospitals) {
 
-        console.log(res, hospitals);
-
         let json = [];
 
         if (res != null) {
@@ -128,8 +126,6 @@ export default class Builder extends JsonEntity<Patient> {
             let aux = parse[key];
             return aux;
         });
-
-        console.log(result);
 
         return result;
     }
