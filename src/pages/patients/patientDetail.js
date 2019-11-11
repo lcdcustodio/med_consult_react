@@ -8,23 +8,26 @@ import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Icon as IconNativeBase} from 'native-base';
-
+import Timer from '../../components/Timer';
 import { RdHeader } from '../../components/rededor-base';
 import Session from '../../Session';
 import baseStyles from '../../styles';
 import Profile from './profile';
 import Events from './events';
 import Visits from './visits';
+import { Sync, setRequireSyncTimer, getDateSync } from '../Sync';
 
 class PatientDetail extends Component {
     
 	constructor(props) {
 
 		super(props);
+
 		let observations = _.orderBy(this.props.navigation.getParam('patient').observationList, ['observationDate'], ['desc']);
 
 		this.state = {
             hospital: {},
+            hospitals: [],
 			hospitalId: this.props.navigation.getParam('hospitalId'),
 			patientId: this.props.navigation.getParam('patientId'),
 			patient: this.props.navigation.getParam('patient'),
@@ -32,16 +35,63 @@ class PatientDetail extends Component {
 			setprofile: null,
             timerTextColor: "#005cd1",
             timerBackgroundColor: "#fff",
+            dateSync: null,
 			selectedTab: TabEnum.Profile,
 			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease)
 		}
+	}
+
+	updateState = (obj) => {
+	    this.setState(obj);
+	}
+
+	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
+		
+		let patientId = this.props.navigation.getParam('patientId');
+
+		let observations = _.orderBy(this.props.navigation.getParam('patient').observationList, ['observationDate'], ['desc']);
+		
+		this.setState({
+			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
+			hospitalId: this.props.navigation.getParam('hospitalId'),
+			patientId: this.props.navigation.getParam('patientId'),
+
+		});
+
+		if (this.state.setprofile != patientId) {
+			this.setState({ 
+				selectedTab: 'profile' 
+			});
+			this.state.setprofile =  patientId;
+		}
+
+        this.loadPatientData();
+
+        Sync(this, false, 'patient');
+
+		getDateSync(this);
+
+		BackHandler.removeEventListener ('hardwareBackPress', () => {});
+        
+        BackHandler.addEventListener('hardwareBackPress', () => {
+            this.props.navigation.navigate('Patients');
+            return true;
+        });
+	});
+
+	renderTimer(){
+		return <Timer dateSync={this.state.dateSync} timerTextColor={this.state.timerTextColor} timerBackgroundColor={this.state.timerBackgroundColor}/>;
 	}
 
 	handleUpdatePatient = async (attribute, value, showSpinner = true) => {
 
 		this.setState({loading: showSpinner});
 
-		await AsyncStorage.setItem('require_sync_at', JSON.stringify(moment().format('YYYY-MM-DD')));
+		let timer = JSON.stringify(moment().format('YYYY-MM-DD'));
+
+		setRequireSyncTimer(timer);
+
+		await AsyncStorage.setItem('require_sync_at', timer);
 
 		let patient = this.state.patient;
 
@@ -55,20 +105,33 @@ class PatientDetail extends Component {
 
 			let hospital = [];
 
+            let listHospital = [];
+
 			for (var h = 0; h < hospitalList.length; h++) {
 				
-				if (patient.hospitalName == hospitalList[h].name) {
+				hospital = hospitalList[h];
 
-					hospital = hospitalList[h];
+				if (this.state.hospitalId == hospitalList[h].id) {
 
 					for (var i = 0; i < hospitalList[h].hospitalizationList.length; i++) {
+
 						if (hospitalList[h].hospitalizationList[i].id == patient.id) {
+
 							hospitalList[h].hospitalizationList[i] = patient;
 						}
 					}
 				}
 			}
 
+			for (var h = 0; h < hospitalList.length; h++) {
+
+                hospital = hospitalList[h];
+
+                listHospital.push(hospital);
+
+            }
+
+			this.setState({hospitals: listHospital});
 			
 			await AsyncStorage.setItem('hospitalList', JSON.stringify(hospitalList));
 
@@ -88,9 +151,7 @@ class PatientDetail extends Component {
 				value: value
 			});
 
-		
-
-			await AsyncStorage.setItem('hospitalizationList', JSON.stringify(hospitalizationList), () => {
+			await AsyncStorage.setItem('hospitalizationList', JSON.stringify(hospitalizationList), () => {				
 				this.setState({loading: false});
 			});
 
@@ -108,28 +169,13 @@ class PatientDetail extends Component {
 		}
 	}
 
-	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
-		let observations = _.orderBy(this.props.navigation.getParam('patient').observationList, ['observationDate'], ['desc']);
-		
-		this.setState({
-			isEditable: (Session.current.user.profile != 'ADMIN') && !(observations.length && observations[0].medicalRelease),
-			hospitalId: this.props.navigation.getParam('hospitalId'),
-			patientId: this.props.navigation.getParam('patientId'),
+	loadPatientData = () => {
 
-		});
+		let patientId = this.props.navigation.getParam('patientId');
 
-		const patientId = this.props.navigation.getParam('patientId');
+		let hospitalId = this.props.navigation.getParam('hospitalId');
 
-		const hospitalId = this.props.navigation.getParam('hospitalId');
-
-		if (this.state.setprofile != patientId) {
-			this.setState({ 
-				selectedTab: 'profile' 
-			});
-			this.state.setprofile =  patientId;
-		}
-
-        AsyncStorage.getItem('hospitalList', (err, res) => {
+		AsyncStorage.getItem('hospitalList', (err, res) => {
 
             let hospitalList = JSON.parse(res);
 
@@ -155,17 +201,6 @@ class PatientDetail extends Component {
                 }
             }
         });
-
-		BackHandler.removeEventListener ('hardwareBackPress', () => {});
-        
-        BackHandler.addEventListener('hardwareBackPress', () => {
-            this.props.navigation.navigate('Patients');
-            return true;
-        });
-	});
-
-	componentWillUnmount() {
-        this.didFocus.remove();
 	}
 	
 	isSelected = (tab) => {
@@ -182,13 +217,19 @@ class PatientDetail extends Component {
 		const visitsStyle = this.isSelected(TabEnum.Visits) ? styles.ativo : styles.inativo;
 		return (
 			<Container>
+
 				<Spinner
                     visible={this.state.loading}
                     textContent={this.state.textContent}
                     textStyle={styles.spinnerTextStyle} />
+
 				<RdHeader
 					title={this.state.patient.patientName ? this.state.patient.patientName : ''}
+					sync={ () => Sync(this, true, 'patient') }
 					goBack={this._goBack}/>
+
+				{ this.renderTimer() }
+
 				<Content contentContainerStyle={{ ...baseStyles.container, flex: 1 }}>
 					{ this.renderSelectedTab() }
 				</Content>
@@ -254,6 +295,9 @@ const styles = StyleSheet.create({
 		borderBottomColor: "#DDD",
 		padding: 20
 	},
+	spinnerTextStyle: {
+        color: '#FFF'
+    },
 	productTitle: {
 		fontSize: 18,
 		fontWeight: "bold",

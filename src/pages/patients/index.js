@@ -6,11 +6,12 @@ import moment from 'moment';
 import _ from 'lodash';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-
+import Timer from '../../components/Timer';
 import { RdHeader } from '../../components/rededor-base';
 import baseStyles from '../../styles';
 import styles from './style';
 import Patient from '../../model/Patient';
+import { Sync, setRequireSyncTimer, getDateSync } from '../Sync';
 
 export default class Patients extends Component {
     
@@ -20,27 +21,72 @@ export default class Patients extends Component {
 
         this.state = {
             hospital: {},
+            dateSync: null,
             loading: false,
+            hospitals: [],
             timerTextColor: "#005cd1",
             timerBackgroundColor: "#fff"
         }
     }
 
+    updateState = (obj) => {
+        this.setState(obj);
+    }
+
     didFocus = this.props.navigation.addListener('didFocus', (res) => {
 
+        this.loadHospitalData();
+
+        Sync(this, false, 'patients');
+
+        getDateSync(this);
+
+        BackHandler.removeEventListener ('hardwareBackPress', () => {});
+        
+        BackHandler.addEventListener('hardwareBackPress', () => {
+            this.props.navigation.navigate('Hospitals');
+            return true;
+        });
+
+    });
+    
+    renderTimer(){
+        return <Timer dateSync={this.state.dateSync} timerTextColor={this.state.timerTextColor} timerBackgroundColor={this.state.timerBackgroundColor}/>;
+    }
+
+    loadHospitalData = () => {
+        
         const hospitalId = this.props.navigation.getParam('hospitalId');
 
         AsyncStorage.getItem('hospitalList', (err, res) => {
 
+            console.log(res);
+
             let hospitalList = JSON.parse(res);
+
+            console.log(hospitalList);
+
+            console.log(hospitalList.length);
 
             let hospital = [];
 
-            for (var h = 0; h < hospitalList.length; h++) {
-                
-                if (hospitalId == hospitalList[h].id) {
+            let listHospital = [];
 
-                    hospital = hospitalList[h];
+            for (var h = 0; h < hospitalList.length; h++) {
+
+                hospital = hospitalList[h];
+
+                listHospital.push(hospital);
+
+            }
+
+            this.setState({hospitals: listHospital});
+
+            for (var h = 0; h < hospitalList.length; h++) {
+
+                hospital = hospitalList[h];
+                
+                if (hospitalId == hospitalList[h].id) {    
 
                     let patients = [];
 
@@ -77,22 +123,11 @@ export default class Patients extends Component {
                     break;
 
                 }
-            }         
-        });
+            } 
 
-        BackHandler.removeEventListener ('hardwareBackPress', () => {});
-        
-        BackHandler.addEventListener('hardwareBackPress', () => {
-            this.props.navigation.navigate('Hospitals');
-            return true;
         });
-
-    });
-    
-    componentWillUnmount() {
-        this.didFocus.remove();
     }
-    
+
     exitDateBelow48Hours(date) {
         const today = moment()
         let dateFormatted = moment(moment(date).format('YYYY-MM-DD'))
@@ -242,13 +277,19 @@ export default class Patients extends Component {
     render(){
         return (
            <Container>
+           
                 <Spinner
                     visible={this.state.loading}
                     textContent={this.state.textContent}
                     textStyle={styles.spinnerTextStyle} />
+
                 <RdHeader
                     title={this.state.hospital.name}
+                    sync={ () => Sync(this, true, 'patients') }
                     goBack={()=>this.props.navigation.navigate('Hospitals')}/>
+
+                { this.renderTimer() }
+
                 <Content style={baseStyles.container}>
                     <View style={styles.container}>
                         <FlatList

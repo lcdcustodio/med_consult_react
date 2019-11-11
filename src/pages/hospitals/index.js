@@ -20,6 +20,7 @@ import styles from './style';
 import Patient from '../../model/Patient';
 import Builder from '../../util/Builder';
 import RNPickerSelect, { inputIOS } from 'react-native-picker-select';
+import { Sync, setRequireSyncTimer, getDateSync } from '../Sync';
 
 export default class Hospital extends Component {
 
@@ -37,7 +38,6 @@ export default class Hospital extends Component {
 			loading: false,
 			timerTextColor: "#005cd1",
 			timerBackgroundColor: "#fff",
-			errorSync: 0,
 			allPatients: [],
 			patientsFiltered: [],
 			patientQuery: null,
@@ -72,22 +72,20 @@ export default class Hospital extends Component {
 				},
 			]
 		}
+	}
 
-		this.setUser();
+	updateState = (obj) => {
+	    this.setState(obj);
 	}
 
 	didFocus = this.props.navigation.addListener('didFocus', (payload) => {
 
 		this.setState({
-			errorSync: 0,
-			timerTextColor: "#005cd1", 
-			timerBackgroundColor: "#fff",
 			patientQuery: null,
 			patientsFiltered: [],
 		});
-
-        this.setUser();
         
+<<<<<<< HEAD
 		NetInfo.fetch().then(state => {
 
 			//this.setState({hospitals: null, filteredHospitals: null, selectedRegionalHospital: ''});
@@ -105,24 +103,17 @@ export default class Hospital extends Component {
 		AsyncStorage.getItem('dateSync', (err, res) => {
 			
 			res = JSON.parse(res);
+=======
+		Sync(this, false, 'hospitals');
+>>>>>>> homologacao-refactor
 
-			if (res !== null) {
-
-				let today =  moment().format('DD/MM/YYYY');
-
-				let dateSync = res.substring(0, 10);
-
-				if (today > dateSync) {
-					this.setState({ timerTextColor: "#721c24", timerBackgroundColor: "#f8d7da" });
-				}				
-			}
-
-            this.setState({dateSync: res});
-        });
+		getDateSync(this);
 
 		AsyncStorage.getItem('require_sync_at', (err, res) => {
 			if (res != null) {
-				this.setRequireSyncTimer(res);
+				setRequireSyncTimer(res);
+			} else {
+				setRequireSyncTimer(null);
 			}
 		});
 
@@ -135,6 +126,7 @@ export default class Hospital extends Component {
 
 	});
 
+<<<<<<< HEAD
 	countTotalPatients = (patients, hospital) => {
 
 		let rooms = [];
@@ -807,6 +799,8 @@ export default class Hospital extends Component {
 		}
 	}
 
+=======
+>>>>>>> homologacao-refactor
 	renderImageOrName(item) {
 
 		if ( item.logomarca ) {
@@ -883,30 +877,7 @@ export default class Hospital extends Component {
 		</TouchableOpacity>
 	);
 
-	setRequireSyncTimer(timer){
-
-		let today =  moment().format('YYYY-MM-DD');
-
-		if (timer == null) 
-		{
-			AsyncStorage.removeItem('require_sync_at');
-
-			this.setState({ timerTextColor: "#005cd1", timerBackgroundColor: "#fff" });
-		}
-		else
-		{
-			let require_sync_at = JSON.parse(timer);
-			
-			if (require_sync_at == today) {
-				this.setState({ timerTextColor: "#856404", timerBackgroundColor: "#fff3cd" });
-			}
-
-			if (require_sync_at < today) {
-				this.setState({ timerTextColor: "#721c24", timerBackgroundColor: "#f8d7da" });
-			}
-		}
-
-	}
+	
 
 	renderTimer(){
 		return <Timer dateSync={this.state.dateSync} timerTextColor={this.state.timerTextColor} timerBackgroundColor={this.state.timerBackgroundColor}/>;
@@ -917,6 +888,8 @@ export default class Hospital extends Component {
 		const str = patientQuery.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
 
 		if(str !== '') {
+
+			console.log(this.state.allPatients);
 
 			const patientsFilteredNew = this.state.allPatients.filter(item => {
 				return (
@@ -960,6 +933,7 @@ export default class Hospital extends Component {
 
 	}
 
+<<<<<<< HEAD
 	setRegional(hospitalId) {
 		
 		if (this.state.REGIONAL_RJ.includes(hospitalId)) {
@@ -979,6 +953,8 @@ export default class Hospital extends Component {
 		}
 	}
 
+=======
+>>>>>>> homologacao-refactor
 	filterHospitals(regionalHospital) {
 		
 		let hospitals = [];
@@ -999,15 +975,6 @@ export default class Hospital extends Component {
 		
 	}
 
-	setUser() {
-		AsyncStorage.getItem('userData', (err, res) => {
-			if(res) {
-				let parse = JSON.parse(res);
-				Session.current.user = parse;
-			}
-		});	
-	}
-
 	renderFilterHospital() {
 		const pickerStyle = {
 			inputIOS: {
@@ -1018,7 +985,7 @@ export default class Hospital extends Component {
 			underline: { borderTopWidth: 0 }
 		};
 
-		if (Session.current.user && Session.current.user.profile !== 'CONSULTANT') {
+		//if (Session.current.user && Session.current.user.profile !== 'CONSULTANT') {
 			return (
 				<RNPickerSelect
 					items={this.state.regions}
@@ -1030,7 +997,7 @@ export default class Hospital extends Component {
 					style={pickerStyle}
 				/>
 			);
-		}
+		//}
 	}
 
 	render(){
@@ -1045,7 +1012,7 @@ export default class Hospital extends Component {
 				<RdRootHeader
 					title='Hospitais'
 					menu={ () => this.props.navigation.openDrawer() }
-					sync={ () => this.sincronizar(true) }/>
+					sync={ () => Sync(this, true, 'hospitals') }/>
 
 				{ this.renderTimer() }			
 
