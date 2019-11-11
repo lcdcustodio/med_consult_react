@@ -2,7 +2,8 @@
 #
 .DS_Store
 src/services/api.js
-
+android/*
+ios/*
 # Xcode
 #
 build/
