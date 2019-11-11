@@ -859,9 +859,9 @@ export async function Sync(cls, fromServer, type) {
 		if (conn) {
 
 			AsyncStorage.getItem('hospitalList', (err, res) => {
-
+				
 				if (res == null) {
-					Sync(instance, true);
+					Sync(instance, true, type);
 				}
 				else
 				{
