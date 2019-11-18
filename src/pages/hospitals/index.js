@@ -48,8 +48,8 @@ export default class Hospital extends Component {
                 OLHO_AZUL_COM_EXCLAMACAO: 0,
                 CASA_AZUL: 2
             },
-			REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21],
-			REGIONAL_SP: [161, 162, 163, 164, 182, 181],
+			REGIONAL_RJ: [101, 1, 2, 3, 4, 5, 6, 7, 8, 61, 9, 41, 21, 224],
+			REGIONAL_SP: [161, 162, 163, 164, 182, 181, 221, 222, 223],
 			REGIONAL_PE: [142, 141, 143, 144],
 			REGIONAL_DF: [201, 202, 203],
 			selectedRegionalHospital: '',
