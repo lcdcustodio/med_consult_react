@@ -57,6 +57,8 @@ export function getDateSync(instance) {
 
 export function getLogomarca(hospital) {
 
+	console.log(hospital);
+
 	if(hospital.id === 61) {
 		return require('../images/logo_hospital/rj/realDor.png');
 	} 
@@ -128,6 +130,22 @@ export function getLogomarca(hospital) {
     }
     else if(hospital.id === 203) {
         return require('../images/logo_hospital/df/santaHelena.png');
+    }
+
+    else if(hospital.id === 221) {
+        return require('../images/logo_hospital/sp/saoLuizAnaliaFranco.png');
+    }
+
+    else if(hospital.id === 222) {
+        return require('../images/logo_hospital/sp/saoLuizSaoCaetano.png');
+    }
+
+    else if(hospital.id === 223) {
+        return require('../images/logo_hospital/sp/villaLobos.png');
+    }
+
+    else if(hospital.id === 224) {
+        return require('../images/logo_hospital/rj/rioMar.png');
     }
 
 	return null;
@@ -513,6 +531,9 @@ export async function loadHospitals(){
 
 					instance.updateState({ textContent: 'Salvando as informações...' });
 
+					console.log(data);
+					console.log(instance);
+
 					api.post('/v3.0/save', data, 
 					{
 						headers: {
@@ -522,6 +543,8 @@ export async function loadHospitals(){
 						}
 
 					}).then(response => {
+
+						console.log(response);
 
 						if(!response.data.body.success)
 						{
@@ -562,6 +585,8 @@ export async function loadHospitals(){
 							}
 
 						}).then(response => {
+
+							console.log(response);
 
 							if(!response.data.body.success)
 							{
@@ -681,6 +706,8 @@ export async function loadHospitals(){
 
 						}).catch(error => {
 
+							console.log(error);
+
 							instance.updateState({loading: false}, function(){
 
 								setTimeout(() => {
@@ -732,6 +759,8 @@ export async function loadHospitals(){
 						});
 						
 					}).catch(error => {
+
+						console.log(error);
 
 						instance.updateState({loading: false}, function(){
 
