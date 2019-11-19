@@ -184,8 +184,6 @@ export default class Report extends Component {
 
 	report = async (hospitalList) => {
 
-		console.log(hospitalList);
-
 		let report = {
 			'hospital_report': [],
 			'patients': 0,

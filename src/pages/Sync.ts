@@ -57,8 +57,6 @@ export function getDateSync(instance) {
 
 export function getLogomarca(hospital) {
 
-	console.log(hospital);
-
 	if(hospital.id === 61) {
 		return require('../images/logo_hospital/rj/realDor.png');
 	} 
@@ -531,9 +529,6 @@ export async function loadHospitals(){
 
 					instance.updateState({ textContent: 'Salvando as informações...' });
 
-					console.log(data);
-					console.log(instance);
-
 					api.post('/v3.0/save', data, 
 					{
 						headers: {
@@ -670,6 +665,10 @@ export async function loadHospitals(){
 
 											if(instanceType == 'report'){
 												instance.report(listHospital);
+											}
+
+											if (instance.state.selectedRegionalHospital) {
+												instance.filterHospitals(instance.state.selectedRegionalHospital);
 											}
 
 										});
