@@ -134,6 +134,16 @@ export default class Builder extends JsonEntity<Patient> {
 
                     return error;
                 }
+
+                if (parse[json[i].id].patientWeight >= 1000) {
+
+                    error['hospitalId'] = patient.hospitalId;
+                    error['patientId'] = patient.id;
+                    error['patient'] = patient;
+                    error['error'] = 'Peso ' + parse[json[i].id].patientWeight + 'kg informado para o(a) paciente ' + patient.patientName + ' é inválido';
+
+                    return error;
+                }
             }
         }
 

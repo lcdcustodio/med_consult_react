@@ -560,7 +560,7 @@ export async function loadHospitals(){
 
 					instance.updateState({ textContent: 'Salvando as informações...' });
 
-					//console.log(data);
+					console.log(data);
 
 					api.post('/v3.0/save', data, 
 					{
@@ -572,7 +572,7 @@ export async function loadHospitals(){
 
 					}).then(response => {
 
-						//console.log(response);
+						console.log(response);
 
 						if(!response.data.body.success)
 						{
@@ -614,7 +614,7 @@ export async function loadHospitals(){
 
 						}).then(response => {
 
-							//console.log(response);
+							console.log(response);
 
 							if(!response.data.body.success)
 							{
