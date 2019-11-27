@@ -103,14 +103,8 @@ class PatientDetail extends Component {
 
 			let hospitalList = JSON.parse(res);
 
-			let hospital = [];
-
-            let listHospital = [];
-
 			for (var h = 0; h < hospitalList.length; h++) {
 				
-				hospital = hospitalList[h];
-
 				if (this.state.hospitalId == hospitalList[h].id) {
 
 					for (var i = 0; i < hospitalList[h].hospitalizationList.length; i++) {
@@ -123,16 +117,8 @@ class PatientDetail extends Component {
 				}
 			}
 
-			for (var h = 0; h < hospitalList.length; h++) {
+			this.setState({hospitals: hospitalList});
 
-                hospital = hospitalList[h];
-
-                listHospital.push(hospital);
-
-            }
-
-			this.setState({hospitals: listHospital});
-			
 			await AsyncStorage.setItem('hospitalList', JSON.stringify(hospitalList));
 
 		});
@@ -145,11 +131,26 @@ class PatientDetail extends Component {
 				hospitalizationList = [];
 			}
 
-			hospitalizationList.push({
-				idPatient: this.state.patient.id,
-				key: attribute,
-				value: value
-			});
+			var changed = false;
+
+			for (var i = 0; i < hospitalizationList.length; i++) {
+
+				if (hospitalizationList[i].idPatient == this.state.patient.id && hospitalizationList[i].key == attribute) {
+
+					hospitalizationList[i].value = value;
+
+					changed = true;
+				}
+			}
+
+			if (!changed) {
+
+				hospitalizationList.push({
+					idPatient: this.state.patient.id,
+					key: attribute,
+					value: value
+				});
+			}
 
 			await AsyncStorage.setItem('hospitalizationList', JSON.stringify(hospitalizationList), () => {				
 				this.setState({loading: false});

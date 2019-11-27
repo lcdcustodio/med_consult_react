@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Container, Content, Text, Card, CardItem } from 'native-base';
-import { Alert, View, FlatList, TouchableOpacity, Image, BackHandler, Picker, Platform, StyleSheet } from "react-native";
+import { AppState, Alert, View, FlatList, TouchableOpacity, Image, BackHandler, Picker, Platform, StyleSheet } from "react-native";
 import { Searchbar, List } from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo";
@@ -71,6 +71,24 @@ export default class Hospital extends Component {
 				  value: 'DF',
 				},
 			]
+		}
+	}
+
+	componentDidMount() {
+		AppState.addEventListener('change', this._handleAppStateChange);
+	}
+
+	componentWillUnmount() {
+		AppState.removeEventListener('change', this._handleAppStateChange);
+	}
+
+	_handleAppStateChange = (nextAppState) => {
+		
+		if (nextAppState == 'active') {
+
+			Sync(this, true, 'hospitals', true);
+
+			getDateSync(this);
 		}
 	}
 

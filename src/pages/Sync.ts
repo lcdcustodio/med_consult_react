@@ -523,11 +523,44 @@ export async function loadHospitals(){
 							
 					let builder = new Builder();
 
+					let validator = new Builder();
+
+					validatorFailed = builder.validateToSync(res, instance.state.hospitals);
+
+					if (validatorFailed) {
+						
+						instance.updateState({loading: false});
+
+						setTimeout(() => {
+
+	                        Alert.alert(
+	                            'Erro de validação',
+	                            validatorFailed['error'],
+	                            [
+	                            	{ text: 'Fechar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+	                                {
+	                                    text: 'Ir para o(a) paciente', onPress: () => {
+	                                    	instance.props.navigation.navigate("PatientDetail", { hospitalId: validatorFailed['hospitalId'], patientId: validatorFailed['patientId'], patient: validatorFailed['patient']});
+	                                    }
+	                                },
+	                            ],
+	                            {
+	                                cancelable: false
+	                            },
+	                        );
+
+	                    }, 100);
+
+						return false;
+					}
+
 					builder = builder.parseToSync(res, instance.state.hospitals);
 
 					let data = { "hospitalizationList": builder };
 
 					instance.updateState({ textContent: 'Salvando as informações...' });
+
+					//console.log(data);
 
 					api.post('/v3.0/save', data, 
 					{
@@ -539,7 +572,7 @@ export async function loadHospitals(){
 
 					}).then(response => {
 
-						console.log(response);
+						//console.log(response);
 
 						if(!response.data.body.success)
 						{
@@ -581,7 +614,7 @@ export async function loadHospitals(){
 
 						}).then(response => {
 
-							console.log(response);
+							//console.log(response);
 
 							if(!response.data.body.success)
 							{
@@ -849,7 +882,7 @@ export async function loadHospitals(){
     }     		
 };
 
-export async function Sync(cls, fromServer, type) {
+export async function Sync(cls, fromServer, type, background) {
 
 	instance = cls;
 
@@ -867,20 +900,22 @@ export async function Sync(cls, fromServer, type) {
 		}
 		else
 		{
-			Alert.alert(
-				'Sua conexão parece estar inativa',
-				'Por favor verifique sua conexão e tente novamente',
-				[
+			if (!background) {
+				
+				Alert.alert(
+					'Sua conexão parece estar inativa',
+					'Por favor verifique sua conexão e tente novamente',
+					[
+						{
+							text: 'OK', onPress: () => {}
+						},
+					],
 					{
-						text: 'OK', onPress: () => {}
+						cancelable: false
 					},
-				],
-				{
-					cancelable: false
-				},
-			);
+				);
+			}
 		}
-		
 	}
 	else
 	{
