@@ -74,24 +74,6 @@ export default class Hospital extends Component {
 		}
 	}
 
-	componentDidMount() {
-		AppState.addEventListener('change', this._handleAppStateChange);
-	}
-
-	componentWillUnmount() {
-		AppState.removeEventListener('change', this._handleAppStateChange);
-	}
-
-	_handleAppStateChange = (nextAppState) => {
-		
-		if (nextAppState == 'active') {
-
-			Sync(this, true, 'hospitals', true);
-
-			getDateSync(this);
-		}
-	}
-
 	updateState = (obj) => {
 	    this.setState(obj);
 	}
