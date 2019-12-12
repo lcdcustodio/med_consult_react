@@ -124660,21 +124660,5 @@
 		"morbidityComorbityId": 18,
 		"morbidityComorbityName": "Lentidão da marcha",
 		"morbidityComorbityProfileName": "Idoso"
-	}, {
-		"morbidityComorbityId": 25,
-		"morbidityComorbityName": "Transtornos psiquiátricos",
-		"morbidityComorbityProfileName": "Idoso"
-	}, {
-		"morbidityComorbityId": 24,
-		"morbidityComorbityName": "Hipertensão",
-		"morbidityComorbityProfileName": "Idoso"
-	}, {
-		"morbidityComorbityId": 27,
-		"morbidityComorbityName": "Lombalgia/ Cervicalgia",
-		"morbidityComorbityProfileName": "Idoso"
-	}, {
-		"morbidityComorbityId": 29,
-		"morbidityComorbityName": "Dor crônica",
-		"morbidityComorbityProfileName": "Idoso"
 	}]
 }
