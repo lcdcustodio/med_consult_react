@@ -196,8 +196,6 @@ export function countTotalPatients(patients, hospital) {
 
 		patient.hospitalId = hospital.id;
 
-		allPatients.push(patient);
-		
 		const patientClass = new Patient(patient);
 
 		let iconNumber = patientClass.getIconNumber();
@@ -212,6 +210,8 @@ export function countTotalPatients(patients, hospital) {
 					iconNumber == instance.state.ICON.OLHO_AZUL_COM_EXCLAMACAO ||
 					iconNumber == instance.state.ICON.OLHO_AZUL ||
 					iconNumber == instance.state.ICON.OLHO_CINZA_COM_CHECK) {
+
+					allPatients.push(patient);
 
 					if(!rooms.includes(patient.locationBed))
 					{
