@@ -16,6 +16,8 @@ let instance = null;
 
 let instanceType = null;
 
+let allPatients = [];
+
 export function setUserData() {
 
 	AsyncStorage.getItem('userData', (err, res) => {
@@ -187,8 +189,6 @@ export function countTotalPatientsVisited(patients) {
 export function countTotalPatients(patients, hospital) {
 
 	let rooms = [];
-
-	let listPatients = [];
 	
 	let totalPatients = patients.reduce((totalPatients, patient) => {
 		
@@ -196,8 +196,8 @@ export function countTotalPatients(patients, hospital) {
 
 		patient.hospitalId = hospital.id;
 
-		listPatients.push(patient);
-
+		allPatients.push(patient);
+		
 		const patientClass = new Patient(patient);
 
 		let iconNumber = patientClass.getIconNumber();
@@ -235,7 +235,7 @@ export function countTotalPatients(patients, hospital) {
 		}
 	}, 0);
 
-	instance.updateState({ allPatients: listPatients });
+	instance.updateState({ allPatients: allPatients });
 
 	rooms = [];
 
@@ -346,6 +346,8 @@ export function setRegional(hospitalId) {
 export async function getInformationHospital(listHospital){
 
 	if(instanceType == 'hospitals'){
+
+		allPatients = [];
 
 		listHospital.forEach( hospital => {
 			hospital.logomarca = getLogomarca(hospital)

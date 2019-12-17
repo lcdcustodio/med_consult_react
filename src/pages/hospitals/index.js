@@ -83,6 +83,7 @@ export default class Hospital extends Component {
 		this.setState({
 			patientQuery: null,
 			patientsFiltered: [],
+			allPatients: []
 		});
 
 		if (this.state.selectedRegionalHospital) {
@@ -199,8 +200,6 @@ export default class Hospital extends Component {
 		const str = patientQuery.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
 
 		if(str !== '') {
-
-			console.log(this.state.allPatients);
 
 			const patientsFilteredNew = this.state.allPatients.filter(item => {
 				return (
