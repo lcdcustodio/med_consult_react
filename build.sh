@@ -8,7 +8,7 @@ if [ "$PACKAGE_VERSION" =  'undefined' ]; then
 fi
 
 if [ "$PACKAGE_NAME" =  'undefined' ]; then
-    echo "Informe o número do app"; exit 2;
+    echo "Informe o nome do app"; exit 2;
 fi
 
 cd android && ./gradlew assembleRelease
