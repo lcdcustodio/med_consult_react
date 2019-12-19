@@ -61,7 +61,7 @@ export function toJsonDate(value) {
     } else {
         momentValue = moment(value);
     }
-    return momentValue.format('YYYY-MM-DDTHH:mm:ssZZ');
+    return momentValue;
 }
 
 const styles = StyleSheet.create({
