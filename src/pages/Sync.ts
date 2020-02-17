@@ -148,6 +148,10 @@ export function getLogomarca(hospital) {
         return require('../images/logo_hospital/rj/rioMar.png');
     }
 
+    else if(hospital.id === 241) {
+        return require('../images/logo_hospital/sp/ifor.png');
+    }
+
 	return null;
 }
 
