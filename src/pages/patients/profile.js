@@ -179,7 +179,7 @@ export default class Profile extends Component {
 	handleSecondaryCID = async (cid) => {
 
 		let secondaryCID = {
-			beginDate: moment(),
+			beginDate: toJsonDate(),
 			cidDisplayName: `${cid.item.code} - ${cid.item.name}`,
 			cidId: cid.item.id,
 			uuid: uuidv4()

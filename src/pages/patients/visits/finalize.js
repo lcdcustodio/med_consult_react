@@ -167,7 +167,7 @@ export default class Finalize extends Component {
 
 	handleExitCID = (cid) => {
 		let newCID = {
-			beginDate: moment(),
+			beginDate: toJsonDate(),
 			cidDisplayName: `${cid.item.code} - ${cid.item.name}`,
 			cidId: cid.item.id,
 			uuid: uuidv4(),

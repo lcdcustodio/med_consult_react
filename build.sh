@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#export ANDROID_HOME=/Users/oberdan/Library/Android/sdk/
+#export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
+
 PACKAGE_VERSION=$(node -p -e "require('./app.json').version")
 	=$(node -p -e "require('./app.json').name")
 
