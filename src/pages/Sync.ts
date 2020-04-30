@@ -156,6 +156,10 @@ export function getLogomarca(hospital) {
         return require('../images/logo_hospital/sp/Logo-RibeiraoPires.png');
     }
 
+    else if(hospital.id === 281) {
+        return require('../images/logo_hospital/rj/gloriaDor.png');
+    }
+
 	return null;
 }
 
