@@ -41,15 +41,16 @@ export default class Patient extends JsonEntity<Patient> {
 	}
 
 	public getIconNumber() {
-
 		const { exitDate, observationList } = this.json;
-
 		let lastVisit = null;
-
-        let listOfOrderedPatientObservations = _.orderBy(observationList, ['observationDate'], ['desc']);
-
-
-        const today = moment();
+		let listOfOrderedPatientObservations = _.orderBy(observationList, ['observationDate'], ['desc']);
+		const lastTracking = this.getLastTracking();
+		const today = moment();
+		
+		// MC-137
+		if (lastTracking && (lastTracking.endMode === TrackingEndModeEnum.Urgency) && lastTracking.json.endDate) {
+			return IconEyeEnum.CASA_AZUL;
+		}
 
         if (listOfOrderedPatientObservations.length > 0) {
 
