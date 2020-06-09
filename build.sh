@@ -4,7 +4,7 @@
 #export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
 
 PACKAGE_VERSION=$(node -p -e "require('./app.json').version")
-	=$(node -p -e "require('./app.json').name")
+PACKAGE_NAME=$(node -p -e "require('./app.json').name")
 
 if [ "$PACKAGE_VERSION" =  'undefined' ]; then
     echo "Informe o número da versão"; exit 1;
@@ -24,7 +24,7 @@ find . -type f -name '*.apk' -exec bash -c 'x="{}"; mv "$x" "$APP_NAME.apk";' \;
 
 ls $APP_NAME.*;
 
-cd ios
+#cd ios
 
 #xcodebuild -scheme medicoconsultor archive -archivePath ./medicoconsultor.xcarchive
 
