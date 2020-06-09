@@ -104,6 +104,7 @@ export default class Report extends Component {
 		let totalPatients = patients.reduce((totalPatients, patient) => {
 
 			const patientClass = new Patient(patient);
+			
 			let iconNumber = patientClass.getIconNumber();
 			let listOfOrderedPatientObservations = _.orderBy(patient.observationList, ['observationDate'], ['desc']);
 			let listOfOrderedPatientTrackingList = _.orderBy(patient.trackingList, ['startDate'], ['desc']);
