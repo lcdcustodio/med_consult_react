@@ -152,7 +152,7 @@ export function getLogomarca(hospital) {
         return require('../images/logo_hospital/sp/ifor.png');
     }
 
-    else if(hospital.id === 261) {
+    else if(hospital.id === 261 || hospital.id === 301) {
         return require('../images/logo_hospital/sp/Logo-RibeiraoPires.png');
     }
 
