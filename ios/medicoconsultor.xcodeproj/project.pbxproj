@@ -70,7 +70,6 @@
 		EFC179C0A1554F77A9CAD8C6 /* Roboto_medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 42AC120DB0044F48867AF6FA /* Roboto_medium.ttf */; };
 		F0BE73AEDB9E40CAAB1D0378 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F10C738D79634903BF40CB46 /* FontAwesome5_Brands.ttf */; };
 		F49B52C3944B448EA7C52E4D /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 27E45ED773FD49A38661F39D /* Feather.ttf */; };
-		5FD0516151C242D9A5573699 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 31D30C886FCB49F0810E76AD /* Fontisto.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -521,7 +520,6 @@
 		F1AA32B1679F4E2783AA0D4A /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		F30AA37B2E514074B03EC40D /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		FB5F47247DE44C958D8ECDC6 /* libRNCNetInfo.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNCNetInfo.a; sourceTree = "<group>"; };
-		31D30C886FCB49F0810E76AD /* Fontisto.ttf */ = {isa = PBXFileReference; name = "Fontisto.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -772,7 +770,6 @@
 				B3AEEFC644B3426D98D5CCB0 /* Octicons.ttf */,
 				C62358D67E6E4639A7B7ADA4 /* SimpleLineIcons.ttf */,
 				190B8BCBD0574752A8334DC7 /* Zocial.ttf */,
-				31D30C886FCB49F0810E76AD /* Fontisto.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1503,7 +1500,6 @@
 				D90A075268EC4DDD849DD792 /* Octicons.ttf in Resources */,
 				40D0FFF578044E099959C039 /* SimpleLineIcons.ttf in Resources */,
 				80791E19FB5E4555B2ECBAEF /* Zocial.ttf in Resources */,
-				5FD0516151C242D9A5573699 /* Fontisto.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
