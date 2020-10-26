@@ -100,7 +100,8 @@ export default class SignIn extends Component {
 
 			let xhr = new XMLHttpRequest();
 
-			xhr.open('POST', 'https://appmedconsultor.rededor.com.br/api/login');
+			//xhr.open('POST', 'https://appmedconsultor.rededor.com.br/api/login');
+			xhr.open('POST', 'http://appmedconsultor-hmg.rededor.com.br/medico-consultor-api/api/login');
 
 			const react = this;
 
