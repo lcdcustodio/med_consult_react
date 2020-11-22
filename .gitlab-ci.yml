@@ -15,7 +15,7 @@ build:
         - pwd
 #        - ls
         - cd ios            
-        - ls
+#        - ls
         - pwd
 #        - bundle install
 #        - BUNDLE_GEMFILE="/ios/Gemfile" ./bundle install
